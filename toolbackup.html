@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal DB Manager | Dark Enterprise</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #0f172a; /* Slate 900 */
+            color: #f8fafc; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Smooth Scrollbar Dark Theme */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* Log Box Custom Styling */
+        .log-box { 
+            background: #1e293b; 
+            border: 1px solid #334155; 
+            border-radius: 16px; 
+            padding: 20px; 
+            height: 380px; 
+            overflow-y: auto; 
+            font-size: 13px; 
+            line-height: 1.6;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+        }
+        
+        .log-entry {
+            display: flex;
+            gap: 12px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            font-family: theme('fontFamily.mono');
+            word-break: break-all;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .log-time { color: #64748b; flex-shrink: 0; }
+        .log-success { border-left: 3px solid #10b981; color: #34d399; background: rgba(16, 185, 129, 0.05); }
+        .log-error { border-left: 3px solid #ef4444; color: #f87171; background: rgba(239, 68, 68, 0.05); }
+        .log-info { border-left: 3px solid #38bdf8; color: #7dd3fc; background: rgba(56, 189, 248, 0.05); }
+        .log-warning { border-left: 3px solid #f59e0b; color: #fbbf24; background: rgba(245, 158, 11, 0.05); }
+        
+        /* Interactive Counter Cards (Riverside Style) */
+        .counter-card { 
+            background: #1e293b; 
+            border-radius: 16px; 
+            padding: 24px 16px; 
+            border: 1px solid #334155; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .counter-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+            border-color: #475569;
+            background: #273549;
+        }
+        .counter-card.updated::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(56, 189, 248, 0.15);
+            animation: flashCyan 1s ease-out forwards;
+            pointer-events: none;
+        }
+        @keyframes flashCyan {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Form Controls */
+        input[type="text"], input[type="email"], input[type="password"], textarea {
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #38bdf8;
+            background-color: #1e293b;
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
+        }
+
+        /* Modals Transitions */
+        .modal-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-out;
+            backdrop-filter: blur(8px);
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            transform: scale(0.95) translateY(10px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        /* Toast Notifications */
+        #toastContainer {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+        .toast-msg {
+            pointer-events: auto;
+            min-width: 300px;
+            max-width: 400px;
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+            border: 1px solid #334155;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #f1f5f9;
+        }
+        .toast-msg.show {
+            transform: translateX(0);
+        }
+        .toast-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+        .toast-success .toast-icon { color: #10b981; }
+        .toast-error .toast-icon { color: #ef4444; }
+        .toast-warning .toast-icon { color: #f59e0b; }
+        .toast-info .toast-icon { color: #38bdf8; }
+
+        .upload-zone {
+            border: 2px dashed #475569;
+            transition: all 0.2s ease;
+            background: #1e293b;
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.05);
+        }
+        
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+        button:active:not(:disabled) { transform: translateY(1px); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        
+        <!-- Header Section -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6 bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-lg">
+            <div class="flex items-center gap-5">
+                <div class="w-16 h-16 rounded-2xl bg-slate-900 flex items-center justify-center text-brand-400 border border-slate-700 shadow-inner">
+                    <i class="ph-duotone ph-database text-3xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black text-white tracking-tight">Universal DB Manager</h1>
+                    <div class="flex items-center gap-2 mt-1.5">
+                        <span class="relative flex h-2.5 w-2.5">
+                          <span id="statusPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-500 opacity-75"></span>
+                          <span id="statusDot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-slate-400"></span>
+                        </span>
+                        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider" id="projectSubtitle">Sistem Terputus - Butuh Setup</p>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button id="btnOpenSettings" class="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-5 py-3 border border-slate-600 rounded-xl shadow-sm text-sm font-bold transition-all">
+                    <i class="ph-fill ph-gear"></i> Konfigurasi Sistem
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Action Bar -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-lg">
+            
+            <button id="btnMainExport" class="flex flex-col items-center justify-center gap-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/20 py-4 rounded-xl shadow-sm text-sm font-bold transition-all disabled:opacity-50">
+                <i class="ph-duotone ph-download-simple text-2xl mb-1"></i> 
+                <span>Backup JSON</span>
+            </button>
+            
+            <button id="btnMainImport" class="flex flex-col items-center justify-center gap-2 bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 border border-brand-500/20 py-4 rounded-xl shadow-sm text-sm font-bold transition-all disabled:opacity-50">
+                <i class="ph-duotone ph-upload-simple text-2xl mb-1"></i> 
+                <span>Restore Data</span>
+            </button>
+
+            <button id="btnSyncNow" class="flex flex-col items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-300 border border-slate-600 py-4 rounded-xl shadow-sm text-sm font-bold transition-all disabled:opacity-50">
+                <i class="ph-duotone ph-arrows-clockwise text-2xl mb-1"></i> 
+                <span>Segarkan Angka</span>
+            </button>
+            
+            <button id="btnMainWipe" class="flex flex-col items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 py-4 rounded-xl shadow-sm text-sm font-bold transition-all disabled:opacity-50">
+                <i class="ph-duotone ph-warning text-2xl mb-1"></i> 
+                <span>Hapus Semua</span>
+            </button>
+
+        </div>
+        
+        <div id="countersContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
+            <div class="col-span-full text-center py-16 bg-slate-800 rounded-2xl border border-slate-700 border-dashed">
+                <i class="ph-duotone ph-plugs-connected text-5xl text-slate-600 mb-4"></i>
+                <p class="text-slate-300 font-bold text-lg">Belum ada koleksi yang dikonfigurasi.</p>
+                <p class="text-slate-500 text-sm mt-2">Buka menu konfigurasi untuk memetakan database Anda.</p>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="w-full bg-slate-800 rounded-full h-2 mb-6 overflow-hidden hidden border border-slate-700" id="progressContainer">
+            <div id="progressBar" class="bg-brand-500 h-full rounded-full transition-all duration-300 relative overflow-hidden" style="width: 0%">
+                <div class="absolute inset-0 bg-white/20" style="animation: shimmer 2s infinite;"></div>
+            </div>
+        </div>
+        <style>@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }</style>
+
+        <div class="log-box mb-8" id="logs">
+            <div class="log-entry log-info">
+                <span class="log-time">[System]</span>
+                <span class="log-message font-semibold">Menunggu inisiasi kontrol Firebase...</span>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal Export -->
+    <div id="exportModal" class="fixed inset-0 z-40 flex items-center justify-center p-4 modal-overlay bg-slate-900/80">
+        <div class="bg-slate-800 rounded-2xl w-full max-w-sm p-6 relative shadow-2xl border border-slate-700 modal-content">
+            <button class="absolute top-4 right-4 text-slate-500 hover:text-white transition" onclick="closeModal('exportModal')">
+                <i class="ph ph-x text-xl"></i>
+            </button>
+            <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4 text-2xl mx-auto">
+                <i class="ph-fill ph-export"></i>
+            </div>
+            <h3 class="text-xl font-black text-white text-center mb-2">Backup Database</h3>
+            <p class="text-xs text-slate-400 text-center mb-6 leading-relaxed">Unduh seluruh koleksi yang aktif ke dalam format JSON. Sangat berguna untuk cadangan harian.</p>
+            <div class="flex flex-col gap-3">
+                <button id="btnBackup" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-xl transition text-sm font-bold flex justify-center items-center gap-2 shadow-lg">
+                    <i class="ph-bold ph-download-simple"></i> Unduh File JSON
+                </button>
+                <button id="btnCopyJson" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 px-4 py-3 rounded-xl transition text-sm font-bold flex justify-center items-center gap-2">
+                    <i class="ph-bold ph-copy"></i> Salin JSON (Fallback)
+                </button>
+                <button onclick="closeModal('exportModal')" class="w-full text-slate-500 hover:text-slate-300 font-bold text-xs mt-2 transition py-2 uppercase tracking-widest">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Import -->
+    <div id="importModal" class="fixed inset-0 z-40 flex items-center justify-center p-4 modal-overlay bg-slate-900/80">
+        <div class="bg-slate-800 rounded-2xl w-full max-w-sm p-6 relative shadow-2xl border border-slate-700 modal-content">
+            <button class="absolute top-4 right-4 text-slate-500 hover:text-white transition" onclick="closeModal('importModal')">
+                <i class="ph ph-x text-xl"></i>
+            </button>
+            <div class="w-12 h-12 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center mb-4 text-2xl mx-auto">
+                <i class="ph-fill ph-upload"></i>
+            </div>
+            <h3 class="text-xl font-black text-white text-center mb-2">Restore Database</h3>
+            <p class="text-xs text-slate-400 text-center mb-6 leading-relaxed">Pulihkan data dari file JSON. Dokumen yang ada akan ditimpa jika memiliki ID yang sama.</p>
+            
+            <label class="upload-zone rounded-xl p-8 text-center flex flex-col items-center justify-center cursor-pointer mb-4 shadow-inner" id="lblRestore">
+                <i class="ph-duotone ph-file-arrow-up text-4xl text-brand-400 mb-3"></i>
+                <span class="text-sm font-bold text-slate-200" id="restoreTextStatus">Pilih File JSON</span>
+                <span class="text-[10px] text-slate-500 mt-1 uppercase tracking-widest">Hanya format .json / .txt</span>
+                <input type="file" id="fileUpload" class="hidden" accept=".json, .txt">
+            </label>
+
+            <button onclick="closeModal('importModal')" class="w-full text-slate-500 hover:text-slate-300 font-bold text-xs transition py-2 uppercase tracking-widest">
+                Batal
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Wipe / Auth (Kritis) -->
+    <div id="authModal" class="fixed inset-0 z-40 flex items-center justify-center p-4 modal-overlay bg-slate-900/90">
+        <div class="bg-slate-800 rounded-2xl w-full max-w-md p-6 relative shadow-2xl border border-red-900/50 modal-content">
+            <div class="flex items-start gap-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-red-500/20 text-red-500 flex items-center justify-center flex-shrink-0 mt-1 border border-red-500/30">
+                    <i class="ph-fill ph-warning-octagon text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-white mb-2">Tindakan Kritis Sistem</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Anda akan menghapus <strong class="text-white">SELURUH DATA</strong> pada koleksi target. Tindakan ini <span class="text-red-400 font-bold">permanen dan tak bisa dibatalkan</span>.</p>
+                </div>
+            </div>
+            
+            <div class="bg-slate-900 rounded-xl p-5 mb-6 border border-slate-700 shadow-inner">
+                <p class="text-xs text-slate-400 font-medium text-center mb-3">Ketik <strong class="select-none text-red-400 font-black bg-slate-800 px-2 py-1 rounded border border-red-900/50">DELETE</strong> di bawah ini untuk mengonfirmasi:</p>
+                <input type="text" id="confirmDeleteInput" class="w-full p-4 text-center text-xl font-black tracking-[0.2em] text-white uppercase bg-slate-800 border border-slate-600 rounded-xl focus:border-red-500 focus:ring-1 focus:ring-red-500" placeholder="KETIK DISINI" autocomplete="off">
+                <p id="authError" class="text-xs text-red-400 font-bold mt-3 text-center hidden"></p>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeModal('authModal')" class="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-sm font-bold transition-colors">Batal</button>
+                <button id="btnConfirmAuth" disabled class="flex-1 py-3 bg-red-600 text-white rounded-xl text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:bg-red-700 shadow-lg shadow-red-900/20 flex justify-center items-center gap-2">
+                    <i class="ph-bold ph-trash"></i> Hapus Permanen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Dialog Component -->
+    <div id="customDialogModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay bg-slate-900/80">
+        <div class="bg-slate-800 rounded-2xl w-full max-w-sm p-6 relative shadow-2xl border border-slate-700 modal-content">
+            <h3 id="dialogTitle" class="text-lg font-black text-white mb-2">Konfirmasi Aksi</h3>
+            <p id="dialogMessage" class="text-sm text-slate-400 mb-6 leading-relaxed">Apakah Anda yakin ingin melanjutkan?</p>
+            <div class="flex justify-end gap-3 mt-2">
+                <button id="btnDialogCancel" class="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-sm font-bold transition-colors">Batal</button>
+                <button id="btnDialogConfirm" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-bold transition-colors shadow-lg">Konfirmasi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfigurasi -->
+    <div id="settingsModal" class="fixed inset-0 z-40 flex items-center justify-center p-4 modal-overlay bg-slate-900/80">
+        <div class="bg-slate-800 rounded-2xl w-full max-w-2xl relative shadow-2xl modal-content flex flex-col max-h-[90vh] border border-slate-700">
+            
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800 rounded-t-2xl">
+                <h3 class="text-xl font-black text-white flex items-center gap-3">
+                    <i class="ph-fill ph-sliders text-brand-400 text-2xl"></i> Konfigurasi Database
+                </h3>
+                <button id="btnCancelSettingsIcon" class="text-slate-500 hover:text-white transition hidden">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto space-y-6">
+                <!-- Smart Detect Scanner with SMART APP_ID EXTRACTOR -->
+                <div class="upload-zone rounded-xl p-6 text-center relative cursor-pointer group shadow-inner">
+                    <label class="cursor-pointer flex flex-col items-center justify-center gap-3 w-full h-full">
+                        <div class="w-14 h-14 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center mb-1 group-hover:scale-110 transition-all border border-brand-500/30">
+                            <i class="ph-duotone ph-scan text-3xl"></i>
+                        </div>
+                        <span class="text-base font-black text-white">Deep Scan Pintar</span>
+                        <span class="text-xs text-slate-400 max-w-md leading-relaxed">Upload file <span class="text-brand-400 font-mono">config.js</span> / HTML / Backup. Sistem akan otomatis mengisi API Key, Path, dan Koleksi. <strong class="text-emerald-400">Pilih banyak file sekaligus!</strong></span>
+                        <input type="file" id="configFileUpload" class="hidden" accept=".js,.json,.txt,.html,.ts" multiple>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-sm font-bold text-slate-300 mb-2 flex justify-between">
+                            Objek Konfigurasi Firebase (JSON)
+                            <span class="text-[10px] font-bold text-rose-400 uppercase tracking-widest bg-rose-500/10 px-2 py-0.5 rounded">Wajib</span>
+                        </label>
+                        <textarea id="configJson" rows="5" class="w-full p-4 font-mono text-sm leading-relaxed" placeholder='{\n  "apiKey": "...",\n  "authDomain": "...",\n  "projectId": "..."\n}'></textarea>
+                    </div>
+
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-sm font-bold text-slate-300 mb-2">Koleksi Target (Pisahkan Koma)</label>
+                        <textarea id="configCollections" rows="2" class="w-full p-4 font-mono text-sm leading-relaxed" placeholder="programs, facilities, tutors, testimonials"></textarea>
+                    </div>
+
+                    <div class="col-span-1 md:col-span-2 pt-2">
+                        <button id="btnToggleAdvanced" class="text-sm font-bold text-brand-400 hover:text-brand-300 transition flex items-center gap-2">
+                            <i class="ph-bold ph-caret-right transition-transform" id="advancedIcon"></i> Opsi Lanjutan (Base Path)
+                        </button>
+
+                        <div id="advancedPanel" class="hidden mt-4 pt-5 border-t border-slate-700">
+                            <label class="block text-sm font-bold text-slate-300 mb-2">Base Path Rute Dokumen (Penting!)</label>
+                            <input type="text" id="configPath" class="w-full p-4 text-sm font-mono text-emerald-400 bg-slate-900" placeholder="Cth: artifacts/[APP_ID]/public/data">
+                            <p class="text-xs text-slate-500 mt-3 leading-relaxed"><i class="ph-fill ph-info text-brand-400"></i> Jika data Anda menunjukkan angka <strong class="text-white">0</strong>, kemungkinan Base Path ini kosong. Gunakan Deep Scan agar sistem otomatis mendeteksi rute <strong class="text-white">artifacts/...</strong> Anda.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-slate-700 bg-slate-900 rounded-b-2xl flex justify-between items-center gap-3">
+                <button id="btnResetSettings" class="px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl text-sm font-bold transition-colors flex items-center gap-2" title="Bersihkan cache sistem">
+                    <i class="ph-bold ph-trash"></i> Reset Sistem
+                </button>
+                <div class="flex gap-3">
+                    <button id="btnCancelSettings" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-sm font-bold transition-colors hidden shadow-sm">Batal</button>
+                    <button id="btnSaveSettings" class="px-8 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-bold transition-colors flex items-center gap-2 shadow-lg shadow-brand-900/20">
+                        <i class="ph-bold ph-check-circle"></i> Simpan & Hubungkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container for Custom Toasts -->
+    <div id="toastContainer"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==================== STATE & VARIABLES ====================
+        let app, auth, db;
+        let activeConfig = null;
+        let COLLECTIONS_LIST = [];
+        let BASE_PATH = "";
+
+        // ==================== UI & UX SERVICES ====================
+        const toastContainer = document.getElementById('toastContainer');
+        const iconMapToast = {
+            success: 'ph-check-circle',
+            error: 'ph-x-circle',
+            warning: 'ph-warning',
+            info: 'ph-info'
+        };
+
+        window.showToast = function(title, message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast-msg toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="ph-fill ${iconMapToast[type]}"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-bold text-white">${title}</h4>
+                    <p class="text-[11px] text-slate-300 mt-1.5 leading-relaxed">${message}</p>
+                </div>
+                <button class="text-slate-500 hover:text-white flex-shrink-0" onclick="this.parentElement.remove()">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            `;
+            toastContainer.appendChild(toast);
+            
+            requestAnimationFrame(() => toast.classList.add('show'));
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400); 
+            }, 6000); 
+        };
+
+        const dialogModal = document.getElementById('customDialogModal');
+        const dialogTitle = document.getElementById('dialogTitle');
+        const dialogMessage = document.getElementById('dialogMessage');
+        const btnDialogConfirm = document.getElementById('btnDialogConfirm');
+        const btnDialogCancel = document.getElementById('btnDialogCancel');
+        
+        let pendingConfirmCallback = null;
+
+        window.showConfirm = function(title, message, onConfirm) {
+            dialogTitle.innerText = title;
+            dialogMessage.innerText = message;
+            pendingConfirmCallback = onConfirm;
+            openModal('customDialogModal');
+        };
+
+        btnDialogConfirm.addEventListener('click', () => {
+            closeModal('customDialogModal');
+            if (pendingConfirmCallback) pendingConfirmCallback();
+            pendingConfirmCallback = null;
+        });
+        
+        btnDialogCancel.addEventListener('click', () => {
+            closeModal('customDialogModal');
+            pendingConfirmCallback = null;
+        });
+
+        window.openModal = function(id) {
+            const modal = document.getElementById(id);
+            if(modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden'; 
+            }
+        };
+
+        window.closeModal = function(id) {
+            const modal = document.getElementById(id);
+            if(modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        };
+
+        const logsDiv = document.getElementById('logs');
+        function addLog(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log-entry log-${type}`;
+            const time = new Date();
+            const timeString = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}`;
+            div.innerHTML = `
+                <span class="log-time">[${timeString}]</span>
+                <span class="log-message font-medium">${message}</span>
+            `;
+            logsDiv.appendChild(div);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        const progressBar = document.getElementById('progressBar');
+        const progressContainer = document.getElementById('progressContainer');
+        function setProgress(percent) {
+            if(percent > 0 && percent < 100) progressContainer.classList.remove('hidden');
+            progressBar.style.width = `${percent}%`;
+            if(percent === 0 || percent === 100) {
+                setTimeout(() => progressContainer.classList.add('hidden'), 600);
+            }
+        }
+
+        function toggleSystemLock(isLocked) {
+            document.getElementById('btnMainExport').disabled = isLocked;
+            document.getElementById('btnMainImport').disabled = isLocked;
+            document.getElementById('btnMainWipe').disabled = isLocked;
+            document.getElementById('btnOpenSettings').disabled = isLocked;
+            document.getElementById('btnSyncNow').disabled = isLocked;
+        }
+
+        // ==================== SETTINGS & SMART SCAN ====================
+        
+        const advancedPanel = document.getElementById('advancedPanel');
+        const btnToggleAdvanced = document.getElementById('btnToggleAdvanced');
+        const advancedIcon = document.getElementById('advancedIcon');
+        
+        btnToggleAdvanced.addEventListener('click', () => {
+            advancedPanel.classList.toggle('hidden');
+            if(advancedPanel.classList.contains('hidden')) {
+                advancedIcon.classList.remove('rotate-90');
+            } else {
+                advancedIcon.classList.add('rotate-90');
+            }
+        });
+
+        document.getElementById('btnResetSettings').addEventListener('click', () => {
+            showConfirm("Reset Konfigurasi?", "Sistem akan menghapus konfigurasi Firebase yang tersimpan dan membersihkan semua riwayat. Aplikasi akan dimulai ulang seperti baru.", () => {
+                localStorage.removeItem('UniversalDBManager_Settings_v4');
+                document.getElementById('configJson').value = '';
+                document.getElementById('configCollections').value = '';
+                document.getElementById('configPath').value = '';
+                document.getElementById('configFileUpload').value = '';
+                
+                showToast("Sistem Direset", "Konfigurasi berhasil dihapus. Sistem memulai ulang...", "success");
+                addLog("Cache konfigurasi dihapus. Melakukan penyegaran halaman...", "warning");
+                
+                setTimeout(() => window.location.reload(), 1200);
+            });
+        });
+
+        // SMART SCAN + AUTO BASE PATH INJECTION
+        document.getElementById('configFileUpload').addEventListener('change', async function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            let extractedConfig = null;
+            let existingCols = document.getElementById('configCollections').value.split(',').map(s => s.trim()).filter(s => s);
+            let autoDetectedCollections = new Set(existingCols); 
+            let collectionsFoundInScan = 0;
+            let autoDetectedAppId = null;
+
+            showToast("Deep Scan Aktif", `Menganalisa ${files.length} file untuk mencari Firebase Config dan Rute Data...`, "info");
+
+            const processFile = (file) => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const text = event.target.result;
+
+                        try {
+                            const parsedJson = JSON.parse(text);
+                            const keys = Object.keys(parsedJson);
+                            
+                            if (keys.length > 0 && Array.isArray(parsedJson[keys[0]])) {
+                                keys.forEach(k => {
+                                    if(!autoDetectedCollections.has(k)) collectionsFoundInScan++;
+                                    autoDetectedCollections.add(k);
+                                });
+                            } else if (parsedJson.apiKey && !extractedConfig) {
+                                extractedConfig = parsedJson; 
+                                if(parsedJson.appId) autoDetectedAppId = parsedJson.appId;
+                            }
+                        } catch(err) {
+                            // Extract Config via Regex
+                            if (!extractedConfig) {
+                                const extractValue = (key) => {
+                                    const regex = new RegExp(`${key}\\s*:\\s*["']([^"']+)["']`);
+                                    const match = text.match(regex);
+                                    return match ? match[1] : "";
+                                };
+                                
+                                const apiKey = extractValue("apiKey");
+                                const projectId = extractValue("projectId");
+                                const appId = extractValue("appId");
+
+                                if (apiKey && projectId) {
+                                    extractedConfig = {
+                                        apiKey: apiKey,
+                                        authDomain: extractValue("authDomain"),
+                                        projectId: projectId,
+                                        storageBucket: extractValue("storageBucket"),
+                                        messagingSenderId: extractValue("messagingSenderId"),
+                                        appId: appId
+                                    };
+                                }
+                                
+                                // Coba tangkap APP_ID secara independen jika ditulis manual sebagai variabel
+                                if (!appId) {
+                                    const regexAppId = /app_id\s*(?:=|:)\s*["']([^"']+)["']/i;
+                                    const matchAppId = text.match(regexAppId);
+                                    if (matchAppId) autoDetectedAppId = matchAppId[1];
+                                } else {
+                                    autoDetectedAppId = appId;
+                                }
+                            }
+                            
+                            // Extract Collections
+                            const firestoreMethods = /(?:collection|doc|\.collection|getDocs|onSnapshot)\s*\(([^)]+)\)/g;
+                            let match;
+                            while ((match = firestoreMethods.exec(text)) !== null) {
+                                const argsText = match[1];
+                                const stringLiterals = argsText.match(/(["'`])([a-zA-Z0-9_.-]+)\1/g);
+                                if (stringLiterals) {
+                                    stringLiterals.forEach(s => {
+                                        const cleanName = s.replace(/["'`]/g, '');
+                                        const ignored = ['artifacts', 'public', 'data', 'users_data', 'db', 'app'];
+                                        if (cleanName.length >= 2 && !ignored.includes(cleanName) && !cleanName.includes('/')) {
+                                            if(!autoDetectedCollections.has(cleanName)) collectionsFoundInScan++;
+                                            autoDetectedCollections.add(cleanName);
+                                        } else if (cleanName === 'users') { 
+                                            if(!autoDetectedCollections.has(cleanName)) collectionsFoundInScan++;
+                                            autoDetectedCollections.add(cleanName);
+                                        }
+                                    });
+                                }
+                            }
+                            
+                            const regexDirect = /(?:collection|\.collection)\s*\(\s*[^,)]*(?:,\s*)?["'`]([a-zA-Z0-9_.-]+)["'`]/g;
+                            let matchDirect;
+                            while ((matchDirect = regexDirect.exec(text)) !== null) {
+                                const cleanName = matchDirect[1];
+                                if (cleanName && !cleanName.includes('/')) {
+                                    if(!autoDetectedCollections.has(cleanName)) collectionsFoundInScan++;
+                                    autoDetectedCollections.add(cleanName);
+                                }
+                            }
+                        }
+                        resolve(); 
+                    };
+                    reader.readAsText(file);
+                });
+            };
+
+            await Promise.all(files.map(processFile));
+
+            let successMessages = [];
+            let hasChanges = false;
+
+            if (extractedConfig && extractedConfig.apiKey) {
+                document.getElementById('configJson').value = JSON.stringify(extractedConfig, null, 2);
+                successMessages.push(`<strong>Sukses:</strong> Kredensial Firebase (Project ID: '${extractedConfig.projectId}') dimuat.`);
+                hasChanges = true;
+            }
+            
+            // SMART INJECTION: MENCEGAH NILAI 0 PADA DATA
+            if (autoDetectedAppId) {
+                const generatedPath = `artifacts/${autoDetectedAppId}/public/data`;
+                document.getElementById('configPath').value = generatedPath;
+                successMessages.push(`<strong>Path Ditemukan:</strong> Base Path otomatis diset ke <br><code class="text-[10px] text-emerald-300 break-all">${generatedPath}</code>`);
+                
+                // Expand advanced panel so user can see it
+                advancedPanel.classList.remove('hidden');
+                advancedIcon.classList.add('rotate-90');
+                hasChanges = true;
+            }
+            
+            if (collectionsFoundInScan > 0) {
+                const colArray = Array.from(autoDetectedCollections);
+                document.getElementById('configCollections').value = colArray.join(', ');
+                successMessages.push(`<strong>Koleksi Terdeteksi:</strong> ${collectionsFoundInScan} nama koleksi baru dimasukkan.`);
+                hasChanges = true;
+            }
+
+            if (hasChanges) {
+                showToast("Analisis Berhasil", successMessages.join('<br><br>'), "success");
+            } else {
+                showToast("Info", "Tidak menemukan Config atau struktur baru pada file ini.", "warning");
+            }
+            e.target.value = ''; 
+        });
+
+        // ==================== FIREBASE INIT & LOGIC ====================
+
+        function saveAndLoadSettings() {
+            const savedData = localStorage.getItem('UniversalDBManager_Settings_v4');
+            if (savedData) {
+                try {
+                    const parsed = JSON.parse(savedData);
+                    document.getElementById('configJson').value = parsed.configJson || '';
+                    document.getElementById('configPath').value = parsed.basePath || '';
+                    document.getElementById('configCollections').value = parsed.collections || '';
+                    
+                    if(parsed.configJson && parsed.collections) {
+                        activeConfig = JSON.parse(parsed.configJson);
+                        BASE_PATH = parsed.basePath.trim();
+                        COLLECTIONS_LIST = parsed.collections.split(',').map(s => s.trim()).filter(s => s !== '');
+                        
+                        document.getElementById('projectSubtitle').innerHTML = `Terkoneksi: <strong class="text-brand-400">${activeConfig.projectId}</strong>`;
+                        document.getElementById('statusPing').classList.replace('bg-slate-500', 'bg-emerald-500');
+                        document.getElementById('statusDot').classList.replace('bg-slate-400', 'bg-emerald-400');
+                        
+                        document.getElementById('btnCancelSettings').classList.remove('hidden');
+                        document.getElementById('btnCancelSettingsIcon').classList.remove('hidden');
+                        return true;
+                    }
+                } catch(e) { console.error("Corrupted settings format.", e); }
+            }
+            return false;
+        }
+
+        document.getElementById('btnOpenSettings').addEventListener('click', () => openModal('settingsModal'));
+        document.getElementById('btnCancelSettings').addEventListener('click', () => closeModal('settingsModal'));
+        document.getElementById('btnCancelSettingsIcon').addEventListener('click', () => closeModal('settingsModal'));
+
+        document.getElementById('btnSaveSettings').addEventListener('click', () => {
+            const jsonStr = document.getElementById('configJson').value;
+            const pathStr = document.getElementById('configPath').value;
+            const colsStr = document.getElementById('configCollections').value;
+
+            try {
+                if(!jsonStr.trim()) throw new Error("File Konfigurasi Firebase JSON tidak boleh kosong.");
+                JSON.parse(jsonStr); 
+                if(!colsStr.trim()) throw new Error("Sistem membutuhkan setidaknya satu nama koleksi target.");
+                
+                localStorage.setItem('UniversalDBManager_Settings_v4', JSON.stringify({
+                    configJson: jsonStr, basePath: pathStr, collections: colsStr
+                }));
+                
+                const btn = document.getElementById('btnSaveSettings');
+                btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Menyiapkan...`;
+                setTimeout(() => window.location.reload(), 600);
+            } catch(e) { 
+                showToast("Error Konfigurasi", e.message, "error");
+            }
+        });
+
+        // FUNGSI MAPPING IKON CERDAS (Seperti pada Riverside)
+        const getCustomIconForCollection = (name) => {
+            const lowerName = name.toLowerCase();
+            if (lowerName.includes('program')) return 'ph-package text-amber-500';
+            if (lowerName.includes('facilit') || lowerName.includes('fasilitas')) return 'ph-buildings text-slate-400';
+            if (lowerName.includes('tutor') || lowerName.includes('teacher')) return 'ph-chalkboard-teacher text-emerald-400';
+            if (lowerName.includes('testimoni')) return 'ph-star text-yellow-400';
+            if (lowerName.includes('partner') || lowerName.includes('mitra')) return 'ph-handshake text-orange-400';
+            if (lowerName.includes('galler') || lowerName.includes('galeri')) return 'ph-image text-purple-400';
+            if (lowerName.includes('ielts') || lowerName.includes('req')) return 'ph-globe-hemisphere-west text-blue-400';
+            if (lowerName.includes('lead') || lowerName.includes('user')) return 'ph-address-book text-rose-400';
+            if (lowerName.includes('setting') || lowerName.includes('config')) return 'ph-gear text-slate-400';
+            return 'ph-folder-open text-brand-400';
+        };
+
+        function renderCountersSkeleton() {
+            const container = document.getElementById('countersContainer');
+            container.innerHTML = '';
+            
+            if(COLLECTIONS_LIST.length === 0) return;
+
+            COLLECTIONS_LIST.forEach(colName => {
+                const cleanName = colName.trim();
+                const displayTitle = cleanName.replace(/_/g, ' ').toUpperCase();
+                const iconClass = getCustomIconForCollection(cleanName);
+                
+                const html = `
+                    <div class="counter-card" id="card_${cleanName}">
+                        <div class="text-[2.5rem] font-black text-brand-400 mb-2 leading-none" id="count_${cleanName}">
+                            <i class="ph-bold ph-spinner animate-spin text-slate-500 text-3xl"></i>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                            <i class="ph-fill ${iconClass} text-sm"></i>
+                            ${displayTitle}
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        const getCollectionPathString = (colName) => {
+            const cleanName = colName.trim();
+            let fullPath = BASE_PATH ? `${BASE_PATH}/${cleanName}` : cleanName;
+            return fullPath.replace(/\/+/g, '/');
+        };
+
+        const getColRef = (colName) => collection(db, getCollectionPathString(colName));
+        const getDocRef = (colName, docId) => doc(db, getCollectionPathString(colName), docId);
+
+        // UPDATE STATIS: MENCEGAH ERROR SECURITY RULES
+        async function updateCounters() {
+            if (!db) return;
+            addLog("Membaca dan menyinkronkan jumlah dokumen secara Real-time...", "info");
+            
+            for (const colName of COLLECTIONS_LIST) {
+                const cleanName = colName.trim();
+                const el = document.getElementById(`count_${cleanName}`);
+                const card = document.getElementById(`card_${cleanName}`);
+                
+                if (!el || !card) continue;
+
+                try {
+                    const snap = await getDocs(getColRef(cleanName));
+                    const count = snap.size;
+                    
+                    const prevCount = el.innerText;
+                    if (prevCount !== count.toString() && !el.innerHTML.includes('spin')) {
+                        card.classList.remove('updated');
+                        void card.offsetWidth; 
+                        card.classList.add('updated');
+                    }
+                    
+                    el.innerHTML = count;
+                    
+                } catch(error) {
+                    console.error(`Gagal membaca counter ${cleanName}:`, error);
+                    el.innerHTML = `<span class="text-rose-500 text-lg font-black" title="${error.message}">Ditolak</span>`;
+                    addLog(`Gagal membaca <strong>${cleanName}</strong>: Base Path mungkin salah atau diblokir Rules.`, "error");
+                }
+            }
+        }
+
+        document.getElementById('btnSyncNow').addEventListener('click', async () => {
+            const btn = document.getElementById('btnSyncNow');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-2xl mb-1"></i> <span>Menyegarkan</span>`;
+            await updateCounters();
+            btn.innerHTML = originalHTML;
+            showToast("Sinkronisasi Selesai", "Angka koleksi telah diperbarui.", "success");
+        });
+
+        // ==================== CORE CRUD ACTIONS ====================
+        
+        async function fetchAllDatabase() {
+            const exportDataObj = {};
+            for (let i = 0; i < COLLECTIONS_LIST.length; i++) {
+                const col = COLLECTIONS_LIST[i];
+                const snapshot = await getDocs(getColRef(col));
+                exportDataObj[col] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setProgress(((i + 1) / COLLECTIONS_LIST.length) * 100);
+            }
+            return exportDataObj;
+        }
+
+        document.getElementById('btnMainExport').addEventListener('click', () => {
+            if(!db) return showToast("Warning", "Sistem belum dikonfigurasi.", "warning");
+            openModal('exportModal');
+        });
+
+        document.getElementById('btnBackup').addEventListener('click', async () => {
+            toggleSystemLock(true);
+            const btn = document.getElementById('btnBackup');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Memproses JSON...';
+            
+            addLog("Mempersiapkan data snapshot untuk diunduh...", "info");
+            setProgress(10);
+            
+            try {
+                const exportDataObj = await fetchAllDatabase();
+                const jsonString = JSON.stringify(exportDataObj, null, 2);
+                
+                const blob = new Blob([jsonString], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${activeConfig.projectId}_DB_${new Date().toISOString().slice(0,10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                addLog(`Export Berhasil! File JSON tersimpan.`, "success");
+                showToast("Sukses", "Database diekspor ke JSON dengan sukses.", "success");
+                closeModal('exportModal');
+            } catch (err) { 
+                addLog(`Export Gagal: ${err.message}`, "error"); 
+                showToast("Export Gagal", err.message, "error");
+            }
+            
+            btn.innerHTML = originalHTML;
+            toggleSystemLock(false);
+            setProgress(100);
+        });
+
+        document.getElementById('btnCopyJson').addEventListener('click', async () => {
+            toggleSystemLock(true);
+            const btn = document.getElementById('btnCopyJson');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Membaca Data...';
+            setProgress(10);
+            
+            try {
+                const exportDataObj = await fetchAllDatabase();
+                const jsonString = JSON.stringify(exportDataObj, null, 2);
+                
+                const textArea = document.createElement("textarea");
+                textArea.value = jsonString;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    addLog(`Data JSON berhasil disalin ke Clipboard.`, "success");
+                    showToast("Tersalin", "Data JSON berhasil disalin ke Clipboard Anda.", "success");
+                    closeModal('exportModal');
+                } catch (err) {
+                    throw new Error("Gagal menyalin ke clipboard");
+                } finally {
+                    document.body.removeChild(textArea);
+                }
+            } catch (err) { 
+                addLog(`Copy Gagal: ${err.message}`, "error"); 
+                showToast("Error", "Gagal menyalin data ke clipboard.", "error");
+            }
+            
+            btn.innerHTML = originalHTML;
+            toggleSystemLock(false);
+            setProgress(100);
+        });
+
+        document.getElementById('btnMainImport').addEventListener('click', () => {
+            if(!db) return showToast("Warning", "Sistem belum dikonfigurasi.", "warning");
+            document.getElementById('fileUpload').value = '';
+            document.getElementById('restoreTextStatus').innerText = 'Pilih File JSON Backup';
+            openModal('importModal');
+        });
+
+        document.getElementById('fileUpload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            document.getElementById('restoreTextStatus').innerText = file.name;
+            
+            showConfirm("Mulai Pemulihan?", `Memulihkan data dari "${file.name}" akan menulis atau menimpa dokumen lama dengan ID yang sama persis di Database. Lanjutkan?`, () => {
+                executeRestore(file);
+            });
+        });
+
+        async function executeRestore(file) {
+            closeModal('importModal');
+            toggleSystemLock(true);
+            addLog(`Membaca file backup: ${file.name}...`, "info");
+            setProgress(5);
+            
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const jsonData = JSON.parse(e.target.result);
+                    const fileCollections = Object.keys(jsonData);
+                    if (fileCollections.length === 0) throw new Error("File JSON kosong atau format tidak valid.");
+
+                    let totalRestored = 0;
+                    for (let i = 0; i < fileCollections.length; i++) {
+                        const colName = fileCollections[i];
+                        const items = jsonData[colName];
+                        if (!Array.isArray(items) || !COLLECTIONS_LIST.includes(colName)) continue; 
+                        
+                        addLog(`Memulihkan koleksi '${colName}' (${items.length} dokumen)...`, "info");
+                        for (const item of items) {
+                            const originalId = item.id; 
+                            const dataToSave = { ...item };
+                            delete dataToSave.id; 
+                            
+                            try {
+                                if (originalId) {
+                                    await setDoc(getDocRef(colName, originalId), dataToSave);
+                                } else {
+                                    await setDoc(doc(getColRef(colName)), dataToSave); 
+                                }
+                                totalRestored++;
+                            } catch(err) { 
+                                addLog(`Gagal menambahkan item di '${colName}': ${err.message}`, "warning"); 
+                            }
+                        }
+                        setProgress(5 + ((i + 1) / fileCollections.length) * 90);
+                    }
+                    setProgress(100);
+                    addLog(`Restore Selesai! Sebanyak ${totalRestored} dokumen berhasil ditambahkan.`, "success");
+                    showToast("Restore Selesai", `${totalRestored} dokumen berhasil disinkronkan.`, "success");
+                    
+                    await updateCounters();
+
+                } catch (err) {
+                    addLog(`Restore Gagal: ${err.message}`, "error");
+                    showToast("Error", err.message, "error");
+                    setProgress(0);
+                } finally {
+                    toggleSystemLock(false);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        const inputConfirmDelete = document.getElementById('confirmDeleteInput');
+        const btnConfirmAuth = document.getElementById('btnConfirmAuth');
+        const authError = document.getElementById('authError');
+
+        document.getElementById('btnMainWipe').addEventListener('click', () => {
+            if(!db) return showToast("Warning", "Sistem belum dikonfigurasi.", "warning");
+            inputConfirmDelete.value = '';
+            btnConfirmAuth.disabled = true;
+            authError.classList.add('hidden');
+            openModal('authModal');
+        });
+        
+        inputConfirmDelete.addEventListener('input', (e) => {
+            if (e.target.value === 'DELETE') {
+                btnConfirmAuth.disabled = false;
+            } else {
+                btnConfirmAuth.disabled = true;
+            }
+        });
+
+        btnConfirmAuth.addEventListener('click', async () => {
+            authError.classList.add('hidden');
+            btnConfirmAuth.disabled = true;
+            btnConfirmAuth.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Menghapus...';
+            inputConfirmDelete.disabled = true;
+
+            try {
+                closeModal('authModal');
+                addLog("Memulai prosedur WIPE Database secara menyeluruh...", "warning");
+                toggleSystemLock(true);
+                setProgress(5);
+                
+                let totalDeleted = 0;
+                for (let i = 0; i < COLLECTIONS_LIST.length; i++) {
+                    const col = COLLECTIONS_LIST[i];
+                    try {
+                        const snapshot = await getDocs(getColRef(col));
+                        if(snapshot.empty) continue;
+                        
+                        let deletedCount = 0;
+                        for (const docSnap of snapshot.docs) {
+                            await deleteDoc(getDocRef(col, docSnap.id));
+                            deletedCount++;
+                        }
+                        totalDeleted += deletedCount;
+                        addLog(`Mengosongkan ${deletedCount} dokumen dari [${col}]`, "success");
+                    } catch(e) { 
+                        addLog(`Gagal menghapus [${col}]: ${e.message}`, "error"); 
+                    }
+                    setProgress(((i + 1) / COLLECTIONS_LIST.length) * 100); 
+                }
+                
+                addLog(`Wipe Selesai! Sebanyak ${totalDeleted} dokumen total musnah permanen.`, "success");
+                showToast("Database Bersih", "Seluruh koleksi telah dikosongkan.", "success");
+                
+                await updateCounters();
+                
+            } catch (error) {
+                openModal('authModal');
+                authError.innerText = "Akses Ditolak: Pastikan Firebase Rules Anda mengizinkan Delete.";
+                authError.classList.remove('hidden');
+                addLog(`Terjadi kesalahan kritis: ${error.message}`, "error");
+            } finally {
+                btnConfirmAuth.innerHTML = '<i class="ph-bold ph-trash"></i> Hapus Permanen';
+                inputConfirmDelete.disabled = false;
+                toggleSystemLock(false);
+                setTimeout(() => setProgress(0), 1000);
+            }
+        });
+
+        // ==================== APP INITIALIZATION ====================
+        async function init() {
+            const hasSettings = saveAndLoadSettings();
+            
+            if (!hasSettings) {
+                openModal('settingsModal');
+                addLog("Menunggu pengaturan Firebase awal...", "warning");
+                return;
+            }
+            
+            renderCountersSkeleton();
+            
+            try {
+                addLog(`Menghubungkan ke server Firebase SDK...`, "info");
+                app = initializeApp(activeConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                
+                addLog(`Meminta akses otentikasi Anonymous...`, "info");
+                await signInAnonymously(auth);
+                addLog(`Akses diterima. Sistem terhubung penuh!`, "success");
+                
+                await updateCounters();
+                
+            } catch (err) {
+                addLog(`Kesalahan Koneksi: ${err.message}`, "error");
+                document.getElementById('statusPing').classList.replace('bg-emerald-500', 'bg-rose-500');
+                document.getElementById('statusDot').classList.replace('bg-emerald-400', 'bg-rose-400');
+                document.getElementById('projectSubtitle').innerHTML = `<span class="text-rose-500 font-bold">Gagal Terhubung</span>`;
+                showToast("Gagal Terhubung", "Periksa konfigurasi apiKey atau koneksi internet Anda.", "error");
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
