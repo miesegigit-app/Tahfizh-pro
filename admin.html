@@ -669,7 +669,7 @@
             }
         };
 
-        // PERBAIKAN: Fungsi ini hanya membuka mode preview. Tombol print ada di dalam preview.
+        // PERBAIKAN: Mengganti endpoint pendaftaran untuk hindari blokir Chrome
         window.bukaPreviewA4 = function() {
             window.showToast("Membuka Mode Preview A4...");
             
@@ -677,13 +677,14 @@
             const printArea = document.getElementById('print-area');
             const qrImg = document.getElementById('print-qr-img');
             
-            let targetUrl = window.location.origin + '/registrasi';
+            // Target baru: portal-wali.html
+            let targetUrl = window.location.origin + '/portal-wali.html';
             
             const currentPath = window.location.pathname;
             if (currentPath.includes('admin.html')) {
-                targetUrl = window.location.origin + currentPath.replace('admin.html', 'registrasi');
+                targetUrl = window.location.origin + currentPath.replace('admin.html', 'portal-wali.html');
             } else if (currentPath.endsWith('/admin') || currentPath.endsWith('/admin/')) {
-                targetUrl = window.location.origin + currentPath.replace(/admin\/?$/, 'registrasi');
+                targetUrl = window.location.origin + currentPath.replace(/admin\/?$/, 'portal-wali.html');
             }
             
             qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(targetUrl)}&color=0F172A&bgcolor=FFFFFF`;
