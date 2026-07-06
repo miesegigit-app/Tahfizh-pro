@@ -37,10 +37,10 @@
     <link rel="apple-touch-icon" href="./logo.png">
     <link rel="manifest" href="manifest.json">
 
-    <!-- Google Fonts & Icons (Ditambahkan font Premium untuk Canvas Twibbon) -->
+    <!-- Google Fonts & Icons (Ditambahkan font Premium: Cinzel untuk Canvas Twibbon) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800&family=Playfair+Display:ital,wght@0,700;1,700&family=Cinzel:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
@@ -256,8 +256,22 @@
         .toast.error { background: var(--danger); }
         .toast.show { transform: translateY(0); }
         
-        /* Modifikasi untuk twibbon responsif */
-        #canvas-twibbon { width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-lg); box-shadow: 0 4px 10px rgba(0,0,0,0.05); background: #F1F5F9; object-fit: contain; }
+        /* Modifikasi untuk twibbon responsif (Sistem Interaktif Pan & Zoom) */
+        .twibbon-preview-area {
+            width: 100%; aspect-ratio: 1/1; background: #E2E8F0; border-radius: var(--radius-md);
+            border: 2px dashed #94A3B8; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative; margin-bottom: 8px; touch-action: none;
+        }
+        .twibbon-preview-area canvas { width: 100%; height: 100%; cursor: move; }
+        .file-upload-btn {
+            position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); color: white;
+            padding: 8px 16px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600;
+            display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2);
+            z-index: 10;
+        }
+        .zoom-slider-container { display: none; margin-bottom: 20px; background: var(--bg-surface); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+        .zoom-slider { width: 100%; accent-color: var(--primary); }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -370,7 +384,6 @@
                 </div>
 
                 <div id="list-siswa-guru" class="student-list">
-                    <!-- Kartu Santri diinject dari JS -->
                     <div class="card" style="padding: 32px; text-align: center;">
                         <i data-lucide="users" style="width: 32px; height: 32px; color: var(--text-light); margin-bottom: 8px;"></i>
                         <p style="font-size: 13px; color: var(--text-muted); font-weight: 500;">Pilih kelas untuk melihat data santri.</p>
@@ -563,9 +576,31 @@
                     <button class="btn btn-primary" onclick="window.lanjutEdit()" style="width: 100%; padding: 12px;">
                         <i data-lucide="edit-3" style="width: 16px;"></i> Edit Profil & Misi
                     </button>
+                    <!-- FITUR BARU: Tombol untuk membuat Twibbon Kapan Saja -->
+                    <button class="btn" onclick="window.bukaDaftarApresiasi()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%); color: #78350F; border: 1px solid #D97706; box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.2); font-weight: 700;">
+                        <i data-lucide="award" style="width: 16px;"></i> Buat Twibbon Apresiasi
+                    </button>
                     <button class="btn btn-danger" onclick="window.lanjutHapus()" style="width: 100%; padding: 12px;">
                         <i data-lucide="user-x" style="width: 16px;"></i> Keluarkan Santri
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DAFTAR PENCAPAIAN UNTUK TWIBBON RETROSPECTIVE -->
+    <div id="modal-daftar-apresiasi" class="modal-overlay">
+        <div class="card modal-container" style="padding: 0; max-width: 380px;">
+            <div class="modal-header">
+                <h3 style="font-size: 16px; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="award" style="width: 18px; color: #D97706;"></i> Koleksi Pencapaian
+                </h3>
+                <button class="btn btn-ghost" onclick="window.tutupModal('modal-daftar-apresiasi')" style="padding: 4px;"><i data-lucide="x" style="width: 18px;"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 16px 20px; background: var(--bg-surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg); max-height: 60vh; overflow-y: auto;">
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; text-align: center;">Pilih lencana/pencapaian ananda yang ingin Anda buatkan poster apresiasinya.</p>
+                <div id="list-apresiasi-siswa" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Diinjeksi via JS -->
                 </div>
             </div>
         </div>
@@ -761,7 +796,7 @@
         </div>
     </div>
 
-    <!-- MODAL 1: KONFIRMASI PEMBUATAN TWIBBON -->
+    <!-- MODAL 1: KONFIRMASI PEMBUATAN TWIBBON (TETAP ADA SEBAGAI INTERCEPT SETORAN) -->
     <div id="modal-konfirmasi-twibbon" class="modal-overlay">
         <div class="card modal-container" style="max-width: 360px; padding: 0;">
             <div class="modal-body" style="text-align: center; padding: 32px 24px 24px; background: var(--bg-surface); border-radius: var(--radius-lg);">
@@ -779,25 +814,41 @@
         </div>
     </div>
 
-    <!-- MODAL 2: STUDIO TWIBBON LOKAL (CANVAS) -->
+    <!-- MODAL 2: STUDIO TWIBBON LOKAL (INTERAKTIF DENGAN DRAG & ZOOM) -->
     <div id="modal-studio-twibbon" class="modal-overlay">
-        <div class="card modal-container" style="padding: 0; max-width: 400px;">
+        <div class="modal-container" style="background: var(--bg-surface);">
             <div class="modal-header">
-                <h3 style="font-size: 16px; margin: 0;">Studio Twibbon Apresiasi</h3>
-                <button class="btn btn-ghost" onclick="window.tutupModal('modal-studio-twibbon')" style="padding: 4px;"><i data-lucide="x" style="width: 18px;"></i></button>
+                <h3 style="font-size: 16px; margin: 0; color: var(--text-main);">Studio Twibbon Apresiasi</h3>
+                <button class="btn-ghost" onclick="window.tutupModalTwibbon()" style="padding: 4px; border:none; background:transparent;"><i data-lucide="x" style="width: 18px;"></i></button>
             </div>
-            <div class="modal-body" style="background: var(--bg-surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 24px; text-align: center;">
+            <div class="modal-body" style="padding: 20px;">
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px; text-align: center;">Unggah foto ananda, lalu geser dan zoom agar pas di dalam bingkai.</p>
                 
-                <canvas id="canvas-twibbon" width="1080" height="1080"></canvas>
-                
-                <label class="btn btn-outline" style="width: 100%; margin-top: 20px; display: flex; padding: 12px; cursor: pointer;">
-                    <i data-lucide="upload" style="width: 18px;"></i> Pilih Foto Santri
-                    <input type="file" id="file-twibbon" accept="image/*" style="display: none;" onchange="window.handleUploadTwibbon(event)">
-                </label>
-                
-                <p style="font-size: 11px; color: var(--text-muted); margin-top: 12px; margin-bottom: 24px;">*Foto hanya diproses secara lokal di perangkat Anda, tidak diunggah ke server (Aman & Cepat).</p>
+                <div class="twibbon-preview-area" id="twibbon-preview-area">
+                    <canvas id="twibbon-canvas" width="1080" height="1080" style="display: none; touch-action: none;"></canvas>
+                    <div id="twibbon-placeholder" style="text-align: center; color: var(--text-light);">
+                        <i data-lucide="image-plus" style="width: 48px; height: 48px; margin-bottom: 8px;"></i>
+                        <p style="font-size: 12px; font-weight: 600;">Area Pratinjau</p>
+                    </div>
+                    <label class="file-upload-btn" id="twibbon-upload-label">
+                        <i data-lucide="camera" style="width: 16px;"></i> Pilih Foto
+                        <input type="file" id="input-foto-twibbon" accept="image/*" style="display: none;" onchange="window.handleUploadTwibbon(event)">
+                    </label>
+                </div>
 
-                <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 14px;" onclick="window.unduhDanWA()">
+                <!-- Kontrol Zoom Interaktif -->
+                <div id="twibbon-controls" class="zoom-slider-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Perbesar / Perkecil Foto</label>
+                        <i data-lucide="zoom-in" style="width: 14px; color: var(--text-light);"></i>
+                    </div>
+                    <input type="range" id="twibbon-zoom" class="zoom-slider" min="0.5" max="3" step="0.05" value="1">
+                    <p style="font-size: 11px; color: var(--primary); margin-top: 8px; text-align: center;"><i data-lucide="move" style="width: 12px; display:inline; margin-right: 4px;"></i>Sentuh dan geser foto di atas untuk mengatur posisi.</p>
+                </div>
+
+                <p style="font-size: 11px; color: var(--text-light); margin-top: 8px; margin-bottom: 24px; text-align: center;">*Foto hanya diproses secara lokal (Aman & Cepat).</p>
+
+                <button class="btn btn-primary" id="btn-unduh-twibbon" style="width: 100%; padding: 14px; display: none;" onclick="window.unduhDanWA()">
                     <i data-lucide="download" style="width: 18px;"></i> Unduh Gambar & Buka WA
                 </button>
             </div>
@@ -852,7 +903,7 @@
         };
         const TOTAL_AYAT_ALQURAN = 6236;
 
-        // DATA PRESET MISI (Generator Dinamis)
+        // DATA PRESET MISI
         function generateRentang(startSurahId, endSurahId) {
             let rentang = []; let totalAyat = 0;
             for (let i = startSurahId; i <= endSurahId; i++) {
@@ -908,12 +959,23 @@
 
         // State Twibbon Internal
         window.tempTwibbonData = null;
-        window.userUploadedImage = null;
+        let twibbonState = {
+            imgUser: null,
+            imgFrame: null,
+            baseScale: 1,
+            scaleMultiplier: 1,
+            x: 0,
+            y: 0,
+            isDragging: false,
+            startX: 0,
+            startY: 0
+        };
 
         window.addEventListener('DOMContentLoaded', () => {
             setupCustomSelects();
             if (window.lucide) window.lucide.createIcons();
             pasangListenerSwipeGuru();
+            initTwibbonListenersGuru(); // Inisialisasi listener Canvas Interaktif
         });
 
         window.addEventListener('scroll', () => {
@@ -925,7 +987,7 @@
         });
 
         // ========================================================
-        // FITUR STUDIO TWIBBON (CANVAS LOKAL DENGAN CUSTOM FONT)
+        // FITUR STUDIO TWIBBON INTERAKTIF (LOKAL) & WHATSAPP
         // ========================================================
         
         window.konfirmasiTwibbon = function(nama, pencapaian, wa, kirimWAState, pesanFallback) {
@@ -938,16 +1000,34 @@
             window.tutupModal('modal-konfirmasi-twibbon');
             if(window.tempTwibbonData && window.tempTwibbonData.kirimWAState) {
                 // Eksekusi fallback WA standar karena tidak mau kirim gambar
-                window.open(`https://wa.me/${window.tempTwibbonData.wa}?text=${encodeURIComponent(window.tempTwibbonData.pesanFallback)}`, '_blank');
+                let wa = window.tempTwibbonData.wa;
+                if (wa && wa.startsWith('0')) wa = '62' + wa.slice(1);
+                window.open(`https://wa.me/${wa}?text=${encodeURIComponent(window.tempTwibbonData.pesanFallback)}`, '_blank');
             }
+        };
+
+        window.tutupModalTwibbon = function() {
+            document.getElementById('modal-studio-twibbon').classList.remove('active');
         };
 
         window.bukaStudioTwibbon = function() {
             window.tutupModal('modal-konfirmasi-twibbon');
+            
+            // Reset state UI ke awal
+            document.getElementById('twibbon-canvas').style.display = 'none';
+            document.getElementById('twibbon-placeholder').style.display = 'block';
+            document.getElementById('twibbon-controls').style.display = 'none';
+            document.getElementById('btn-unduh-twibbon').style.display = 'none';
+            document.getElementById('input-foto-twibbon').value = '';
+            
+            twibbonState.imgUser = null;
             window.bukaModal('modal-studio-twibbon');
-            window.userUploadedImage = null; // Reset foto
-            document.getElementById('file-twibbon').value = '';
-            renderCanvasTwibbon(); 
+
+            // Preload frame.png agar siap saat render
+            if(!twibbonState.imgFrame) {
+                twibbonState.imgFrame = new Image();
+                twibbonState.imgFrame.src = 'frame.png'; // FRAME IDENTIK DENGAN INDEX.HTML
+            }
         };
 
         window.handleUploadTwibbon = function(event) {
@@ -956,132 +1036,175 @@
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    window.userUploadedImage = img;
-                    renderCanvasTwibbon();
-                }
-                img.src = e.target.result;
+                twibbonState.imgUser = new Image();
+                twibbonState.imgUser.onload = () => {
+                    setupInitialTwibbon();
+                };
+                twibbonState.imgUser.src = e.target.result;
             }
             reader.readAsDataURL(file);
         };
 
-        function renderCanvasTwibbon() {
-            const canvas = document.getElementById('canvas-twibbon');
-            if(!canvas) return;
+        function setupInitialTwibbon() {
+            const canvas = document.getElementById('twibbon-canvas');
+            const img = twibbonState.imgUser;
+            
+            // Hitung skala agar gambar menutup seluruh kanvas (cover logic)
+            const scaleX = 1080 / img.width;
+            const scaleY = 1080 / img.height;
+            twibbonState.baseScale = Math.max(scaleX, scaleY);
+            twibbonState.scaleMultiplier = 1;
+            
+            // Posisikan di tengah
+            twibbonState.x = (1080 - (img.width * twibbonState.baseScale)) / 2;
+            twibbonState.y = (1080 - (img.height * twibbonState.baseScale)) / 2;
+
+            document.getElementById('twibbon-placeholder').style.display = 'none';
+            document.getElementById('twibbon-controls').style.display = 'block';
+            document.getElementById('btn-unduh-twibbon').style.display = 'block';
+            canvas.style.display = 'block';
+            
+            document.getElementById('twibbon-zoom').value = 1; // Reset slider
+            
+            renderInteractiveTwibbon();
+        }
+
+        function initTwibbonListenersGuru() {
+            const canvas = document.getElementById('twibbon-canvas');
+            const slider = document.getElementById('twibbon-zoom');
+
+            // Slider Zoom Logic
+            slider.addEventListener('input', (e) => {
+                const newMult = parseFloat(e.target.value);
+                const center1080 = 540;
+                // Hitung posisi relatif agar zoom berpusat
+                const relX = (center1080 - twibbonState.x) / twibbonState.scaleMultiplier;
+                const relY = (center1080 - twibbonState.y) / twibbonState.scaleMultiplier;
+                
+                twibbonState.scaleMultiplier = newMult;
+                twibbonState.x = center1080 - (relX * twibbonState.scaleMultiplier);
+                twibbonState.y = center1080 - (relY * twibbonState.scaleMultiplier);
+                
+                renderInteractiveTwibbon();
+            });
+
+            // Normalisasi koordinat pointer
+            function getPointerPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+            }
+
+            const startDrag = (e) => {
+                if(!twibbonState.imgUser) return;
+                e.preventDefault();
+                twibbonState.isDragging = true;
+                const pos = getPointerPos(e);
+                twibbonState.startX = pos.x - twibbonState.x;
+                twibbonState.startY = pos.y - twibbonState.y;
+            };
+
+            const doDrag = (e) => {
+                if (!twibbonState.isDragging || !twibbonState.imgUser) return;
+                e.preventDefault();
+                const pos = getPointerPos(e);
+                twibbonState.x = pos.x - twibbonState.startX;
+                twibbonState.y = pos.y - twibbonState.startY;
+                renderInteractiveTwibbon();
+            };
+
+            const endDrag = () => { twibbonState.isDragging = false; };
+
+            canvas.addEventListener('mousedown', startDrag);
+            canvas.addEventListener('mousemove', doDrag);
+            window.addEventListener('mouseup', endDrag);
+
+            canvas.addEventListener('touchstart', startDrag, {passive: false});
+            canvas.addEventListener('touchmove', doDrag, {passive: false});
+            window.addEventListener('touchend', endDrag);
+        }
+
+        function renderInteractiveTwibbon() {
+            const canvas = document.getElementById('twibbon-canvas');
             const ctx = canvas.getContext('2d');
-            ctx.clearRect(0,0,1080,1080);
             
             // 1. Background Dasar
             ctx.fillStyle = '#E2E8F0';
             ctx.fillRect(0,0,1080,1080);
 
-            // Fungsi pembantu render teks dan overlay
-            const drawOverlayAndText = () => {
-                const frame = new Image();
-                frame.onload = () => {
-                    ctx.drawImage(frame, 0, 0, 1080, 1080);
-                    drawText();
-                }
-                frame.onerror = () => {
-                    // Fallback jika frame gagal dimuat
-                    ctx.strokeStyle = '#FBBF24';
-                    ctx.lineWidth = 40;
-                    ctx.strokeRect(20,20,1040,1040);
-                    drawText();
-                }
-                // MENGGUNAKAN FILE SESUAI INSTRUKSI/KONTRAK SECARA VERBATIM
-                frame.src = 'Untitled3_20260706103011.jpg'; 
-            };
-
-            const drawText = () => {
-                if(!window.tempTwibbonData) return;
-                ctx.textAlign = 'center';
-                
-                // Shadow untuk Teks agar terbaca dan rapi
-                ctx.shadowColor = 'rgba(0,0,0,0.6)';
-                ctx.shadowBlur = 10;
-                ctx.shadowOffsetX = 2;
-                ctx.shadowOffsetY = 2;
-                
-                // FUNGSI HELPER: Resize teks agar fit dalam area tertentu
-                function fillTextToFit(ctx, text, x, y, maxFontSize, maxWidth, fontTemplate) {
-                    let fontSize = maxFontSize;
-                    ctx.font = fontTemplate.replace('{size}', fontSize);
-                    // Turunkan ukuran font perlahan hingga minimal 16px agar tetap estetis
-                    while (ctx.measureText(text).width > maxWidth && fontSize > 16) {
-                        fontSize -= 1;
-                        ctx.font = fontTemplate.replace('{size}', fontSize);
-                    }
-                    // Eksekusi print dengan penjaga maxWidth bawaan canvas (Anti-Overflow / Fail-Proof)
-                    ctx.fillText(text, x, y, maxWidth);
-                }
-                
-                // Nama Santri - Menggunakan Font Montserrat (Tegas & Mewah)
-                ctx.fillStyle = '#FFFFFF';
-                // Max width dibatasi ke 600 agar aman dari tabrakan pinggir/emblem
-                fillTextToFit(ctx, window.tempTwibbonData.nama.toUpperCase(), 540, 880, 56, 600, '800 {size}px Montserrat, sans-serif');
-                
-                // Pencapaian - Menggunakan Font Playfair Display (Elegan Klasik)
-                // Bersihkan awalan "Lulus Misi:" atau "Lulus:" menggunakan Regex untuk presisi
-                let teksMisiBersih = window.tempTwibbonData.pencapaian || 'Pencapaian';
-                teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
-                teksMisiBersih = `Lulus: ${teksMisiBersih}`;
-
-                ctx.fillStyle = '#FDE68A'; // Warna emas
-                // Max width dibatasi ke 700 agar pas di banner bawah
-                fillTextToFit(ctx, teksMisiBersih, 540, 950, 42, 700, 'italic 700 {size}px "Playfair Display", serif');
-                
-                // Reset shadow
-                ctx.shadowBlur = 0;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 0;
-            };
-
-            // 2. Render Foto User (Fit/Cover logic)
-            if(window.userUploadedImage) {
-                const img = window.userUploadedImage;
-                const canvasRatio = 1; // 1080 / 1080
-                const imgRatio = img.width / img.height;
-                
-                let renderWidth = 1080;
-                let renderHeight = 1080;
-                let offsetX = 0;
-                let offsetY = 0;
-
-                if(imgRatio > canvasRatio) {
-                    renderWidth = 1080 * imgRatio;
-                    offsetX = -(renderWidth - 1080) / 2;
-                } else {
-                    renderHeight = 1080 / imgRatio;
-                    offsetY = -(renderHeight - 1080) / 2;
-                }
-                
-                ctx.drawImage(img, offsetX, offsetY, renderWidth, renderHeight);
-                drawOverlayAndText();
-            } else {
-                ctx.fillStyle = '#94A3B8';
-                ctx.font = '700 40px Montserrat, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('Belum Ada Foto Santri', 540, 540);
-                drawOverlayAndText();
+            // 2. Gambar User dengan Skala & Posisi
+            if (twibbonState.imgUser) {
+                const currentScale = twibbonState.baseScale * twibbonState.scaleMultiplier;
+                const dw = twibbonState.imgUser.width * currentScale;
+                const dh = twibbonState.imgUser.height * currentScale;
+                ctx.drawImage(twibbonState.imgUser, twibbonState.x, twibbonState.y, dw, dh);
             }
+
+            // 3. Overlay Frame (frame.png)
+            if (twibbonState.imgFrame) {
+                ctx.drawImage(twibbonState.imgFrame, 0, 0, 1080, 1080);
+            }
+
+            // 4. Render Teks sesuai Frame Index.html
+            if(!window.tempTwibbonData) return;
+            
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            function fillTextToFit(ctx, text, x, y, maxFontSize, maxWidth, fontFace) {
+                let fontSize = maxFontSize;
+                ctx.font = `800 ${fontSize}px ${fontFace}`;
+                while (ctx.measureText(text).width > maxWidth && fontSize > 16) {
+                    fontSize -= 1;
+                    ctx.font = `800 ${fontSize}px ${fontFace}`;
+                }
+                ctx.fillText(text, x, y, maxWidth);
+            }
+            
+            // Nama Santri (Tengah pita, Y=755, Cinzel)
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowBlur = 12;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 4;
+            ctx.fillStyle = '#FFFFFF';
+            fillTextToFit(ctx, window.tempTwibbonData.nama.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
+            
+            // Pencapaian (Bawah, Y=860, Montserrat)
+            let teksMisiBersih = window.tempTwibbonData.pencapaian || 'Pencapaian';
+            teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
+            teksMisiBersih = `Lulus: ${teksMisiBersih}`;
+
+            ctx.shadowColor = 'rgba(255,255,255,0.7)'; 
+            ctx.shadowBlur = 6;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.fillStyle = '#D97706'; 
+            fillTextToFit(ctx, teksMisiBersih, 540, 860, 34, 450, '"Montserrat", sans-serif');
+            
+            // Reset Shadow
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
         }
 
         window.unduhDanWA = function() {
             if(!window.tempTwibbonData) return;
 
-            // 1. Format Nomor WA (Ubah 0 jadi 62 jika diperlukan agar tidak gagal terkirim)
+            // 1. Format Nomor WA Otomatis (Ubah 0 jadi 62)
             let wa = window.tempTwibbonData.wa;
             if (wa && wa.startsWith('0')) wa = '62' + wa.slice(1);
             
-            // 2. Buka WA secara sinkron (langsung) agar tidak diblokir Pop-up Blocker browser
-            const pesan = `Assalamu'alaikum Ayah/Bunda,\n\nAlhamdulillah, ananda *${window.tempTwibbonData.nama}* baru saja menuntaskan *${window.tempTwibbonData.pencapaian}*!\n\nKami telah membuatkan bingkisan (Poster Twibbon) spesial. Silakan lampirkan gambar yang baru saja tersimpan di galeri HP Anda untuk dibagikan sebagai bentuk apresiasi.\n\nTerima kasih.`;
+            // Pesan yang Interaktif & Hangat
+            const pesan = `Assalamu'alaikum Ayah/Bunda yang dirahmati Allah,\n\nAlhamdulillah wa syukurillah, hari ini ananda *${window.tempTwibbonData.nama}* telah berhasil menyelesaikan capaian luar biasa, yaitu *${window.tempTwibbonData.pencapaian}*! 🎉\n\nSebagai bentuk apresiasi atas kerja keras ananda, kami telah menyiapkan sebuah Twibbon spesial. Ayah/Bunda dapat melampirkan gambar yang baru saja tersimpan di galeri HP untuk dibagikan ke keluarga tercinta, agar ananda semakin termotivasi.\n\nTerima kasih atas doa dan pendampingan Ayah/Bunda di rumah. Semoga menjadi amal jariyah bagi kita semua. Amin ya Rabbal 'Alamin. 🙏`;
+            
+            // 2. Buka WA Langsung (Synchronous) agar bebas blokir popup HP
             const waUrl = `https://wa.me/${wa}?text=${encodeURIComponent(pesan)}`;
             window.open(waUrl, '_blank');
 
-            // 3. Ekspor & Unduh ke Device Lokal (Berjalan aman di background)
-            const canvas = document.getElementById('canvas-twibbon');
+            // 3. Unduh secara paralel ke memori lokal HP
+            const canvas = document.getElementById('twibbon-canvas');
             const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
             const link = document.createElement('a');
             const fileName = `Apresiasi-${window.tempTwibbonData.nama.replace(/\s+/g, '-')}.jpg`;
@@ -1091,11 +1214,61 @@
             
             window.tampilkanToast("Gambar diunduh & WA dibuka. Silakan lampirkan foto di WA!");
             
-            // 4. Tutup modal setelah proses sukses berjalan
             setTimeout(() => {
-                window.tutupModal('modal-studio-twibbon');
+                window.tutupModalTwibbon();
             }, 500);
         };
+
+        // ========================================================
+        // FITUR "BUAT ULANG TWIBBON" (RETROSPECTIVE)
+        // ========================================================
+        
+        window.bukaDaftarApresiasi = function() {
+            window.tutupModal('modal-opsi-lanjutan');
+            if(!siswaTerpilih) return;
+
+            const container = document.getElementById('list-apresiasi-siswa');
+            if(!siswaTerpilih.lencana || siswaTerpilih.lencana.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 24px; border: 1px dashed var(--border-color); border-radius: var(--radius-md);">
+                        <i data-lucide="shield-off" style="width: 32px; height: 32px; color: var(--text-light); margin-bottom: 8px;"></i>
+                        <p style="font-size: 13px; color: var(--text-muted); font-weight: 500;">Belum ada lencana/pencapaian yang diraih ananda.</p>
+                    </div>`;
+            } else {
+                const sortedLencana = [...siswaTerpilih.lencana].sort((a,b) => b.tanggal - a.tanggal);
+                container.innerHTML = sortedLencana.map(l => {
+                    const dateStr = new Date(l.tanggal).toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+                    return `
+                    <div style="border: 1px solid var(--border-focus); background: var(--primary-light); padding: 12px 16px; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm);">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 2px;">${l.namaLencana}</div>
+                            <div style="font-size: 11px; color: var(--text-main); font-weight: 500;">Diraih: ${dateStr}</div>
+                        </div>
+                        <button class="btn btn-primary" style="padding: 8px 14px; font-size: 12px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);" onclick="window.siapkanTwibbonRetro('${l.namaLencana}')">
+                            <i data-lucide="image" style="width: 14px;"></i> Buat
+                        </button>
+                    </div>
+                    `;
+                }).join('');
+            }
+            window.bukaModal('modal-daftar-apresiasi');
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        window.siapkanTwibbonRetro = function(namaLencana) {
+            window.tutupModal('modal-daftar-apresiasi');
+            window.tempTwibbonData = { 
+                nama: siswaTerpilih.nama, 
+                pencapaian: namaLencana, 
+                wa: siswaTerpilih.waOrtu, 
+                kirimWAState: true, 
+                pesanFallback: '' 
+            };
+            setTimeout(() => {
+                window.bukaStudioTwibbon();
+            }, 300);
+        };
+
 
         // ========================================================
         // FITUR SWIPE (GESER LAYAR) GURU
@@ -1810,13 +1983,13 @@
                 
                 window.tampilkanToast("Evaluasi terekam sistem!"); window.tutupModal('modal-setoran');
 
-                // Siapkan Pesan WA Standard
+                // Siapkan Pesan WA Standard (Dengan Gaya Hangat)
                 const persen = ((totalAyatAfter / TOTAL_AYAT_ALQURAN) * 100).toFixed(1);
                 const rentangSurah = sAwal === sAkhir ? `${sAwal} ayat ${aAwal}-${aAkhir}` : `${sAwal}:${aAwal} - ${sAkhir}:${aAkhir}`;
-                let pesanWA = `Assalamu'alaikum Ayah/Bunda,\n\nAlhamdulillah evaluasi hafalan ananda *${siswaTerpilih.nama}* telah masuk ke sistem:\n\n📖 *Cakupan:* ${rentangSurah}\n📊 *Kelancaran:* ${kelancaran}\n🎯 *Tajwid:* ${tajwid}\n\n🌟 *Capaian Keseluruhan:* ${persen}% (${totalAyatAfter} dari 6236 Ayat)\n\n`;
+                let pesanWA = `Assalamu'alaikum Ayah/Bunda yang dirahmati Allah,\n\nAlhamdulillah, hari ini evaluasi hafalan ananda *${siswaTerpilih.nama}* telah berhasil kami catat di sistem:\n\n📖 *Cakupan:* ${rentangSurah}\n📊 *Kelancaran:* ${kelancaran}\n🎯 *Tajwid:* ${tajwid}\n\n🌟 *Capaian Keseluruhan:* ${persen}% (${totalAyatAfter} dari 6236 Ayat)\n\n`;
                 if(catatanKhusus) pesanWA += `📝 *Pesan Akademik:* ${catatanKhusus}\n\n`;
                 if(!siswaTerpilih.pembayaranLunas) pesanWA += `⚠️ *Info Tagihan:* Administrasi sistem (Rp 5.000) belum lunas. Mohon selesaikan via Admin. 🙏\n\n`;
-                pesanWA += `Terima kasih atas sinerginya.`;
+                pesanWA += `Terima kasih banyak atas sinergi dan doa Ayah/Bunda di rumah. Semoga ananda senantiasa semangat menjaga hafalannya. Amin. 🙏`;
 
                 // Intercept jika mencapai milestone
                 if(reachedMilestone) {
@@ -2029,12 +2202,12 @@
             let waOrtu = siswaTerpilih.waOrtu;
             if (waOrtu && waOrtu.startsWith('0')) waOrtu = '62' + waOrtu.slice(1);
 
-            let pesanWA = `Assalamu'alaikum Ayah/Bunda,\n\nBerikut adalah rekap/pengingat evaluasi hafalan ananda *${siswaTerpilih.nama}*:\n\n📖 *Cakupan:* ${rentangSurah}\n📊 *Kelancaran:* ${item.kelancaran}\n🎯 *Tajwid:* ${item.tajwid}\n\n🌟 *Capaian Keseluruhan:* ${persen}% (${totalAyat} dari 6236 Ayat)\n\n`;
+            let pesanWA = `Assalamu'alaikum Ayah/Bunda yang dirahmati Allah,\n\nBerikut adalah rekap/pengingat evaluasi hafalan ananda *${siswaTerpilih.nama}*:\n\n📖 *Cakupan:* ${rentangSurah}\n📊 *Kelancaran:* ${item.kelancaran}\n🎯 *Tajwid:* ${item.tajwid}\n\n🌟 *Capaian Keseluruhan:* ${persen}% (${totalAyat} dari 6236 Ayat)\n\n`;
 
             if(siswaTerpilih.catatanSiswa) pesanWA += `📝 *Pesan Akademik:* ${siswaTerpilih.catatanSiswa}\n\n`;
             if(!siswaTerpilih.pembayaranLunas) pesanWA += `⚠️ *Info Tagihan:* Administrasi sistem (Rp 5.000) belum lunas. Mohon selesaikan via Admin. 🙏\n\n`;
             
-            pesanWA += `Terima kasih atas sinerginya.`;
+            pesanWA += `Terima kasih atas sinergi dan doa Ayah/Bunda.`;
 
             window.open(`https://wa.me/${waOrtu}?text=${encodeURIComponent(pesanWA)}`, '_blank');
         };
