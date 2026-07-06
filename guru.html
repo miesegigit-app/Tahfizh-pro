@@ -296,7 +296,7 @@
 
                 <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color);">
                     <p style="font-size: 13px; color: var(--text-muted);">
-                        Wali Murid? <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Pantau di sini</a>
+                        Wali Murid? <a href="index" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Pantau di sini</a>
                     </p>
                 </div>
             </div>
@@ -979,7 +979,6 @@
             // Fungsi pembantu render teks dan overlay
             const drawOverlayAndText = () => {
                 const frame = new Image();
-                // Enable crossOrigin is good practice if urls are external, but since we use verbatim file
                 frame.onload = () => {
                     ctx.drawImage(frame, 0, 0, 1080, 1080);
                     drawText();
@@ -1072,7 +1071,16 @@
         window.unduhDanWA = function() {
             if(!window.tempTwibbonData) return;
 
-            // 1. Ekspor & Unduh ke Device Lokal
+            // 1. Format Nomor WA (Ubah 0 jadi 62 jika diperlukan agar tidak gagal terkirim)
+            let wa = window.tempTwibbonData.wa;
+            if (wa && wa.startsWith('0')) wa = '62' + wa.slice(1);
+            
+            // 2. Buka WA secara sinkron (langsung) agar tidak diblokir Pop-up Blocker browser
+            const pesan = `Assalamu'alaikum Ayah/Bunda,\n\nAlhamdulillah, ananda *${window.tempTwibbonData.nama}* baru saja menuntaskan *${window.tempTwibbonData.pencapaian}*!\n\nKami telah membuatkan bingkisan (Poster Twibbon) spesial. Silakan lampirkan gambar yang baru saja tersimpan di galeri HP Anda untuk dibagikan sebagai bentuk apresiasi.\n\nTerima kasih.`;
+            const waUrl = `https://wa.me/${wa}?text=${encodeURIComponent(pesan)}`;
+            window.open(waUrl, '_blank');
+
+            // 3. Ekspor & Unduh ke Device Lokal (Berjalan aman di background)
             const canvas = document.getElementById('canvas-twibbon');
             const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
             const link = document.createElement('a');
@@ -1081,15 +1089,12 @@
             link.href = dataUrl;
             link.click();
             
-            // 2. Buka WA setelah jeda
-            const wa = window.tempTwibbonData.wa;
-            const pesan = `Assalamu'alaikum Ayah/Bunda,\n\nAlhamdulillah, ananda *${window.tempTwibbonData.nama}* baru saja menuntaskan *${window.tempTwibbonData.pencapaian}*!\n\nKami telah membuatkan bingkisan (Poster Twibbon) spesial. Silakan lampirkan gambar yang baru saja tersimpan di galeri HP Anda untuk dibagikan sebagai bentuk apresiasi.\n\nTerima kasih.`;
+            window.tampilkanToast("Gambar diunduh & WA dibuka. Silakan lampirkan foto di WA!");
             
-            window.tampilkanToast("Mengunduh gambar... Membuka WA...");
-            
+            // 4. Tutup modal setelah proses sukses berjalan
             setTimeout(() => {
-                window.open(`https://wa.me/${wa}?text=${encodeURIComponent(pesan)}`, '_blank');
-            }, 1500);
+                window.tutupModal('modal-studio-twibbon');
+            }, 500);
         };
 
         // ========================================================
@@ -1167,9 +1172,12 @@
             const siswa = semuaSiswa.find(s => s.docId === docId);
             if (!siswa) return;
             if (!siswa.waOrtu || siswa.waOrtu === '') return window.tampilkanToast("No WA belum tersimpan. Edit profil santri terlebih dahulu.", true);
-            const baseUrl = window.location.href.split('?')[0].replace('guru.html', 'portal-wali.html'); 
+            const baseUrl = window.location.href.split('?')[0].replace('guru.html', 'index.html'); 
+            let wa = siswa.waOrtu;
+            if (wa && wa.startsWith('0')) wa = '62' + wa.slice(1);
+
             let pesan = `Assalamu'alaikum Ayah/Bunda,\n\nSelamat datang di *TahfizhPro Enterprise*.\nBerikut adalah akses Portal Wali Murid untuk memantau progres hafalan ananda *${siswa.nama}* secara real-time:\n\n🔑 *ID Akun:* ${siswa.kodeSiswa}\n🌐 *Link Portal:* ${baseUrl}\n\n📱 *PANDUAN INSTALASI APLIKASI DI HP:*\n1. Buka link portal di atas menggunakan browser Google Chrome (Android) atau Safari (iPhone).\n2. Jika muncul, klik tombol *"Install"* di bagian atas layar.\n3. Atau, klik ikon menu (titik tiga) di pojok kanan atas browser, lalu pilih *"Tambahkan ke Layar Utama"* (Add to Home Screen).\n\nSetelah terinstal, Ayah/Bunda dapat memantau mutaba'ah ananda langsung dari layar HP tanpa perlu mengetik link lagi.\n\nTerima kasih atas sinergi dan kerja samanya. 🙏`;
-            window.open(`https://wa.me/${siswa.waOrtu}?text=${encodeURIComponent(pesan)}`, '_blank');
+            window.open(`https://wa.me/${wa}?text=${encodeURIComponent(pesan)}`, '_blank');
         };
 
         window.hitungProgresAlQuran = function(riwayatArray) {
@@ -1814,7 +1822,9 @@
                 if(reachedMilestone) {
                     window.konfirmasiTwibbon(siswaTerpilih.nama, `Hafalan ${reachedMilestone} Ayat`, siswaTerpilih.waOrtu, kirimWA, pesanWA);
                 } else if(kirimWA) {
-                    window.open(`https://wa.me/${siswaTerpilih.waOrtu}?text=${encodeURIComponent(pesanWA)}`, '_blank');
+                    let waOrtu = siswaTerpilih.waOrtu;
+                    if (waOrtu && waOrtu.startsWith('0')) waOrtu = '62' + waOrtu.slice(1);
+                    window.open(`https://wa.me/${waOrtu}?text=${encodeURIComponent(pesanWA)}`, '_blank');
                 }
             } catch (error) { window.tampilkanToast("Gagal menyimpan ke server.", true); }
         };
@@ -1945,7 +1955,6 @@
             } catch (error) { window.tampilkanToast("Pembaruan gagal diproses.", true); }
         };
 
-
         // ========================================================
         // 7. RIWAYAT CRUD & PENGHAPUSAN
         // ========================================================
@@ -2017,6 +2026,9 @@
             const persen = ((totalAyat / TOTAL_AYAT_ALQURAN) * 100).toFixed(1);
             const rentangSurah = item.surahAwal === item.surahAkhir ? `${item.surahAwal} ayat ${item.ayatAwal}-${item.ayatAkhir}` : `${item.surahAwal}:${item.ayatAwal} - ${item.surahAkhir}:${item.ayatAkhir}`;
 
+            let waOrtu = siswaTerpilih.waOrtu;
+            if (waOrtu && waOrtu.startsWith('0')) waOrtu = '62' + waOrtu.slice(1);
+
             let pesanWA = `Assalamu'alaikum Ayah/Bunda,\n\nBerikut adalah rekap/pengingat evaluasi hafalan ananda *${siswaTerpilih.nama}*:\n\n📖 *Cakupan:* ${rentangSurah}\n📊 *Kelancaran:* ${item.kelancaran}\n🎯 *Tajwid:* ${item.tajwid}\n\n🌟 *Capaian Keseluruhan:* ${persen}% (${totalAyat} dari 6236 Ayat)\n\n`;
 
             if(siswaTerpilih.catatanSiswa) pesanWA += `📝 *Pesan Akademik:* ${siswaTerpilih.catatanSiswa}\n\n`;
@@ -2024,7 +2036,7 @@
             
             pesanWA += `Terima kasih atas sinerginya.`;
 
-            window.open(`https://wa.me/${siswaTerpilih.waOrtu}?text=${encodeURIComponent(pesanWA)}`, '_blank');
+            window.open(`https://wa.me/${waOrtu}?text=${encodeURIComponent(pesanWA)}`, '_blank');
         };
 
         window.konfirmasiHapusSetoran = function(idSetoran) {

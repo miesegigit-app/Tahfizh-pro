@@ -209,7 +209,7 @@
         @keyframes slideInRight { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
 
         .app-bar { position: sticky; top: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 40; }
-        .app-bar-brand { font-size: 15px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; letter-spacing: -0.01em; }
+        .app-bar-brand { font-size: 16px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; letter-spacing: -0.01em; } /* Adjusted font and gap for better scaling */
         
         .dashboard-container { max-width: 600px; margin: 0 auto; padding: 20px 16px calc(var(--bottom-nav-height) + 20px); display: flex; flex-direction: column; gap: 20px; min-height: 100vh; }
 
@@ -222,7 +222,9 @@
 
         .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%); }
         .login-card { width: 100%; max-width: 380px; padding: 48px 32px; text-align: center; background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid rgba(255,255,255,0.8); }
-        .logo-box { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%); border-radius: 16px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 8px 15px -3px rgba(37, 99, 235, 0.3); }
+        
+        /* Adjusted Logo Box Dimensions for better aesthetic */
+        .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%); border-radius: 20px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 8px 15px -3px rgba(37, 99, 235, 0.3); }
 
         .billing-banner { background: var(--danger-bg); border: 1px solid #FECACA; border-radius: var(--radius-md); padding: 12px 16px; display: none; align-items: flex-start; gap: 12px; box-shadow: var(--shadow-sm); animation: slideDown 0.3s ease-out; }
         .billing-banner.show { display: flex; }
@@ -341,7 +343,8 @@
         <div class="login-wrapper">
             <div class="login-card">
                 <div class="logo-box">
-                    <img src="./logo.png" alt="TahfizhPro Logo" style="width: 36px; height: 36px; filter: brightness(0) invert(1);" onerror="this.src='https://placehold.co/36x36/2563EB/ffffff?text=TP'">
+                    <!-- Ukuran Logo dan Kontainer telah disesuaikan agar lebih ideal dan terlihat jelas -->
+                    <img src="./logo.png" alt="TahfizhPro Logo" style="width: 48px; height: 48px; filter: brightness(0) invert(1);" onerror="this.src='https://placehold.co/48x48/2563EB/ffffff?text=TP'">
                 </div>
                 <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 8px; color: #0F172A; letter-spacing: -0.03em;">TahfizhPro</h1>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 36px;">Portal Kehormatan Wali Murid</p>
@@ -363,7 +366,7 @@
 
                 <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color);">
                     <p style="font-size: 13px; color: var(--text-muted);">
-                        Anda Pengajar? <a href="guru.html" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Masuk Sistem Akademi</a>
+                        Anda Pengajar? <a href="guru" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Masuk Sistem Akademi</a>
                     </p>
                 </div>
             </div>
@@ -376,7 +379,8 @@
     <div id="view-parent" class="view-section">
         <header class="app-bar">
             <div class="app-bar-brand">
-                <img src="./logo.png" alt="TahfizhPro" style="width: 20px; height: 20px;" onerror="this.src='https://placehold.co/20x20/2563EB/ffffff?text=TP'">
+                <!-- Ukuran Logo App Bar diubah menjadi 32x32px agar seimbang dan proporsional -->
+                <img src="./logo.png" alt="TahfizhPro" style="width: 32px; height: 32px;" onerror="this.src='https://placehold.co/32x32/2563EB/ffffff?text=TP'">
                 <span>Akun Ananda</span>
             </div>
             <div style="display: flex; align-items: center;">
@@ -805,6 +809,16 @@
         window.activeSiswaDocId = null; 
         window.radarChartObj = null;    
 
+        window.tampilkanToast = function(pesan, isError = false) {
+            const toast = document.getElementById('toast');
+            if(!toast) return;
+            const iconStr = isError ? 'alert-circle' : 'check-circle';
+            toast.className = `toast show ${isError ? 'error' : ''}`;
+            toast.innerHTML = `<i data-lucide="${iconStr}" style="width: 16px;"></i> <span id="toast-msg">${pesan}</span>`;
+            if(window.lucide) window.lucide.createIcons();
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
         const initAuth = async () => { 
             try { await signInAnonymously(auth); } 
             catch (error) { window.tampilkanToast("Koneksi database terputus.", true); } 
@@ -846,16 +860,6 @@
                     window.autoLoginKode = null; 
                 } catch(e) {}
             }
-        }
-
-        window.tampilkanToast = function(pesan, isError = false) {
-            const toast = document.getElementById('toast');
-            if(!toast) return;
-            const iconStr = isError ? 'alert-circle' : 'check-circle';
-            toast.className = `toast show ${isError ? 'error' : ''}`;
-            toast.innerHTML = `<i data-lucide="${iconStr}" style="width: 16px;"></i> <span id="toast-msg">${pesan}</span>`;
-            if(window.lucide) window.lucide.createIcons();
-            setTimeout(() => toast.classList.remove('show'), 4000);
         }
 
         window.keluarKeLogin = async function() {
@@ -984,16 +988,13 @@
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle'; 
                         
-                        // FUNGSI HELPER: Resize teks agar fit dalam area tertentu
                         function fillTextToFit(ctx, text, x, y, maxFontSize, maxWidth, fontFace) {
                             let fontSize = maxFontSize;
                             ctx.font = `800 ${fontSize}px ${fontFace}`;
-                            // Turunkan ukuran font perlahan hingga minimal 16px agar tetap estetis
                             while (ctx.measureText(text).width > maxWidth && fontSize > 16) {
                                 fontSize -= 1;
                                 ctx.font = `800 ${fontSize}px ${fontFace}`;
                             }
-                            // Eksekusi print dengan penjaga maxWidth bawaan canvas (Anti-Overflow / Fail-Proof)
                             ctx.fillText(text, x, y, maxWidth);
                         }
                         
@@ -1002,10 +1003,8 @@
                         ctx.shadowOffsetX = 0;
                         ctx.shadowOffsetY = 4;
                         ctx.fillStyle = '#FFFFFF';
-                        // Max width dibatasi ke 420 agar aman dari tabrakan emblem
                         fillTextToFit(ctx, namaAnak.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
                         
-                        // Bersihkan awalan "Lulus Misi:" atau "Lulus:" menggunakan Regex untuk presisi
                         let teksMisiBersih = namaMisi || '';
                         teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
                         teksMisiBersih = `Lulus: ${teksMisiBersih}`;
@@ -1015,7 +1014,6 @@
                         ctx.shadowOffsetX = 0;
                         ctx.shadowOffsetY = 0;
                         ctx.fillStyle = '#D97706'; 
-                        // Max width dibatasi ke 450 agar pas di banner bawah
                         fillTextToFit(ctx, teksMisiBersih, 540, 860, 34, 450, '"Montserrat", sans-serif');
                         
                         ctx.shadowColor = 'transparent';
@@ -1057,7 +1055,6 @@
             document.getElementById('twibbon-nama-anak').value = namaAnak;
             document.getElementById('twibbon-nama-misi').value = namaMisi;
             
-            // Reset UI State
             document.getElementById('twibbon-canvas').style.display = 'none';
             document.getElementById('twibbon-placeholder').style.display = 'block';
             document.getElementById('twibbon-controls').style.display = 'none';
@@ -1067,7 +1064,6 @@
             twibbonState.imgUser = null;
             document.getElementById('modal-studio-twibbon').classList.add('active');
 
-            // Preload Frame untuk mencegah delay saat drag
             if(!twibbonState.imgFrame) {
                 twibbonState.imgFrame = new Image();
                 twibbonState.imgFrame.src = 'frame.png';
@@ -1097,13 +1093,11 @@
             const canvas = document.getElementById('twibbon-canvas');
             const img = twibbonState.imgUser;
             
-            // Hitung Base Scale agar gambar "cover" kanvas 1080x1080
             const scaleX = 1080 / img.width;
             const scaleY = 1080 / img.height;
-            twibbonState.baseScale = Math.max(scaleX, scaleY); // Cover logic
+            twibbonState.baseScale = Math.max(scaleX, scaleY);
             twibbonState.scaleMultiplier = 1;
             
-            // Center Image Initially
             twibbonState.x = (1080 - (img.width * twibbonState.baseScale)) / 2;
             twibbonState.y = (1080 - (img.height * twibbonState.baseScale)) / 2;
 
@@ -1112,36 +1106,28 @@
             document.getElementById('btn-unduh-twibbon').style.display = 'flex';
             canvas.style.display = 'block';
             
-            document.getElementById('twibbon-zoom').value = 1; // Reset slider
+            document.getElementById('twibbon-zoom').value = 1;
             
             renderInteractiveTwibbon();
         }
 
-        // Listener untuk Canvas dan Slider (Pan & Zoom)
         function initTwibbonListeners() {
             const canvas = document.getElementById('twibbon-canvas');
             const slider = document.getElementById('twibbon-zoom');
 
-            // Slider Zoom
             slider.addEventListener('input', (e) => {
                 const newMult = parseFloat(e.target.value);
-                
-                // Menjaga agar zoom in / out tetap berpusat (Center Zoom adjustment)
                 const center1080 = 540;
-                // Hitung posisi relatif tengah layar terhadap gambar saat ini
                 const relX = (center1080 - twibbonState.x) / twibbonState.scaleMultiplier;
                 const relY = (center1080 - twibbonState.y) / twibbonState.scaleMultiplier;
                 
                 twibbonState.scaleMultiplier = newMult;
-                
-                // Set ulang X dan Y agar titik tengah tetap
                 twibbonState.x = center1080 - (relX * twibbonState.scaleMultiplier);
                 twibbonState.y = center1080 - (relY * twibbonState.scaleMultiplier);
                 
                 renderInteractiveTwibbon();
             });
 
-            // Mendapatkan koordinat yang dinormalisasi ke ukuran kanvas
             function getPointerPos(e) {
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -1173,23 +1159,20 @@
 
             canvas.addEventListener('mousedown', startDrag);
             canvas.addEventListener('mousemove', doDrag);
-            window.addEventListener('mouseup', endDrag); // Handle diluar kanvas
+            window.addEventListener('mouseup', endDrag);
 
             canvas.addEventListener('touchstart', startDrag, {passive: false});
             canvas.addEventListener('touchmove', doDrag, {passive: false});
             window.addEventListener('touchend', endDrag);
         }
 
-        // Core Render Function untuk Preview
         function renderInteractiveTwibbon() {
             const canvas = document.getElementById('twibbon-canvas');
             const ctx = canvas.getContext('2d');
             
-            // 1. Background
             ctx.fillStyle = "#E2E8F0";
             ctx.fillRect(0, 0, 1080, 1080);
 
-            // 2. Draw User Image with Pan & Zoom
             if (twibbonState.imgUser) {
                 const currentScale = twibbonState.baseScale * twibbonState.scaleMultiplier;
                 const dw = twibbonState.imgUser.width * currentScale;
@@ -1197,42 +1180,33 @@
                 ctx.drawImage(twibbonState.imgUser, twibbonState.x, twibbonState.y, dw, dh);
             }
 
-            // 3. Draw Frame on Top
             if (twibbonState.imgFrame) {
                 ctx.drawImage(twibbonState.imgFrame, 0, 0, 1080, 1080);
             }
 
-            // 4. Render Beautiful Text
             const namaAnak = document.getElementById('twibbon-nama-anak').value || 'Nama Ananda';
             const namaMisiRaw = document.getElementById('twibbon-nama-misi').value || 'Pencapaian';
 
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle'; 
             
-            // FUNGSI HELPER: Resize teks agar fit dalam area tertentu
             function fillTextToFit(ctx, text, x, y, maxFontSize, maxWidth, fontFace) {
                 let fontSize = maxFontSize;
                 ctx.font = `800 ${fontSize}px ${fontFace}`;
-                // Turunkan ukuran font perlahan hingga minimal 16px agar tetap estetis
                 while (ctx.measureText(text).width > maxWidth && fontSize > 16) {
                     fontSize -= 1;
                     ctx.font = `800 ${fontSize}px ${fontFace}`;
                 }
-                // Eksekusi print dengan penjaga maxWidth bawaan canvas (Anti-Overflow / Fail-Proof)
                 ctx.fillText(text, x, y, maxWidth);
             }
 
-            // Text Nama di Ribbon Biru (Y ~ 755 untuk presisi di tengah pita)
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
             ctx.shadowBlur = 12;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 4;
             ctx.fillStyle = '#FFFFFF';
-            // Max width dibatasi ke 420 agar aman dari tabrakan emblem
             fillTextToFit(ctx, namaAnak.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
             
-            // Text Misi di Area Bawah (Y ~ 860)
-            // Bersihkan awalan "Lulus Misi:" atau "Lulus:" menggunakan Regex untuk presisi
             let teksMisiBersih = namaMisiRaw || 'Pencapaian';
             teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
             teksMisiBersih = `Lulus: ${teksMisiBersih}`;
@@ -1242,7 +1216,6 @@
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
             ctx.fillStyle = '#D97706'; 
-            // Max width dibatasi ke 450 agar pas di banner bawah
             fillTextToFit(ctx, teksMisiBersih, 540, 860, 34, 450, '"Montserrat", sans-serif');
             
             ctx.shadowColor = 'transparent';
@@ -1279,11 +1252,8 @@
                 return;
             }
 
-            // Urutkan dari yang terbaru
             const sortedLencana = [...lencanaArray].sort((a,b) => b.tanggal - a.tanggal);
             const lencanaTerbaru = sortedLencana[0];
-            
-            // Cek apakah umurnya kurang dari 24 jam (86400000 ms)
             const umurLencana = Date.now() - lencanaTerbaru.tanggal;
             
             if (umurLencana < 86400000) {
@@ -1882,7 +1852,6 @@
 
             const semuaSiswaKelas = semuaSiswa.filter(s => s.kelas_id === siswa.kelas_id);
             
-            // Render Seluruh Fitur Utama
             renderMisiAktifCard(siswa);
             renderGaleriLencana(siswa);
             cekNotifikasiLencanaBaru(siswa);
