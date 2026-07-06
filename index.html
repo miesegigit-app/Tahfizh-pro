@@ -38,7 +38,7 @@
     <link rel="apple-touch-icon" href="./logo.png">
     <link rel="manifest" href="manifest.json">
 
-    <!-- Google Fonts & Icons (Ditambahkan Font Cinzel untuk Nama Twibbon) -->
+    <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800&family=Cinzel:wght@700;800&display=swap" rel="stylesheet">
@@ -209,7 +209,7 @@
         @keyframes slideInRight { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
 
         .app-bar { position: sticky; top: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 40; }
-        .app-bar-brand { font-size: 16px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; letter-spacing: -0.01em; } /* Adjusted font and gap for better scaling */
+        .app-bar-brand { font-size: 16px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; letter-spacing: -0.01em; }
         
         .dashboard-container { max-width: 600px; margin: 0 auto; padding: 20px 16px calc(var(--bottom-nav-height) + 20px); display: flex; flex-direction: column; gap: 20px; min-height: 100vh; }
 
@@ -223,7 +223,6 @@
         .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%); }
         .login-card { width: 100%; max-width: 380px; padding: 48px 32px; text-align: center; background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid rgba(255,255,255,0.8); }
         
-        /* Adjusted Logo Box Dimensions for better aesthetic */
         .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%); border-radius: 20px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 8px 15px -3px rgba(37, 99, 235, 0.3); }
 
         .billing-banner { background: var(--danger-bg); border: 1px solid #FECACA; border-radius: var(--radius-md); padding: 12px 16px; display: none; align-items: flex-start; gap: 12px; box-shadow: var(--shadow-sm); animation: slideDown 0.3s ease-out; }
@@ -275,18 +274,22 @@
         .glass-notif::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(180deg, #FDE68A 0%, #F59E0B 100%); }
         @keyframes slideDownGlass { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Grid Galeri Lencana */
-        .trophy-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        /* Grid Galeri Lencana Yang Telah Dirapikan & Dipercantik */
+        .trophy-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        
         .trophy-card {
-            background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md);
-            padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center;
-            transition: all 0.2s ease;
+            background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+            padding: 20px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-sm); min-height: 164px;
         }
-        .trophy-card.locked { filter: grayscale(1); opacity: 0.6; }
+        .trophy-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: #CBD5E1; }
+        .trophy-card.locked { filter: grayscale(1); opacity: 0.6; background: #F8FAFC; border: 1px dashed #CBD5E1; }
+        
         .trophy-icon {
             width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
             margin-bottom: 12px; position: relative;
         }
+        
         .trophy-card.unlocked .trophy-icon {
             background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); color: #D97706;
             box-shadow: 0 0 15px rgba(245, 158, 11, 0.4), inset 0 2px 4px rgba(255,255,255,0.8);
@@ -294,14 +297,15 @@
         }
         .trophy-card.locked .trophy-icon { background: #F1F5F9; color: var(--text-light); border: 2px solid #E2E8F0; }
         
-        .trophy-title { font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; line-height: 1.2; }
-        .trophy-date { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+        .trophy-title { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; line-height: 1.3; }
+        .trophy-date { font-size: 11px; color: var(--text-muted); font-weight: 600; padding: 4px 8px; background: #F1F5F9; border-radius: 12px; }
+        
         .btn-twibbon-mini {
-            margin-top: 12px; background: transparent; border: 1px solid var(--primary); color: var(--primary);
-            padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: var(--radius-sm);
-            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; width: 100%; justify-content: center;
+            margin-top: 16px; background: var(--bg-surface); border: 1px solid var(--primary); color: var(--primary);
+            padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: var(--radius-md);
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; width: 100%; justify-content: center; box-shadow: var(--shadow-sm);
         }
-        .btn-twibbon-mini:hover { background: var(--primary-light); }
+        .btn-twibbon-mini:hover { background: var(--primary-light); box-shadow: var(--shadow-md); }
 
         /* Modal Studio Twibbon Interaktif */
         .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.2s ease; }
@@ -314,7 +318,7 @@
         .twibbon-preview-area {
             width: 100%; aspect-ratio: 1/1; background: #E2E8F0; border-radius: var(--radius-md);
             border: 2px dashed #94A3B8; display: flex; align-items: center; justify-content: center;
-            overflow: hidden; position: relative; margin-bottom: 8px; touch-action: none; /* Cegah scroll saat geser foto */
+            overflow: hidden; position: relative; margin-bottom: 8px; touch-action: none;
         }
         .twibbon-preview-area canvas { width: 100%; height: 100%; cursor: move; }
         .file-upload-btn {
@@ -325,7 +329,6 @@
             z-index: 10;
         }
 
-        /* Custom Slider Style */
         .zoom-slider-container { display: none; margin-bottom: 20px; background: var(--bg-surface); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
         .zoom-slider { width: 100%; accent-color: var(--primary); }
 
@@ -343,7 +346,6 @@
         <div class="login-wrapper">
             <div class="login-card">
                 <div class="logo-box">
-                    <!-- Ukuran Logo dan Kontainer telah disesuaikan agar lebih ideal dan terlihat jelas -->
                     <img src="./logo.png" alt="TahfizhPro Logo" style="width: 48px; height: 48px; filter: brightness(0) invert(1);" onerror="this.src='https://placehold.co/48x48/2563EB/ffffff?text=TP'">
                 </div>
                 <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 8px; color: #0F172A; letter-spacing: -0.03em;">TahfizhPro</h1>
@@ -379,7 +381,6 @@
     <div id="view-parent" class="view-section">
         <header class="app-bar">
             <div class="app-bar-brand">
-                <!-- Ukuran Logo App Bar diubah menjadi 32x32px agar seimbang dan proporsional -->
                 <img src="./logo.png" alt="TahfizhPro" style="width: 32px; height: 32px;" onerror="this.src='https://placehold.co/32x32/2563EB/ffffff?text=TP'">
                 <span>Akun Ananda</span>
             </div>
@@ -401,7 +402,7 @@
                 </div>
                 <div class="billing-content">
                     <h4>Pemberitahuan Tagihan</h4>
-                    <p>Administrasi mutaba'ah digital (Rp 5.000) belum diselesaikan. Mohon hubungi admin untuk pelunasan.</p>
+                    <p id="teks-periode-tagihan">Administrasi mutaba'ah digital (Rp 5.000) belum diselesaikan. Mohon hubungi admin untuk pelunasan.</p>
                 </div>
             </div>
 
@@ -416,7 +417,8 @@
                         <p style="font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 2px;">Lencana Baru Diraih! 🎉</p>
                         <p style="font-size: 11px; color: var(--text-muted); line-height: 1.3;" id="notif-lencana-teks">Ananda baru saja meraih lencana...</p>
                     </div>
-                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; border-radius: 20px;" onclick="window.switchTabParent('tab-analisis', document.querySelector('.nav-item[onclick*=\\'tab-analisis\\']'))">
+                    <!-- Pembaruan Fungsi Onclick agar tombol Lihat aman & bernavigasi halus -->
+                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; border-radius: 20px;" onclick="window.lihatLencanaBaru()">
                         Lihat
                     </button>
                 </div>
@@ -463,7 +465,7 @@
                 </div>
 
                 <!-- Galeri Lencana (Trophy Room) -->
-                <div class="card" style="padding: 24px 16px; margin-bottom: 20px;">
+                <div class="card" style="padding: 24px 16px; margin-bottom: 20px;" id="area-galeri-utama">
                     <div class="section-header" style="margin-top: 0; padding-bottom: 12px; margin-bottom: 16px;">
                         <h3 style="font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--text-main);">
                             <i data-lucide="award" style="color: #D97706; width: 18px;"></i> Koleksi Lencana
@@ -472,7 +474,7 @@
                     </div>
                     
                     <div class="trophy-grid" id="container-galeri-lencana">
-                        <!-- Injected via JS -->
+                        <!-- Injected via JS dengan style baru -->
                     </div>
                 </div>
 
@@ -622,6 +624,10 @@
         import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { collection, onSnapshot, query, doc, setDoc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Variabel Pengaturan Tagihan Global
+        window.appSettings = { isTagihanAktif: true, periodeTagihan: "Bulan Ini" };
+        window.unsubscribeSettings = null;
+
         const dataAlQuran = {
             "Al-Fatihah": { urutan: 1, ayat: 7 }, "Al-Baqarah": { urutan: 2, ayat: 286 }, "Ali 'Imran": { urutan: 3, ayat: 200 },
             "An-Nisa'": { urutan: 4, ayat: 176 }, "Al-Ma'idah": { urutan: 5, ayat: 120 }, "Al-An'am": { urutan: 6, ayat: 165 },
@@ -664,7 +670,6 @@
         };
         const TOTAL_AYAT_ALQURAN = 6236;
         
-        // Konstanta Lencana untuk Pengecekan
         const DAFTAR_LENCANA_PRESET = [
             { id: 'juz30', nama: 'Khatam Juz 30', target: 564, icon: 'book' },
             { id: 'juz29', nama: 'Khatam Juz 29', target: 995, icon: 'book-open' }, 
@@ -688,6 +693,27 @@
             pasangListenerSwipe();
             initTwibbonListeners();
         });
+
+        // ===============================================
+        // FUNGSI BARU: Animasi Tab Lencana yang Mulus
+        // ===============================================
+        window.lihatLencanaBaru = function() {
+            const navItem = document.querySelector('.nav-item:nth-child(2)'); // Menargetkan Tab Potensi
+            window.switchTabParent('tab-analisis', navItem);
+            
+            setTimeout(() => {
+                const galeri = document.getElementById('area-galeri-utama');
+                if (galeri) {
+                    galeri.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Animasi Highlight Sesaat
+                    galeri.style.transition = 'box-shadow 0.5s ease-out';
+                    galeri.style.boxShadow = '0 0 0 4px rgba(245, 158, 11, 0.4)';
+                    setTimeout(() => { 
+                        galeri.style.boxShadow = 'var(--shadow-sm)'; 
+                    }, 1500);
+                }
+            }, 300);
+        };
 
         window.switchTabParent = function(tabId, element, animasi = 'fade') {
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -1289,19 +1315,21 @@
                         dateStr = new Date(acquired.tanggal).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
                     }
                     dateHtml = `<div class="trophy-date">${dateStr}</div>`;
-                    btnHtml = `<button class="btn-twibbon-mini" onclick="window.bukaModalTwibbon('${siswa.nama}', '${preset.nama}')"><i data-lucide="image" style="width:12px;"></i> Buat Twibbon</button>`;
+                    btnHtml = `<button class="btn-twibbon-mini" onclick="window.bukaModalTwibbon('${siswa.nama}', '${preset.nama}')"><i data-lucide="image" style="width:14px;"></i> Buat Twibbon</button>`;
                 } else {
-                    dateHtml = `<div class="trophy-date" style="display:flex; align-items:center; justify-content:center; gap:4px;"><i data-lucide="lock" style="width:10px;"></i> Terkunci</div>`;
+                    dateHtml = `<div class="trophy-date" style="background:transparent; color:var(--text-light);"><i data-lucide="lock" style="width:12px;"></i> Terkunci</div>`;
                 }
 
                 container.innerHTML += `
                     <div class="trophy-card ${isUnlocked ? 'unlocked' : 'locked'}">
-                        <div class="trophy-icon">
-                            <i data-lucide="${preset.icon}" style="width: 24px; height: 24px;"></i>
+                        <div style="display:flex; flex-direction:column; align-items:center;">
+                            <div class="trophy-icon">
+                                <i data-lucide="${preset.icon}" style="width: 24px; height: 24px;"></i>
+                            </div>
+                            <div class="trophy-title">${preset.nama}</div>
+                            ${dateHtml}
                         </div>
-                        <div class="trophy-title">${preset.nama}</div>
-                        ${dateHtml}
-                        ${btnHtml}
+                        ${isUnlocked ? btnHtml : ''}
                     </div>
                 `;
             });
@@ -1312,12 +1340,14 @@
                 const dateStr = new Date(l.tanggal).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
                 container.innerHTML += `
                     <div class="trophy-card unlocked" style="border-color: var(--border-focus);">
-                        <div class="trophy-icon" style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); color: var(--primary); border-color: #93C5FD; box-shadow: 0 0 15px rgba(37, 99, 235, 0.3);">
-                            <i data-lucide="target" style="width: 24px; height: 24px;"></i>
+                        <div style="display:flex; flex-direction:column; align-items:center;">
+                            <div class="trophy-icon" style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); color: var(--primary); border-color: #93C5FD; box-shadow: 0 0 15px rgba(37, 99, 235, 0.3);">
+                                <i data-lucide="target" style="width: 24px; height: 24px;"></i>
+                            </div>
+                            <div class="trophy-title">${l.namaLencana}</div>
+                            <div class="trophy-date">${dateStr}</div>
                         </div>
-                        <div class="trophy-title">${l.namaLencana}</div>
-                        <div class="trophy-date">${dateStr}</div>
-                        <button class="btn-twibbon-mini" onclick="window.bukaModalTwibbon('${siswa.nama}', '${l.namaLencana}')"><i data-lucide="image" style="width:12px;"></i> Buat Twibbon</button>
+                        <button class="btn-twibbon-mini" onclick="window.bukaModalTwibbon('${siswa.nama}', '${l.namaLencana}')"><i data-lucide="image" style="width:14px;"></i> Buat Twibbon</button>
                     </div>
                 `;
             });
@@ -1724,6 +1754,27 @@
         }
 
         function mulaiListenData() {
+            // Dengarkan Global Settings
+            const qSettings = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
+            if (window.unsubscribeSettings) window.unsubscribeSettings();
+            window.unsubscribeSettings = onSnapshot(qSettings, (docSnap) => {
+                if(docSnap.exists()) {
+                    window.appSettings = { ...window.appSettings, ...docSnap.data() };
+                }
+                
+                // Jika sedang di Dasbor, Render Ulang agar Banner Tagihan Reaktif
+                if (document.getElementById('view-parent').classList.contains('active')) {
+                    const elKode = document.getElementById('parent-kode-anak');
+                    if(elKode && elKode.textContent !== '---') {
+                        const siswaOrtu = semuaSiswa.find(s => s.kodeSiswa === elKode.textContent);
+                        if(siswaOrtu) {
+                            try { renderDasborOrangTua(siswaOrtu); } catch(e) {}
+                        }
+                    }
+                }
+            });
+
+            // Dengarkan Data Siswa
             const qSiswa = query(collection(db, 'artifacts', appId, 'public', 'data', 'students'));
             if (window.unsubscribeSiswa) window.unsubscribeSiswa();
             window.unsubscribeSiswa = onSnapshot(qSiswa, (snapshot) => {
@@ -1734,7 +1785,7 @@
 
                 if (document.getElementById('view-parent').classList.contains('active')) {
                     const elKode = document.getElementById('parent-kode-anak');
-                    if(elKode) {
+                    if(elKode && elKode.textContent !== '---') {
                         const kodeAktif = elKode.textContent;
                         const siswaOrtu = semuaSiswa.find(s => s.kodeSiswa === kodeAktif);
                         if(siswaOrtu) {
@@ -1744,6 +1795,7 @@
                 }
             });
 
+            // Dengarkan Data Kelas
             const qKelas = query(collection(db, 'artifacts', appId, 'public', 'data', 'classes'));
             if (window.unsubscribeKelas) window.unsubscribeKelas();
             window.unsubscribeKelas = onSnapshot(qKelas, (snapshot) => {
@@ -1829,16 +1881,24 @@
             const klsObj = semuaKelas.find(k => k.docId === siswa.kelas_id);
             document.getElementById('parent-nama-kelas').textContent = klsObj ? (klsObj.nama_kelas || klsObj.name) : "Kelas Aktif";
 
+            // LOGIKA TAGIHAN DINAMIS
             const isLunas = siswa.pembayaranLunas === true;
+            const tagihanAktif = window.appSettings.isTagihanAktif !== false; // default true jika undefined
+            const periodeTagihan = window.appSettings.periodeTagihan || "Bulan Ini";
+            
             const bannerBilling = document.getElementById('parent-billing-banner');
             const badgePremium = document.getElementById('badge-premium-status');
             
-            if(isLunas) {
+            if(isLunas || !tagihanAktif) {
                 bannerBilling.classList.remove('show');
                 badgePremium.style.display = 'inline-flex';
             } else {
                 bannerBilling.classList.add('show');
                 badgePremium.style.display = 'none';
+                const pPeriode = document.getElementById('teks-periode-tagihan');
+                if(pPeriode) {
+                    pPeriode.innerHTML = `Administrasi mutaba'ah digital (Rp 5.000) periode <strong>${periodeTagihan}</strong> belum diselesaikan. Mohon hubungi admin untuk pelunasan.`;
+                }
             }
 
             const pinnedContainer = document.getElementById('parent-pinned-note');

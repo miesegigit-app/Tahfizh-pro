@@ -12,7 +12,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="TahfizhPro Admin">
 
-    <!-- Open Graph / Facebook / WhatsApp / Telegram -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://tahfizhpro-enterprise.web.app/admin.html">
     <meta property="og:title" content="TahfizhPro - Super Admin Enterprise">
@@ -25,7 +24,6 @@
     <meta property="og:site_name" content="TahfizhPro Enterprise">
     <meta property="og:locale" content="id_ID">
 
-    <!-- Ikon Aplikasi Terpadu -->
     <link rel="icon" href="./logo.png" type="image/svg+xml">
     <link rel="apple-touch-icon" href="./logo.png">
     <link rel="manifest" href="manifest.json">
@@ -155,6 +153,7 @@
         .ops-icon.orange { background: var(--warning-bg); color: var(--warning); }
         .ops-icon.red { background: #FEE2E2; color: var(--danger); }
         .ops-icon.indigo { background: #E0E7FF; color: #4338CA; }
+        .ops-icon.yellow { background: #FEF3C7; color: #D97706; }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; opacity: 0; transition: opacity 0.2s ease; }
         .modal-overlay.active { display: flex; opacity: 1; }
@@ -175,12 +174,8 @@
         .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(2px); z-index: 30; opacity: 0; transition: opacity 0.3s; }
         .sidebar-backdrop.active { display: block; opacity: 1; }
 
-        /* =========================================
-           CSS KHUSUS CETAK & PREVIEW A4 (FIXED)
-           ========================================= */
         #print-area { display: none; background: #CBD5E1; width: 100vw; height: 100vh; overflow-y: auto; padding: 40px; color: #000; box-sizing: border-box; flex-direction: column; align-items: center; position: fixed; top: 0; left: 0; z-index: 9999; }
         
-        /* Area Kontrol Melayang di Atas Preview (Tampil di layar, Sembunyi saat print) */
         .preview-controls { position: fixed; top: 24px; right: 24px; display: flex; gap: 12px; z-index: 10000; background: rgba(255, 255, 255, 0.95); padding: 12px; border-radius: var(--radius-lg); backdrop-filter: blur(8px); box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); }
         
         .print-container { background: white; width: 100%; max-width: 210mm; min-height: 297mm; padding: 20mm; margin: 0 auto; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; box-shadow: var(--shadow-lg); border-radius: 4px; }
@@ -217,10 +212,8 @@
             @page { size: A4 portrait; margin: 0; } 
             html, body { width: 100%; height: 100%; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: hidden !important; margin: 0; padding: 0; }
             
-            /* Sembunyikan elemen UI Dashboard dan panel melayang */
             #login-view, #dashboard-view, .toast, .modal-overlay, .sidebar-backdrop, .preview-controls { display: none !important; }
             
-            /* Hapus background dan margin dari kertas putih saat print */
             #print-area { display: flex !important; background: white; padding: 15mm; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; box-sizing: border-box; }
             .print-container { box-shadow: none; padding: 0; margin: 0; max-width: 100%; min-height: auto; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-evenly; }
             
@@ -254,7 +247,6 @@
                 <label>Otorisasi Master PIN</label>
                 <div style="position: relative;">
                     <i data-lucide="lock" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 20px; color: var(--text-light);"></i>
-                    <!-- PERBAIKAN: Input tidak terlihat norak, bergaya PIN Pad Elegan -->
                     <input type="password" id="admin-pin" class="form-control" placeholder="••••••" style="padding-left: 48px; padding-right: 48px; text-align: center; font-size: 28px; letter-spacing: 12px; font-weight: 800; height: 56px;" autocomplete="off">
                     <button type="button" onclick="window.togglePinAdmin()" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer;" title="Lihat/Sembunyikan PIN">
                         <i data-lucide="eye" id="icon-eye-admin" style="width: 20px;"></i>
@@ -409,7 +401,6 @@
                         <h3 style="margin-bottom: 8px;">Pendaftaran Wali Murid</h3>
                         <p class="text-muted text-xs" style="margin-bottom: 24px; flex-grow: 1;">Kelola portal pendaftaran mandiri dan lihat draft cetak pamflet A4 sebelum mengunduhnya.</p>
                         
-                        <!-- Toggle Switch Akses QR -->
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 12px; background: white; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <i data-lucide="smartphone" style="width: 16px; color: var(--text-muted);"></i>
@@ -421,10 +412,33 @@
                             </label>
                         </div>
                         
-                        <!-- PERBAIKAN: Tombol Buka Preview (tidak langsung nge-print) -->
                         <button class="btn btn-primary" style="width: 100%;" onclick="window.bukaPreviewA4()">
                             <i data-lucide="file-search"></i> Buka Mode Preview A4
                         </button>
+                    </div>
+
+                    <!-- FITUR BARU: Manajemen Penagihan -->
+                    <div class="ops-card">
+                        <div class="ops-icon yellow" style="background: var(--warning-bg); color: var(--warning);"><i data-lucide="receipt" style="width: 24px; height: 24px;"></i></div>
+                        <h3 style="margin-bottom: 8px;">Manajemen Penagihan</h3>
+                        <p class="text-muted text-xs" style="margin-bottom: 16px; flex-grow: 1;">Atur status dan periode penagihan administrasi yang tampil di portal wali murid secara real-time.</p>
+                        
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 12px; background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i data-lucide="bell-ring" style="width: 16px; color: var(--text-muted);"></i>
+                                <span class="text-sm" style="font-weight: 600;">Status Tagihan</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="billing-status-toggle" checked onchange="window.toggleBillingStatus(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="input-group" style="margin-bottom: 12px;">
+                            <label>Periode Tagihan Aktif</label>
+                            <input type="text" id="input-periode-tagihan" class="form-control" placeholder="Contoh: Bulan Ini" autocomplete="off">
+                        </div>
+                        <button class="btn btn-outline" style="width: 100%; color: var(--primary); border-color: var(--border-focus);" onclick="window.simpanPeriodeTagihan()">Simpan Periode</button>
                     </div>
 
                     <!-- Mass Lunas -->
@@ -460,8 +474,6 @@
          VIEW 3: A4 PRINT AREA (PREVIEW MODE)
     =========================================== -->
     <div id="print-area">
-        
-        <!-- PERBAIKAN: Kontrol Melayang, hanya muncul di layar preview -->
         <div class="preview-controls">
             <button class="btn btn-outline" onclick="window.tutupPreviewA4()">
                 <i data-lucide="arrow-left"></i> Tutup Preview
@@ -640,7 +652,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             window.lucide.createIcons();
             
-            // PERBAIKAN: Logika Auto-Login
             if (localStorage.getItem('tahfizhpro_admin_session') === 'active') {
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('dashboard-view').style.display = 'block';
@@ -649,7 +660,7 @@
         });
 
         // =====================================
-        // LOGIKA BARU: CETAK PAMFLET & PREVIEW
+        // LOGIKA CETAK PAMFLET & PENGATURAN
         // =====================================
         window.toggleQRAccess = async function(element) {
             const isChecked = element.checked;
@@ -669,7 +680,34 @@
             }
         };
 
-        // PERBAIKAN: Mengganti endpoint pendaftaran untuk hindari blokir Chrome
+        // FITUR BARU: Toggle Status Penagihan
+        window.toggleBillingStatus = async function(element) {
+            const isChecked = element.checked;
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), {
+                    isTagihanAktif: isChecked
+                }, { merge: true });
+                window.showToast(isChecked ? "Notifikasi tagihan DIAKTIFKAN." : "Notifikasi tagihan DINONAKTIFKAN.");
+            } catch (error) {
+                window.showToast("Gagal menyimpan status tagihan.", true);
+                element.checked = !isChecked; 
+            }
+        };
+
+        // FITUR BARU: Simpan Teks Periode Penagihan
+        window.simpanPeriodeTagihan = async function() {
+            const periode = document.getElementById('input-periode-tagihan').value.trim();
+            if (!periode) return window.showToast("Periode tagihan tidak boleh kosong!", true);
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), {
+                    periodeTagihan: periode
+                }, { merge: true });
+                window.showToast("Periode tagihan berhasil diperbarui.");
+            } catch (error) {
+                window.showToast("Gagal menyimpan periode tagihan.", true);
+            }
+        };
+
         window.bukaPreviewA4 = function() {
             window.showToast("Membuka Mode Preview A4...");
             
@@ -677,7 +715,6 @@
             const printArea = document.getElementById('print-area');
             const qrImg = document.getElementById('print-qr-img');
             
-            // Target baru: portal-wali.html
             let targetUrl = window.location.origin + '/portal-wali.html';
             
             const currentPath = window.location.pathname;
@@ -689,12 +726,10 @@
             
             qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(targetUrl)}&color=0F172A&bgcolor=FFFFFF`;
 
-            // Menyembunyikan dashboard dan menampilkan area print
             dashView.style.display = 'none';
             printArea.style.display = 'flex';
         };
 
-        // PERBAIKAN: Fungsi baru untuk menutup preview dan kembali ke dashboard
         window.tutupPreviewA4 = function() {
             const dashView = document.getElementById('dashboard-view');
             const printArea = document.getElementById('print-area');
@@ -752,7 +787,6 @@
         window.loginAdmin = function() {
             const pin = document.getElementById('admin-pin').value;
             if(pin === 'admin123') { 
-                // PERBAIKAN: Simpan Session Auto-Login
                 localStorage.setItem('tahfizhpro_admin_session', 'active');
                 
                 document.getElementById('login-view').style.display = 'none';
@@ -765,7 +799,6 @@
         };
 
         window.logoutAdmin = function() {
-            // PERBAIKAN: Hapus Session Auto-Login
             localStorage.removeItem('tahfizhpro_admin_session');
 
             if (window.unsubscribeAdminClasses) { window.unsubscribeAdminClasses(); window.unsubscribeAdminClasses = null; }
@@ -786,10 +819,15 @@
             window.unsubscribeAdminSettings = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    const toggle = document.getElementById('qr-access-toggle');
-                    if (toggle && data.isRegistrationOpen !== undefined) {
-                        toggle.checked = data.isRegistrationOpen;
-                    }
+                    
+                    const toggleQR = document.getElementById('qr-access-toggle');
+                    if (toggleQR && data.isRegistrationOpen !== undefined) toggleQR.checked = data.isRegistrationOpen;
+                    
+                    const toggleBilling = document.getElementById('billing-status-toggle');
+                    if (toggleBilling && data.isTagihanAktif !== undefined) toggleBilling.checked = data.isTagihanAktif;
+
+                    const inputPeriode = document.getElementById('input-periode-tagihan');
+                    if (inputPeriode && data.periodeTagihan !== undefined) inputPeriode.value = data.periodeTagihan;
                 }
             });
 
