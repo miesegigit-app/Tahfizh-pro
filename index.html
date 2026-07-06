@@ -38,10 +38,10 @@
     <link rel="apple-touch-icon" href="./logo.svg">
     <link rel="manifest" href="manifest.json">
 
-    <!-- Google Fonts & Icons -->
+    <!-- Google Fonts & Icons (Ditambahkan Font Cinzel untuk Nama Twibbon) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800&family=Cinzel:wght@700;800&display=swap" rel="stylesheet">
     
     <!-- Library Ikon & Grafik Radar -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -301,7 +301,7 @@
         }
         .btn-twibbon-mini:hover { background: var(--primary-light); }
 
-        /* Modal Studio Twibbon (Sisi Ortu) */
+        /* Modal Studio Twibbon Interaktif */
         .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.2s ease; }
         .modal-overlay.active { display: flex; opacity: 1; }
         .modal-container { width: 100%; max-width: 400px; transform: scale(0.95); transition: transform 0.2s ease; background: var(--bg-body); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; }
@@ -312,9 +312,9 @@
         .twibbon-preview-area {
             width: 100%; aspect-ratio: 1/1; background: #E2E8F0; border-radius: var(--radius-md);
             border: 2px dashed #94A3B8; display: flex; align-items: center; justify-content: center;
-            overflow: hidden; position: relative; margin-bottom: 16px;
+            overflow: hidden; position: relative; margin-bottom: 8px; touch-action: none; /* Cegah scroll saat geser foto */
         }
-        .twibbon-preview-area canvas { width: 100%; height: 100%; object-fit: contain; }
+        .twibbon-preview-area canvas { width: 100%; height: 100%; cursor: move; }
         .file-upload-btn {
             position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
             background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); color: white;
@@ -322,6 +322,10 @@
             display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2);
             z-index: 10;
         }
+
+        /* Custom Slider Style */
+        .zoom-slider-container { display: none; margin-bottom: 20px; background: var(--bg-surface); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+        .zoom-slider { width: 100%; accent-color: var(--primary); }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -359,7 +363,7 @@
 
                 <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color);">
                     <p style="font-size: 13px; color: var(--text-muted);">
-                        Anda Pengajar? <a href="guru" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Masuk Sistem Akademi</a>
+                        Anda Pengajar? <a href="guru.html" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Masuk Sistem Akademi</a>
                     </p>
                 </div>
             </div>
@@ -567,7 +571,7 @@
         </nav>
     </div>
 
-    <!-- MODAL STUDIO TWIBBON (CLIENT-SIDE) -->
+    <!-- MODAL STUDIO TWIBBON INTERAKTIF -->
     <div id="modal-studio-twibbon" class="modal-overlay">
         <div class="modal-container" style="background: var(--bg-surface);">
             <div class="modal-header">
@@ -575,18 +579,28 @@
                 <button class="btn-ghost" onclick="window.tutupModalTwibbon()" style="padding: 4px; border:none; background:transparent;"><i data-lucide="x" style="width: 18px;"></i></button>
             </div>
             <div class="modal-body" style="padding: 20px;">
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px; text-align: center;">Unggah foto terbaik ananda. Gambar akan diproses secara lokal tanpa diunggah ke server (Privasi Terjaga).</p>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px; text-align: center;">Unggah foto ananda, lalu geser dan zoom agar pas di dalam bingkai.</p>
                 
                 <div class="twibbon-preview-area" id="twibbon-preview-area">
-                    <canvas id="twibbon-canvas" width="1080" height="1080" style="display: none;"></canvas>
+                    <canvas id="twibbon-canvas" width="1080" height="1080" style="display: none; touch-action: none;"></canvas>
                     <div id="twibbon-placeholder" style="text-align: center; color: var(--text-light);">
                         <i data-lucide="image-plus" style="width: 48px; height: 48px; margin-bottom: 8px;"></i>
-                        <p style="font-size: 12px; font-weight: 600;">Pratinjau Twibbon</p>
+                        <p style="font-size: 12px; font-weight: 600;">Area Pratinjau</p>
                     </div>
-                    <label class="file-upload-btn">
+                    <label class="file-upload-btn" id="twibbon-upload-label">
                         <i data-lucide="camera" style="width: 16px;"></i> Pilih Foto
                         <input type="file" id="input-foto-twibbon" accept="image/*" style="display: none;" onchange="window.handleFotoTwibbon(event)">
                     </label>
+                </div>
+
+                <!-- Kontrol Zoom Interaktif -->
+                <div id="twibbon-controls" class="zoom-slider-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Perbesar / Perkecil Foto</label>
+                        <i data-lucide="zoom-in" style="width: 14px; color: var(--text-light);"></i>
+                    </div>
+                    <input type="range" id="twibbon-zoom" class="zoom-slider" min="0.5" max="3" step="0.05" value="1">
+                    <p style="font-size: 11px; color: var(--primary); margin-top: 8px; text-align: center;"><i data-lucide="move" style="width: 12px; display:inline; margin-right: 4px;"></i>Sentuh dan geser foto di atas untuk mengatur posisi.</p>
                 </div>
 
                 <input type="hidden" id="twibbon-nama-anak">
@@ -649,15 +663,15 @@
         // Konstanta Lencana untuk Pengecekan
         const DAFTAR_LENCANA_PRESET = [
             { id: 'juz30', nama: 'Khatam Juz 30', target: 564, icon: 'book' },
-            { id: 'juz29', nama: 'Khatam Juz 29', target: 995, icon: 'book-open' }, // 564 + 431
-            { id: 'juz28', nama: 'Khatam Juz 28', target: 1445, icon: 'library' }, // 995 + 450 (estimasi)
+            { id: 'juz29', nama: 'Khatam Juz 29', target: 995, icon: 'book-open' }, 
+            { id: 'juz28', nama: 'Khatam Juz 28', target: 1445, icon: 'library' },
             { id: 'half', nama: 'Setengah Al-Quran', target: 3118, icon: 'star' },
             { id: 'full', nama: 'Khatam 30 Juz', target: 6236, icon: 'award' }
         ];
 
         window.unsubscribeSiswa = null; 
         window.unsubscribeKelas = null;
-        window.activeTimeframe = 'all'; // all, current, last
+        window.activeTimeframe = 'all';
 
         const SWIPE_TABS = ['tab-beranda', 'tab-analisis', 'tab-pesan', 'tab-riwayat'];
         let sentuhanMulaiX = 0;
@@ -668,6 +682,7 @@
             setGreeting();
             inisialisasiServiceWorker();
             pasangListenerSwipe();
+            initTwibbonListeners();
         });
 
         window.switchTabParent = function(tabId, element, animasi = 'fade') {
@@ -702,12 +717,12 @@
             if(!areaGeser) return;
 
             areaGeser.addEventListener('touchstart', (e) => {
-                if (e.target.closest('canvas') || e.target.closest('.chat-history') || e.target.closest('textarea') || e.target.closest('.time-lapse-container')) return;
+                if (e.target.closest('canvas') || e.target.closest('.chat-history') || e.target.closest('textarea') || e.target.closest('.time-lapse-container') || e.target.closest('.zoom-slider')) return;
                 sentuhanMulaiX = e.changedTouches[0].screenX;
             }, { passive: true });
 
             areaGeser.addEventListener('touchend', (e) => {
-                if (e.target.closest('canvas') || e.target.closest('.chat-history') || e.target.closest('textarea') || e.target.closest('.time-lapse-container')) return;
+                if (e.target.closest('canvas') || e.target.closest('.chat-history') || e.target.closest('textarea') || e.target.closest('.time-lapse-container') || e.target.closest('.zoom-slider')) return;
                 sentuhanSelesaiX = e.changedTouches[0].screenX;
                 kalkulasiSwipe();
             }, { passive: true });
@@ -901,7 +916,6 @@
             return totalDihafal;
         }
 
-        // FUNGSI KALKULASI PROGRES MISI (KLIEN/WALI MURID)
         function hitungProgresMisiClient(riwayatArray, misiAktif) {
             if (!misiAktif || !misiAktif.totalAyatTarget) return 0;
             if (!riwayatArray || riwayatArray.length === 0) return 0;
@@ -942,7 +956,7 @@
         }
 
         // ==========================================
-        // FITUR BARU: HTML5 CANVAS E-POSTER
+        // 1. E-POSTER (NON-INTERAKTIF)
         // ==========================================
         window.generatePosterApresiasi = function(namaAnak, namaMisi) {
             window.tampilkanToast("Sedang menyiapkan E-Poster berkualitas tinggi...", false);
@@ -951,111 +965,72 @@
                 try {
                     const canvas = document.createElement('canvas');
                     canvas.width = 1080;
-                    canvas.height = 1920;
+                    canvas.height = 1080;
                     const ctx = canvas.getContext('2d');
 
-                    // 1. Background Gradient Premium
-                    const grad = ctx.createLinearGradient(0, 0, 1080, 1920);
-                    grad.addColorStop(0, '#0F172A'); // Dark Blue
-                    grad.addColorStop(0.5, '#1E3A8A'); // Royal Blue
-                    grad.addColorStop(1, '#3B82F6'); // Primary Blue
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(0, 0, 1080, 1920);
+                    ctx.fillStyle = '#1E293B';
+                    ctx.fillRect(0, 0, 1080, 1080);
 
-                    // 2. Decorative elements (Circles & Ornaments)
-                    ctx.beginPath();
-                    ctx.arc(1080, 0, 450, 0, 2 * Math.PI);
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-                    ctx.fill();
-                    
-                    ctx.beginPath();
-                    ctx.arc(0, 1920, 650, 0, 2 * Math.PI);
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
-                    ctx.fill();
-
-                    // 3. Inner Frame Accent
-                    ctx.strokeStyle = '#FBBF24'; // Gold
-                    ctx.lineWidth = 12;
-                    ctx.strokeRect(60, 60, 960, 1800);
-
-                    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-                    ctx.lineWidth = 4;
-                    ctx.strokeRect(80, 80, 920, 1760);
-
-                    // 4. Text Typography
                     ctx.textAlign = 'center';
-                    
-                    ctx.font = 'bold 90px Arial, sans-serif';
-                    ctx.fillStyle = '#FDE68A';
-                    ctx.fillText('ALHAMDULILLAH', 540, 400);
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#334155';
+                    ctx.font = 'bold 80px Montserrat, sans-serif';
+                    ctx.fillText('TAHFIZHPRO', 540, 500);
 
-                    ctx.font = '45px Arial, sans-serif';
-                    ctx.fillStyle = '#E2E8F0';
-                    ctx.fillText('Apresiasi setinggi-tingginya kepada:', 540, 550);
+                    const frame = new Image();
+                    frame.onload = () => {
+                        ctx.drawImage(frame, 0, 0, 1080, 1080);
 
-                    ctx.font = 'bold 110px Arial, sans-serif';
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.shadowColor = 'rgba(0,0,0,0.5)';
-                    ctx.shadowBlur = 15;
-                    ctx.shadowOffsetX = 0;
-                    ctx.shadowOffsetY = 5;
-                    ctx.fillText(namaAnak, 540, 720);
-                    
-                    // Reset shadow
-                    ctx.shadowColor = 'transparent';
-                    ctx.shadowBlur = 0;
-
-                    ctx.beginPath();
-                    ctx.moveTo(340, 820);
-                    ctx.lineTo(740, 820);
-                    ctx.strokeStyle = '#FBBF24';
-                    ctx.lineWidth = 5;
-                    ctx.stroke();
-
-                    ctx.font = 'italic 50px Arial, sans-serif';
-                    ctx.fillStyle = '#E2E8F0';
-                    ctx.fillText('Atas pencapaian luar biasa menuntaskan:', 540, 950);
-
-                    // Word wrap untuk nama misi
-                    ctx.font = 'bold 75px Arial, sans-serif';
-                    ctx.fillStyle = '#FDE68A';
-                    
-                    const words = `Misi ${namaMisi}`.split(' ');
-                    let line = '';
-                    let y = 1100;
-                    const maxWidth = 800;
-
-                    for(let n = 0; n < words.length; n++) {
-                        const testLine = line + words[n] + ' ';
-                        const metrics = ctx.measureText(testLine);
-                        if (metrics.width > maxWidth && n > 0) {
-                            ctx.fillText(line, 540, y);
-                            line = words[n] + ' ';
-                            y += 90;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle'; 
+                        
+                        // FUNGSI HELPER: Resize teks agar fit dalam area tertentu
+                        function fillTextToFit(ctx, text, x, y, maxFontSize, maxWidth, fontFace) {
+                            let fontSize = maxFontSize;
+                            ctx.font = `800 ${fontSize}px ${fontFace}`;
+                            // Turunkan ukuran font perlahan hingga minimal 16px agar tetap estetis
+                            while (ctx.measureText(text).width > maxWidth && fontSize > 16) {
+                                fontSize -= 1;
+                                ctx.font = `800 ${fontSize}px ${fontFace}`;
+                            }
+                            // Eksekusi print dengan penjaga maxWidth bawaan canvas (Anti-Overflow / Fail-Proof)
+                            ctx.fillText(text, x, y, maxWidth);
                         }
-                        else {
-                            line = testLine;
-                        }
-                    }
-                    ctx.fillText(line, 540, y);
+                        
+                        ctx.shadowColor = 'rgba(0,0,0,0.7)';
+                        ctx.shadowBlur = 12;
+                        ctx.shadowOffsetX = 0;
+                        ctx.shadowOffsetY = 4;
+                        ctx.fillStyle = '#FFFFFF';
+                        // Max width dibatasi ke 420 agar aman dari tabrakan emblem
+                        fillTextToFit(ctx, namaAnak.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
+                        
+                        // Bersihkan awalan "Lulus Misi:" atau "Lulus:" menggunakan Regex untuk presisi
+                        let teksMisiBersih = namaMisi || '';
+                        teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
+                        teksMisiBersih = `Lulus: ${teksMisiBersih}`;
+                        
+                        ctx.shadowColor = 'rgba(255,255,255,0.8)';
+                        ctx.shadowBlur = 6;
+                        ctx.shadowOffsetX = 0;
+                        ctx.shadowOffsetY = 0;
+                        ctx.fillStyle = '#D97706'; 
+                        // Max width dibatasi ke 450 agar pas di banner bawah
+                        fillTextToFit(ctx, teksMisiBersih, 540, 860, 34, 450, '"Montserrat", sans-serif');
+                        
+                        ctx.shadowColor = 'transparent';
+                        ctx.shadowBlur = 0;
 
-                    // 5. Branding Footer
-                    ctx.font = 'bold 40px Arial, sans-serif';
-                    ctx.fillStyle = '#94A3B8';
-                    ctx.fillText('TahfizhPro Enterprise', 540, 1750);
-                    
-                    ctx.font = '30px Arial, sans-serif';
-                    ctx.fillStyle = '#64748B';
-                    ctx.fillText('Platform Manajemen Tahfizh Modern', 540, 1800);
-
-                    // 6. Export dan Download
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
-                    const link = document.createElement('a');
-                    link.download = `E-Poster-${namaAnak.replace(/\s+/g, '-')}.jpg`;
-                    link.href = dataUrl;
-                    link.click();
-                    
-                    window.tampilkanToast("E-Poster berhasil diunduh ke perangkat Anda!");
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                        const link = document.createElement('a');
+                        link.download = `E-Poster-${namaAnak.replace(/\s+/g, '-')}.jpg`;
+                        link.href = dataUrl;
+                        link.click();
+                        
+                        window.tampilkanToast("E-Poster berhasil diunduh ke perangkat Anda!");
+                    };
+                    frame.onerror = () => { window.tampilkanToast("Gagal memuat frame gambar.", true); };
+                    frame.src = 'frame.png';
                 } catch (err) {
                     window.tampilkanToast("Gagal memproses poster.", true);
                 }
@@ -1063,22 +1038,40 @@
         };
 
         // ==========================================
-        // FITUR BARU: HTML5 CANVAS TWIBBON (ORTU)
+        // 2. STUDIO TWIBBON INTERAKTIF (CROP/ZOOM)
         // ==========================================
-        let imgFotoBase64 = null;
+        
+        let twibbonState = {
+            imgUser: null,
+            imgFrame: null,
+            baseScale: 1,
+            scaleMultiplier: 1,
+            x: 0,
+            y: 0,
+            isDragging: false,
+            startX: 0,
+            startY: 0
+        };
 
         window.bukaModalTwibbon = function(namaAnak, namaMisi) {
             document.getElementById('twibbon-nama-anak').value = namaAnak;
             document.getElementById('twibbon-nama-misi').value = namaMisi;
             
-            // Reset Canvas Area
+            // Reset UI State
             document.getElementById('twibbon-canvas').style.display = 'none';
             document.getElementById('twibbon-placeholder').style.display = 'block';
+            document.getElementById('twibbon-controls').style.display = 'none';
             document.getElementById('btn-unduh-twibbon').style.display = 'none';
-            imgFotoBase64 = null;
             document.getElementById('input-foto-twibbon').value = '';
-
+            
+            twibbonState.imgUser = null;
             document.getElementById('modal-studio-twibbon').classList.add('active');
+
+            // Preload Frame untuk mencegah delay saat drag
+            if(!twibbonState.imgFrame) {
+                twibbonState.imgFrame = new Image();
+                twibbonState.imgFrame.src = 'frame.png';
+            }
         };
 
         window.tutupModalTwibbon = function() {
@@ -1091,100 +1084,169 @@
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                imgFotoBase64 = e.target.result;
-                generateCanvasLokal();
+                twibbonState.imgUser = new Image();
+                twibbonState.imgUser.onload = () => {
+                    setupInitialTwibbon();
+                };
+                twibbonState.imgUser.src = e.target.result;
             };
             reader.readAsDataURL(file);
         };
 
-        function generateCanvasLokal() {
-            if (!imgFotoBase64) return;
+        function setupInitialTwibbon() {
+            const canvas = document.getElementById('twibbon-canvas');
+            const img = twibbonState.imgUser;
             
+            // Hitung Base Scale agar gambar "cover" kanvas 1080x1080
+            const scaleX = 1080 / img.width;
+            const scaleY = 1080 / img.height;
+            twibbonState.baseScale = Math.max(scaleX, scaleY); // Cover logic
+            twibbonState.scaleMultiplier = 1;
+            
+            // Center Image Initially
+            twibbonState.x = (1080 - (img.width * twibbonState.baseScale)) / 2;
+            twibbonState.y = (1080 - (img.height * twibbonState.baseScale)) / 2;
+
+            document.getElementById('twibbon-placeholder').style.display = 'none';
+            document.getElementById('twibbon-controls').style.display = 'block';
+            document.getElementById('btn-unduh-twibbon').style.display = 'flex';
+            canvas.style.display = 'block';
+            
+            document.getElementById('twibbon-zoom').value = 1; // Reset slider
+            
+            renderInteractiveTwibbon();
+        }
+
+        // Listener untuk Canvas dan Slider (Pan & Zoom)
+        function initTwibbonListeners() {
+            const canvas = document.getElementById('twibbon-canvas');
+            const slider = document.getElementById('twibbon-zoom');
+
+            // Slider Zoom
+            slider.addEventListener('input', (e) => {
+                const newMult = parseFloat(e.target.value);
+                
+                // Menjaga agar zoom in / out tetap berpusat (Center Zoom adjustment)
+                const center1080 = 540;
+                // Hitung posisi relatif tengah layar terhadap gambar saat ini
+                const relX = (center1080 - twibbonState.x) / twibbonState.scaleMultiplier;
+                const relY = (center1080 - twibbonState.y) / twibbonState.scaleMultiplier;
+                
+                twibbonState.scaleMultiplier = newMult;
+                
+                // Set ulang X dan Y agar titik tengah tetap
+                twibbonState.x = center1080 - (relX * twibbonState.scaleMultiplier);
+                twibbonState.y = center1080 - (relY * twibbonState.scaleMultiplier);
+                
+                renderInteractiveTwibbon();
+            });
+
+            // Mendapatkan koordinat yang dinormalisasi ke ukuran kanvas
+            function getPointerPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+            }
+
+            const startDrag = (e) => {
+                if(!twibbonState.imgUser) return;
+                e.preventDefault();
+                twibbonState.isDragging = true;
+                const pos = getPointerPos(e);
+                twibbonState.startX = pos.x - twibbonState.x;
+                twibbonState.startY = pos.y - twibbonState.y;
+            };
+
+            const doDrag = (e) => {
+                if (!twibbonState.isDragging || !twibbonState.imgUser) return;
+                e.preventDefault();
+                const pos = getPointerPos(e);
+                twibbonState.x = pos.x - twibbonState.startX;
+                twibbonState.y = pos.y - twibbonState.startY;
+                renderInteractiveTwibbon();
+            };
+
+            const endDrag = () => { twibbonState.isDragging = false; };
+
+            canvas.addEventListener('mousedown', startDrag);
+            canvas.addEventListener('mousemove', doDrag);
+            window.addEventListener('mouseup', endDrag); // Handle diluar kanvas
+
+            canvas.addEventListener('touchstart', startDrag, {passive: false});
+            canvas.addEventListener('touchmove', doDrag, {passive: false});
+            window.addEventListener('touchend', endDrag);
+        }
+
+        // Core Render Function untuk Preview
+        function renderInteractiveTwibbon() {
             const canvas = document.getElementById('twibbon-canvas');
             const ctx = canvas.getContext('2d');
             
-            document.getElementById('twibbon-placeholder').style.display = 'none';
-            canvas.style.display = 'block';
-            
+            // 1. Background
+            ctx.fillStyle = "#E2E8F0";
+            ctx.fillRect(0, 0, 1080, 1080);
+
+            // 2. Draw User Image with Pan & Zoom
+            if (twibbonState.imgUser) {
+                const currentScale = twibbonState.baseScale * twibbonState.scaleMultiplier;
+                const dw = twibbonState.imgUser.width * currentScale;
+                const dh = twibbonState.imgUser.height * currentScale;
+                ctx.drawImage(twibbonState.imgUser, twibbonState.x, twibbonState.y, dw, dh);
+            }
+
+            // 3. Draw Frame on Top
+            if (twibbonState.imgFrame) {
+                ctx.drawImage(twibbonState.imgFrame, 0, 0, 1080, 1080);
+            }
+
+            // 4. Render Beautiful Text
             const namaAnak = document.getElementById('twibbon-nama-anak').value || 'Nama Ananda';
-            const namaMisi = document.getElementById('twibbon-nama-misi').value || 'Pencapaian';
+            const namaMisiRaw = document.getElementById('twibbon-nama-misi').value || 'Pencapaian';
 
-            const imgUser = new Image();
-            imgUser.onload = function() {
-                // 1. Gambar Background/Frame Dasar (Fallback Warna jika image tidak cover)
-                ctx.fillStyle = "#E2E8F0";
-                ctx.fillRect(0, 0, 1080, 1080);
-
-                // 2. Gambar Foto Santri dengan Cover Fit (Rasio 1:1)
-                const size = 1080;
-                let sx, sy, sWidth, sHeight;
-                if (imgUser.width > imgUser.height) {
-                    sHeight = imgUser.height;
-                    sWidth = imgUser.height;
-                    sx = (imgUser.width - imgUser.height) / 2;
-                    sy = 0;
-                } else {
-                    sWidth = imgUser.width;
-                    sHeight = imgUser.width;
-                    sx = 0;
-                    sy = (imgUser.height - imgUser.width) / 2;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle'; 
+            
+            // FUNGSI HELPER: Resize teks agar fit dalam area tertentu
+            function fillTextToFit(ctx, text, x, y, maxFontSize, maxWidth, fontFace) {
+                let fontSize = maxFontSize;
+                ctx.font = `800 ${fontSize}px ${fontFace}`;
+                // Turunkan ukuran font perlahan hingga minimal 16px agar tetap estetis
+                while (ctx.measureText(text).width > maxWidth && fontSize > 16) {
+                    fontSize -= 1;
+                    ctx.font = `800 ${fontSize}px ${fontFace}`;
                 }
-                ctx.drawImage(imgUser, sx, sy, sWidth, sHeight, 0, 0, size, size);
+                // Eksekusi print dengan penjaga maxWidth bawaan canvas (Anti-Overflow / Fail-Proof)
+                ctx.fillText(text, x, y, maxWidth);
+            }
 
-                // 3. Tambahkan Dark Overlay Gradient agar teks terbaca jelas
-                const gradient = ctx.createLinearGradient(0, 540, 0, 1080);
-                gradient.addColorStop(0, 'rgba(15, 23, 42, 0)');
-                gradient.addColorStop(1, 'rgba(15, 23, 42, 0.95)');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, 1080, 1080);
+            // Text Nama di Ribbon Biru (Y ~ 755 untuk presisi di tengah pita)
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowBlur = 12;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 4;
+            ctx.fillStyle = '#FFFFFF';
+            // Max width dibatasi ke 420 agar aman dari tabrakan emblem
+            fillTextToFit(ctx, namaAnak.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
+            
+            // Text Misi di Area Bawah (Y ~ 860)
+            // Bersihkan awalan "Lulus Misi:" atau "Lulus:" menggunakan Regex untuk presisi
+            let teksMisiBersih = namaMisiRaw || 'Pencapaian';
+            teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
+            teksMisiBersih = `Lulus: ${teksMisiBersih}`;
 
-                // 4. Render Frame (Simulasi, digambar manual karena tidak ada asset lokal eksternal)
-                ctx.strokeStyle = '#FBBF24'; // Gold Frame
-                ctx.lineWidth = 15;
-                ctx.strokeRect(40, 40, 1000, 1000);
-                
-                ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-                ctx.lineWidth = 5;
-                ctx.strokeRect(60, 60, 960, 960);
-
-                // Top Badge
-                ctx.fillStyle = '#2563EB'; // Blue Badge
-                ctx.beginPath();
-                ctx.roundRect(40, 40, 400, 100, [0, 0, 40, 0]);
-                ctx.fill();
-
-                ctx.font = 'bold 36px Arial, sans-serif';
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textAlign = 'left';
-                ctx.fillText('TAHFIZHPRO', 80, 105);
-
-                // 5. Render Tipografi Prestasi di Bawah
-                ctx.textAlign = 'center';
-                
-                ctx.font = 'bold 50px Arial, sans-serif';
-                ctx.fillStyle = '#FDE68A';
-                ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                ctx.shadowBlur = 10;
-                ctx.fillText('ALHAMDULILLAH', 540, 850);
-
-                ctx.font = 'bold 85px Arial, sans-serif';
-                ctx.fillStyle = '#FFFFFF';
-                ctx.shadowBlur = 15;
-                ctx.fillText(namaAnak, 540, 950);
-
-                ctx.font = 'italic 40px Arial, sans-serif';
-                ctx.fillStyle = '#E2E8F0';
-                ctx.shadowBlur = 8;
-                ctx.fillText(`Lulus: ${namaMisi}`, 540, 1020);
-
-                // Reset shadow
-                ctx.shadowColor = 'transparent';
-                ctx.shadowBlur = 0;
-
-                // Tampilkan Tombol Unduh
-                document.getElementById('btn-unduh-twibbon').style.display = 'flex';
-            };
-            imgUser.src = imgFotoBase64;
+            ctx.shadowColor = 'rgba(255,255,255,0.7)'; 
+            ctx.shadowBlur = 6;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.fillStyle = '#D97706'; 
+            // Max width dibatasi ke 450 agar pas di banner bawah
+            fillTextToFit(ctx, teksMisiBersih, 540, 860, 34, 450, '"Montserrat", sans-serif');
+            
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
         }
 
         window.unduhTwibbonOrtu = function() {
@@ -1237,16 +1299,13 @@
             const totalTeks = document.getElementById('teks-total-lencana');
             const lencanaSiswa = siswa.lencana || [];
             
-            // --- PERBAIKAN: Deteksi Auto-Unlock Lencana Preset berdasarkan Total Ayat ---
             const totalAyatDihafal = hitungProgresAlQuran(siswa.riwayat || []);
             let totalDiraih = 0;
             
             container.innerHTML = '';
 
-            // Render Preset (Utama)
             DAFTAR_LENCANA_PRESET.forEach(preset => {
                 const acquired = lencanaSiswa.find(l => l.id === preset.id);
-                // Lencana dianggap terbuka jika sudah ada di database ATAU total ayat sudah memenuhi target
                 const isUnlocked = !!acquired || (totalAyatDihafal >= preset.target);
                 
                 if (isUnlocked) totalDiraih++;
@@ -1277,7 +1336,6 @@
                 `;
             });
 
-            // Render Lencana Kustom (Misi Guru)
             const lencanaKustom = lencanaSiswa.filter(l => !DAFTAR_LENCANA_PRESET.find(p => p.id === l.id));
             lencanaKustom.forEach(l => {
                 totalDiraih++;
@@ -1310,7 +1368,6 @@
             }
 
             if (misi.statusSelesai) {
-                // Misi Selesai: Tampilkan Banner Glassmorphism & Tombol Poster
                 container.innerHTML = `
                     <div class="glass-banner" style="margin-bottom: 20px;">
                         <div style="position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; background: rgba(251, 191, 36, 0.2); filter: blur(25px); border-radius: 50%;"></div>
@@ -1329,7 +1386,6 @@
                     </div>
                 `;
             } else {
-                // Active Mission Progress Card (Circular Ring)
                 const progres = hitungProgresMisiClient(siswa.riwayat || [], misi);
                 const dashArray = `${progres}, 100`;
 
@@ -1404,7 +1460,6 @@
             const avgT = Math.round(totalT / riwayat.length);
             const avgK = Math.round(totalK / riwayat.length);
             
-            // Disiplin dinamis berdasarkan filter
             let targetSetoran = timeframe === 'all' ? (riwayatAsli.length > 20 ? 20 : riwayatAsli.length) : 4; 
             let realSetoran = timeframe === 'all' ? riwayat.length : setoranBulanIni;
             if(timeframe === 'last') realSetoran = riwayat.length; 
@@ -1504,7 +1559,6 @@
             if(window.lucide) window.lucide.createIcons();
         }
 
-        // AI Forecast Terfokus Misi
         function generateAIForecast(siswa, timeframe) {
             const cont = document.getElementById('ai-forecast-container');
             if(!cont) return;

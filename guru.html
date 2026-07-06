@@ -37,10 +37,10 @@
     <link rel="apple-touch-icon" href="./logo.svg">
     <link rel="manifest" href="manifest.json">
 
-    <!-- Google Fonts & Icons -->
+    <!-- Google Fonts & Icons (Ditambahkan font Premium untuk Canvas Twibbon) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
@@ -296,7 +296,7 @@
 
                 <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color);">
                     <p style="font-size: 13px; color: var(--text-muted);">
-                        Wali Murid? <a href="index" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Pantau di sini</a>
+                        Wali Murid? <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Pantau di sini</a>
                     </p>
                 </div>
             </div>
@@ -925,7 +925,7 @@
         });
 
         // ========================================================
-        // FITUR STUDIO TWIBBON (CANVAS LOKAL)
+        // FITUR STUDIO TWIBBON (CANVAS LOKAL DENGAN CUSTOM FONT)
         // ========================================================
         
         window.konfirmasiTwibbon = function(nama, pencapaian, wa, kirimWAState, pesanFallback) {
@@ -979,6 +979,7 @@
             // Fungsi pembantu render teks dan overlay
             const drawOverlayAndText = () => {
                 const frame = new Image();
+                // Enable crossOrigin is good practice if urls are external, but since we use verbatim file
                 frame.onload = () => {
                     ctx.drawImage(frame, 0, 0, 1080, 1080);
                     drawText();
@@ -990,26 +991,47 @@
                     ctx.strokeRect(20,20,1040,1040);
                     drawText();
                 }
-                frame.src = 'assets/frame-twibbon.png'; // Menyesuaikan dengan path standar
+                // MENGGUNAKAN FILE SESUAI INSTRUKSI/KONTRAK SECARA VERBATIM
+                frame.src = 'Untitled3_20260706103011.jpg'; 
             };
 
             const drawText = () => {
                 if(!window.tempTwibbonData) return;
                 ctx.textAlign = 'center';
                 
-                // Shadow untuk Teks agar terbaca di background apapun
-                ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                ctx.shadowBlur = 12;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 4;
+                // Shadow untuk Teks agar terbaca dan rapi
+                ctx.shadowColor = 'rgba(0,0,0,0.6)';
+                ctx.shadowBlur = 10;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
                 
+                // FUNGSI HELPER: Resize teks agar fit dalam area tertentu
+                function fillTextToFit(ctx, text, x, y, maxFontSize, maxWidth, fontTemplate) {
+                    let fontSize = maxFontSize;
+                    ctx.font = fontTemplate.replace('{size}', fontSize);
+                    // Turunkan ukuran font perlahan hingga minimal 16px agar tetap estetis
+                    while (ctx.measureText(text).width > maxWidth && fontSize > 16) {
+                        fontSize -= 1;
+                        ctx.font = fontTemplate.replace('{size}', fontSize);
+                    }
+                    // Eksekusi print dengan penjaga maxWidth bawaan canvas (Anti-Overflow / Fail-Proof)
+                    ctx.fillText(text, x, y, maxWidth);
+                }
+                
+                // Nama Santri - Menggunakan Font Montserrat (Tegas & Mewah)
                 ctx.fillStyle = '#FFFFFF';
-                ctx.font = 'bold 64px Inter, sans-serif';
-                ctx.fillText(window.tempTwibbonData.nama, 540, 900);
+                // Max width dibatasi ke 600 agar aman dari tabrakan pinggir/emblem
+                fillTextToFit(ctx, window.tempTwibbonData.nama.toUpperCase(), 540, 880, 56, 600, '800 {size}px Montserrat, sans-serif');
                 
-                ctx.font = '800 48px Inter, sans-serif';
-                ctx.fillStyle = '#FDE68A';
-                ctx.fillText(window.tempTwibbonData.pencapaian, 540, 980);
+                // Pencapaian - Menggunakan Font Playfair Display (Elegan Klasik)
+                // Bersihkan awalan "Lulus Misi:" atau "Lulus:" menggunakan Regex untuk presisi
+                let teksMisiBersih = window.tempTwibbonData.pencapaian || 'Pencapaian';
+                teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
+                teksMisiBersih = `Lulus: ${teksMisiBersih}`;
+
+                ctx.fillStyle = '#FDE68A'; // Warna emas
+                // Max width dibatasi ke 700 agar pas di banner bawah
+                fillTextToFit(ctx, teksMisiBersih, 540, 950, 42, 700, 'italic 700 {size}px "Playfair Display", serif');
                 
                 // Reset shadow
                 ctx.shadowBlur = 0;
@@ -1040,7 +1062,7 @@
                 drawOverlayAndText();
             } else {
                 ctx.fillStyle = '#94A3B8';
-                ctx.font = '40px Inter, sans-serif';
+                ctx.font = '700 40px Montserrat, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText('Belum Ada Foto Santri', 540, 540);
                 drawOverlayAndText();
@@ -1063,7 +1085,7 @@
             const wa = window.tempTwibbonData.wa;
             const pesan = `Assalamu'alaikum Ayah/Bunda,\n\nAlhamdulillah, ananda *${window.tempTwibbonData.nama}* baru saja menuntaskan *${window.tempTwibbonData.pencapaian}*!\n\nKami telah membuatkan bingkisan (Poster Twibbon) spesial. Silakan lampirkan gambar yang baru saja tersimpan di galeri HP Anda untuk dibagikan sebagai bentuk apresiasi.\n\nTerima kasih.`;
             
-            window.showToast("Mengunduh gambar... Membuka WA...");
+            window.tampilkanToast("Mengunduh gambar... Membuka WA...");
             
             setTimeout(() => {
                 window.open(`https://wa.me/${wa}?text=${encodeURIComponent(pesan)}`, '_blank');
@@ -1145,7 +1167,7 @@
             const siswa = semuaSiswa.find(s => s.docId === docId);
             if (!siswa) return;
             if (!siswa.waOrtu || siswa.waOrtu === '') return window.tampilkanToast("No WA belum tersimpan. Edit profil santri terlebih dahulu.", true);
-            const baseUrl = window.location.href.split('?')[0].replace('guru', ''); 
+            const baseUrl = window.location.href.split('?')[0].replace('guru.html', 'portal-wali.html'); 
             let pesan = `Assalamu'alaikum Ayah/Bunda,\n\nSelamat datang di *TahfizhPro Enterprise*.\nBerikut adalah akses Portal Wali Murid untuk memantau progres hafalan ananda *${siswa.nama}* secara real-time:\n\n🔑 *ID Akun:* ${siswa.kodeSiswa}\n🌐 *Link Portal:* ${baseUrl}\n\n📱 *PANDUAN INSTALASI APLIKASI DI HP:*\n1. Buka link portal di atas menggunakan browser Google Chrome (Android) atau Safari (iPhone).\n2. Jika muncul, klik tombol *"Install"* di bagian atas layar.\n3. Atau, klik ikon menu (titik tiga) di pojok kanan atas browser, lalu pilih *"Tambahkan ke Layar Utama"* (Add to Home Screen).\n\nSetelah terinstal, Ayah/Bunda dapat memantau mutaba'ah ananda langsung dari layar HP tanpa perlu mengetik link lagi.\n\nTerima kasih atas sinergi dan kerja samanya. 🙏`;
             window.open(`https://wa.me/${siswa.waOrtu}?text=${encodeURIComponent(pesan)}`, '_blank');
         };
@@ -1344,7 +1366,7 @@
                 populateDropdownKelas();
                 document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
                 document.getElementById('view-guru').classList.add('active');
-                window.switchTabGuru('tab-direktori', document.querySelector('.nav-item')); // Switch ke tab direktori
+                window.switchTabGuru('tab-direktori', document.querySelector('.nav-item')); 
                 window.autoLoginTeacherId = null;
             }
         }
@@ -1440,7 +1462,6 @@
             
             if(element) element.classList.add('active');
             else {
-                // Cari navigasi aktif lewat script jika dari swipe
                 const targetNav = document.querySelector(`.nav-item[onclick*="${tabId}"]`);
                 if(targetNav) targetNav.classList.add('active');
             }
