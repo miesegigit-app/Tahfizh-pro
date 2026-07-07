@@ -141,13 +141,11 @@
         .progress-container { width: 100%; height: 8px; background: #E2E8F0; border-radius: var(--radius-full); overflow: hidden; margin-top: 8px; }
         .progress-bar { height: 100%; background: var(--success); transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-        /* Grid Khusus Keuangan */
         .finance-layout { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; margin-bottom: 24px; }
         .chart-card { background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 24px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; align-items: center; }
         .chart-container { width: 100%; max-width: 220px; aspect-ratio: 1/1; position: relative; margin: 20px auto; }
         .chart-center-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
         
-        /* Kartu Analisis Per Kelas */
         .class-finance-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .class-finance-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; transition: all 0.2s; box-shadow: var(--shadow-sm); }
         .class-finance-card:hover { border-color: var(--border-focus); box-shadow: var(--shadow-md); transform: translateY(-2px); }
@@ -213,9 +211,15 @@
         .print-step-item h4 { margin-top: 8px; font-size: 15px; margin-bottom: 6px; color: #0F172A; }
         .print-step-item p { font-size: 13px; color: #64748B; line-height: 1.5; }
         
-        /* Tombol Clear Search */
         .search-clear-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: #F1F5F9; border: none; color: var(--text-muted); cursor: pointer; display: none; padding: 4px; border-radius: 50%; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
         .search-clear-btn:hover { background: #E2E8F0; color: var(--text-main); }
+
+        /* Styling for Billing Students Modal */
+        .billing-student-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; border-bottom: 1px solid var(--border-color); transition: background 0.2s; }
+        .billing-student-item:hover { background: #F8FAFC; }
+        .billing-student-info { display: flex; flex-direction: column; gap: 4px; }
+        .billing-student-name { font-size: 14px; font-weight: 600; color: var(--text-main); }
+        .billing-student-meta { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
 
         @media (max-width: 1024px) {
             .finance-layout { grid-template-columns: 1fr; }
@@ -260,15 +264,10 @@
 </head>
 <body>
 
-    <!-- TOAST NOTIFICATION -->
     <div id="toast" class="toast"><i data-lucide="info" style="width:18px;"></i> <span id="toast-msg">Memuat...</span></div>
-
-    <!-- BACKDROP MOBILE SIDEBAR -->
     <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="window.toggleSidebar()"></div>
 
-    <!-- ==========================================
-         VIEW 1: LOGIN SUPER ADMIN
-    =========================================== -->
+    <!-- VIEW 1: LOGIN SUPER ADMIN -->
     <div id="login-view">
         <div class="login-card">
             <div class="logo-box">
@@ -291,12 +290,9 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         VIEW 2: DASHBOARD ADMIN
-    =========================================== -->
+    <!-- VIEW 2: DASHBOARD ADMIN -->
     <div id="dashboard-view">
         
-        <!-- SIDEBAR NAVIGATION -->
         <aside class="sidebar" id="main-sidebar">
             <div class="sidebar-header">
                 <div style="width: 32px; height: 32px; background: var(--text-main); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -320,7 +316,6 @@
             </div>
         </aside>
 
-        <!-- MAIN CONTENT AREA -->
         <main class="main-content">
             <header class="topbar">
                 <div style="display: flex; align-items: center;">
@@ -401,10 +396,7 @@
                 </div>
             </div>
 
-            <!-- TAB DIREKTORI SANTRI & PENDAFTARAN QR -->
             <div id="tab-students" class="content-area">
-                
-                <!-- CARD AKSES QR -->
                 <div class="ops-card" style="margin-bottom: 24px; flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%); border-color: var(--border-focus);">
                     <div style="display: flex; align-items: center; gap: 16px;">
                         <div class="ops-icon indigo" style="margin: 0; flex-shrink: 0;"><i data-lucide="qr-code" style="width: 24px; height: 24px;"></i></div>
@@ -445,7 +437,6 @@
                 </div>
             </div>
 
-            <!-- TAB KEUANGAN & TAGIHAN -->
             <div id="tab-finance" class="content-area">
                 <div style="margin-bottom: 24px;">
                     <h1 style="font-size: 24px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
@@ -454,31 +445,24 @@
                     <p class="text-muted text-sm" id="teks-finance-periode">Pantau pembayaran mutaba'ah untuk periode aktif.</p>
                 </div>
 
-                <!-- 1. Analitik Keuangan Utama -->
                 <div class="stats-grid" style="margin-bottom: 24px;">
                     <div class="stat-card">
                         <h3>Total Tagihan Wajib</h3>
                         <div class="value" id="finance-stat-total">Rp 0</div>
                         <p class="desc">Berdasarkan total santri aktif.</p>
-                        <div style="position: absolute; right: -10px; bottom: -10px; opacity: 0.05; transform: scale(3);">
-                            <i data-lucide="file-text"></i>
-                        </div>
+                        <div style="position: absolute; right: -10px; bottom: -10px; opacity: 0.05; transform: scale(3);"><i data-lucide="file-text"></i></div>
                     </div>
                     <div class="stat-card" style="border-bottom: 4px solid var(--success);">
                         <h3>Dana Terkumpul</h3>
                         <div class="value" style="color: var(--success);" id="finance-stat-lunas">Rp 0</div>
                         <p class="desc">Dari santri berstatus Lunas.</p>
-                        <div style="position: absolute; right: -10px; bottom: -10px; opacity: 0.05; transform: scale(3); color: var(--success);">
-                            <i data-lucide="check-circle"></i>
-                        </div>
+                        <div style="position: absolute; right: -10px; bottom: -10px; opacity: 0.05; transform: scale(3); color: var(--success);"><i data-lucide="check-circle"></i></div>
                     </div>
                     <div class="stat-card" style="border-bottom: 4px solid var(--danger);">
                         <h3>Potensi Tunggakan</h3>
                         <div class="value" style="color: var(--danger);" id="finance-stat-tunggak">Rp 0</div>
                         <p class="desc">Menunggu pelunasan wali murid.</p>
-                        <div style="position: absolute; right: -10px; bottom: -10px; opacity: 0.05; transform: scale(3); color: var(--danger);">
-                            <i data-lucide="alert-circle"></i>
-                        </div>
+                        <div style="position: absolute; right: -10px; bottom: -10px; opacity: 0.05; transform: scale(3); color: var(--danger);"><i data-lucide="alert-circle"></i></div>
                     </div>
                     <div class="stat-card">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -492,29 +476,37 @@
                     </div>
                 </div>
 
-                <!-- 2. FITUR BARU: Analisis Tagihan Per Kelas -->
                 <div style="margin-bottom: 24px;">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                         <h2 style="font-size: 16px; font-weight: 700; color: var(--text-main);">Analisis Tagihan Per Kelas</h2>
                         <span class="text-xs text-muted" id="finance-class-updated-text">Real-time update</span>
                     </div>
                     <div class="class-finance-grid" id="finance-class-summary-grid">
-                        <!-- Konten Grid Card diisi via JavaScript -->
                         <div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: var(--text-muted); background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">Memuat analisis kelas...</div>
                     </div>
                 </div>
 
-                <!-- 3. PENGATURAN KEUANGAN & AKSI MASSAL -->
                 <div class="system-ops-grid" style="margin-bottom: 24px;">
-                    <!-- Konfigurasi Penagihan (DIPERBARUI DENGAN HARGA DINAMIS) -->
                     <div class="ops-card" style="padding: 20px;">
                         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                             <div style="width: 40px; height: 40px; border-radius: 10px; background: var(--warning-bg); color: var(--warning); display: flex; align-items: center; justify-content: center;"><i data-lucide="settings"></i></div>
                             <div>
-                                <h3 style="font-size: 15px; margin-bottom: 2px;">Konfigurasi Penagihan</h3>
-                                <p class="text-xs text-muted">Atur tarif, denda, dan periode aktif.</p>
+                                <h3 style="font-size: 15px; margin-bottom: 2px;">Konfigurasi Sistem Global</h3>
+                                <p class="text-xs text-muted">Atur fitur, tarif, denda, dan periode aktif.</p>
                             </div>
                         </div>
+
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 12px; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius-md);">
+                            <div>
+                                <span class="text-sm" style="font-weight: 700; color: #92400E;">Modul Absensi Sholat</span>
+                                <p style="font-size: 11px; color: #B45309; margin-top: 2px;">Fitur laporan sholat harian bagi wali murid.</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="sholat-module-toggle" checked onchange="window.toggleSholatModule(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 12px; background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
                             <span class="text-sm" style="font-weight: 600;">Notifikasi Tagihan Wali Murid</span>
                             <label class="toggle-switch">
@@ -539,7 +531,6 @@
                         <button class="btn btn-outline" style="width: 100%; color: var(--primary); border-color: var(--border-focus);" onclick="window.simpanKonfigurasiKeuangan()">Simpan Konfigurasi</button>
                     </div>
 
-                    <!-- Aksi Massal Keuangan -->
                     <div class="ops-card" style="padding: 20px;">
                         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                             <div style="width: 40px; height: 40px; border-radius: 10px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;"><i data-lucide="layers"></i></div>
@@ -561,15 +552,12 @@
                     </div>
                 </div>
 
-                <!-- 4. Grid Khusus: Grafik Doughnut & Tabel Manajemen -->
                 <div class="finance-layout">
-                    <!-- Sisi Kiri: Chart Doughnut -->
                     <div class="chart-card">
                         <div style="width: 100%; text-align: left; margin-bottom: 8px;">
                             <h2 style="font-size: 16px; font-weight: 700; color: var(--text-main);">Rasio Pembayaran</h2>
                             <p style="font-size: 12px; color: var(--text-muted);">Status tagihan periode ini</p>
                         </div>
-                        
                         <div class="chart-container">
                             <canvas id="financeDoughnutChart"></canvas>
                             <div class="chart-center-text">
@@ -579,32 +567,24 @@
                         </div>
                     </div>
 
-                    <!-- Sisi Kanan: Tabel Filter Data Tagihan -->
                     <div class="data-card">
                         <div class="data-header" style="flex-direction: column; align-items: flex-start;">
                             <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
                                 <h2 style="font-size: 16px;">Daftar Tagihan Santri</h2>
-                                
-                                <!-- Search Bar dengan Ikon Clear (X) -->
                                 <div class="input-group" style="margin: 0; width: 100%; max-width: 250px;">
                                     <div style="position: relative;">
                                         <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; color: var(--text-light);"></i>
                                         <input type="text" id="finance-search" class="form-control" placeholder="Cari nama santri..." style="padding-left: 36px; padding-right: 36px; padding-top:8px; padding-bottom:8px; font-size: 13px;" oninput="window.handleSearchInput(this)">
-                                        <button id="clear-search-btn" class="search-clear-btn" onclick="window.clearFinanceSearch()" title="Hapus Pencarian">
-                                            <i data-lucide="x" style="width: 14px; height: 14px;"></i>
-                                        </button>
+                                        <button id="clear-search-btn" class="search-clear-btn" onclick="window.clearFinanceSearch()" title="Hapus Pencarian"><i data-lucide="x" style="width: 14px; height: 14px;"></i></button>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Modern Filter Pills -->
                             <div class="pill-nav" style="margin-bottom: 0;">
                                 <button class="pill-btn active" onclick="window.setFinanceFilter('all', this)"><i data-lucide="layers" style="width:14px;"></i> Semua</button>
                                 <button class="pill-btn" onclick="window.setFinanceFilter('lunas', this)" style="color: var(--success);"><i data-lucide="check-circle" style="width:14px;"></i> Lunas</button>
                                 <button class="pill-btn" onclick="window.setFinanceFilter('tunggak', this)" style="color: var(--danger);"><i data-lucide="alert-circle" style="width:14px;"></i> Menunggak</button>
                             </div>
                         </div>
-                        
                         <div class="table-responsive">
                             <table>
                                 <thead>
@@ -624,7 +604,6 @@
                 </div>
             </div>
 
-            <!-- TAB OPERASI SISTEM (Khusus Keamanan/Danger Zone) -->
             <div id="tab-systemops" class="content-area">
                 <div style="margin-bottom: 24px;">
                     <h1 style="font-size: 24px; color: var(--danger); display: flex; align-items: center; gap: 8px;">
@@ -634,7 +613,22 @@
                 </div>
 
                 <div class="system-ops-grid">
-                    <!-- Mass Reset PIN -->
+                    <!-- FITUR BARU: Konfigurasi Kredensial Master PIN -->
+                    <div class="ops-card" style="padding: 24px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--danger-bg); color: var(--danger); display: flex; align-items: center; justify-content: center;"><i data-lucide="key" style="width: 24px; height: 24px;"></i></div>
+                            <div>
+                                <h3 style="font-size: 15px; margin-bottom: 2px;">Kredensial Super Admin</h3>
+                                <p class="text-xs text-muted">Ubah kata sandi akses master sistem.</p>
+                            </div>
+                        </div>
+                        <div class="input-group" style="margin-bottom: 16px; flex-grow: 1;">
+                            <label>PIN Admin Baru</label>
+                            <input type="password" id="input-new-admin-pin" class="form-control" placeholder="Minimal 6 karakter..." autocomplete="off">
+                        </div>
+                        <button class="btn btn-outline" style="width: 100%; color: var(--danger); border-color: #FECACA;" onclick="window.ubahPinAdmin()">Ubah PIN Master</button>
+                    </div>
+
                     <div class="ops-card">
                         <div class="ops-icon orange"><i data-lucide="key-round" style="width: 24px; height: 24px;"></i></div>
                         <h3 style="margin-bottom: 8px;">Reset Engine (PIN Guru)</h3>
@@ -642,7 +636,6 @@
                         <button class="btn btn-outline" style="width: 100%; color: var(--warning); border-color: #FDE68A;" onclick="window.confirmOpsAction('mass_pin')">Reset Semua PIN</button>
                     </div>
 
-                    <!-- Factory Reset -->
                     <div class="ops-card danger-zone">
                         <div class="ops-icon red"><i data-lucide="skull" style="width: 24px; height: 24px;"></i></div>
                         <h3 style="margin-bottom: 8px; color: var(--danger);">Wipe Database (Lulusan)</h3>
@@ -655,33 +648,23 @@
         </main>
     </div>
 
-    <!-- ==========================================
-         VIEW 3: A4 PRINT AREA (PREVIEW MODE)
-    =========================================== -->
+    <!-- VIEW 3: A4 PRINT AREA -->
     <div id="print-area">
         <div class="preview-controls">
-            <button class="btn btn-outline" onclick="window.tutupPreviewA4()">
-                <i data-lucide="arrow-left"></i> Tutup Preview
-            </button>
-            <button class="btn btn-primary" onclick="window.print()">
-                <i data-lucide="printer"></i> Cetak / Simpan PDF
-            </button>
+            <button class="btn btn-outline" onclick="window.tutupPreviewA4()"><i data-lucide="arrow-left"></i> Tutup Preview</button>
+            <button class="btn btn-primary" onclick="window.print()"><i data-lucide="printer"></i> Cetak / Simpan PDF</button>
         </div>
 
         <div class="print-container">
             <div class="print-header">
                 <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-                    <div style="width: 64px; height: 64px; background: #0F172A; color: white; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
-                        <i data-lucide="book-open" style="width: 32px; height: 32px;"></i>
-                    </div>
+                    <div style="width: 64px; height: 64px; background: #0F172A; color: white; border-radius: 16px; display: flex; align-items: center; justify-content: center;"><i data-lucide="book-open" style="width: 32px; height: 32px;"></i></div>
                 </div>
                 <h1>Portal Kehormatan Wali Murid</h1>
                 <p>Silakan pindai <i>(scan)</i> QR Code di bawah ini untuk mendaftarkan nomor WhatsApp Anda dan mulai memantau perkembangan hafalan ananda secara langsung.</p>
             </div>
             
-            <div class="print-qr-wrapper">
-                <img id="print-qr-img" src="" alt="Scan QR Registrasi" class="print-qr-img">
-            </div>
+            <div class="print-qr-wrapper"><img id="print-qr-img" src="" alt="Scan QR Registrasi" class="print-qr-img"></div>
             
             <div class="print-steps">
                 <div class="print-step-item">
@@ -703,11 +686,7 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         MODALS (CRUD & CONFIRMATION)
-    =========================================== -->
-
-    <!-- Modal Class -->
+    <!-- MODALS -->
     <div id="modal-class" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -728,7 +707,6 @@
         </div>
     </div>
 
-    <!-- Modal Teacher -->
     <div id="modal-teacher" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -747,9 +725,7 @@
                 </div>
                 <div class="input-group" style="margin-bottom: 0;">
                     <label>Otorisasi Kelas (Bisa Multi-Kelas)</label>
-                    <div id="checkbox-classes-container" class="checkbox-group">
-                        <!-- Checkbox classes rendered dynamically -->
-                    </div>
+                    <div id="checkbox-classes-container" class="checkbox-group"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -759,7 +735,6 @@
         </div>
     </div>
 
-    <!-- Modal Student -->
     <div id="modal-student" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -778,9 +753,7 @@
                 </div>
                 <div class="input-group" style="margin-bottom: 0;">
                     <label>Mutasi Kelas (Pindah Kelas)</label>
-                    <select id="select-student-class" class="form-control" style="cursor: pointer;">
-                        <!-- Options injected -->
-                    </select>
+                    <select id="select-student-class" class="form-control" style="cursor: pointer;"></select>
                 </div>
             </div>
             <div class="modal-footer">
@@ -790,7 +763,6 @@
         </div>
     </div>
 
-    <!-- Modal Confirm -->
     <div id="modal-confirm" class="modal-overlay">
         <div class="modal-container" style="max-width: 360px;">
             <div class="modal-body" style="text-align: center; padding-top: 32px;">
@@ -799,12 +771,10 @@
                 </div>
                 <h3 id="confirm-title" style="margin-bottom: 8px;">Konfirmasi Tindakan</h3>
                 <p id="confirm-desc" class="text-muted text-sm" style="margin-bottom: 24px; line-height: 1.5;"></p>
-                
                 <div id="confirm-verification-area" style="background: #F1F5F9; padding: 16px; border-radius: var(--radius-md); margin-bottom: 24px; text-align: left;">
                     <label id="confirm-label" style="display: block; font-size: 12px; font-weight: 600; color: var(--danger); margin-bottom: 8px;">Ketik "1" untuk konfirmasi:</label>
                     <input type="text" id="input-confirm-verify" class="form-control" style="text-align: center; font-weight: bold; border-color: #CBD5E1;" onkeyup="window.checkConfirmVerify()" autocomplete="off">
                 </div>
-
                 <div style="display: flex; gap: 12px;">
                     <button class="btn btn-outline" onclick="window.closeModal('modal-confirm')" style="flex: 1;">Batal</button>
                     <button class="btn btn-danger" id="btn-execute-confirm" style="flex: 1;" disabled>Eksekusi</button>
@@ -813,30 +783,47 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         LOGIKA & INTEGRASI FIREBASE (MODULAR)
-    =========================================== -->
+    <!-- FITUR BARU: Modal Daftar Tagihan Santri Per Kelas -->
+    <div id="modal-class-billing-details" class="modal-overlay">
+        <div class="modal-container" style="max-width: 400px; padding: 0;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="wallet" style="width: 18px; color: var(--primary);"></i>
+                    <h3 style="font-size: 16px; margin: 0;" id="class-billing-modal-title">Rincian Tagihan Kelas</h3>
+                </div>
+                <button class="btn-ghost" onclick="window.closeModal('modal-class-billing-details')" style="padding: 4px;"><i data-lucide="x" style="width: 18px;"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 0; background: var(--bg-surface);">
+                <div id="class-billing-stats" style="padding: 16px; background: #F8FAFC; border-bottom: 1px solid var(--border-color); display: flex; gap: 12px; justify-content: center;">
+                    <!-- Diinjeksi JS -->
+                </div>
+                <ul id="class-billing-student-list" style="list-style: none; margin: 0; padding: 0;">
+                    <!-- Diinjeksi JS -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { db, appId } from './firebase-config.js';
-        import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global State (Termasuk Konfigurasi Harga Dinamis)
+        // Global State
         let allDataClasses = [];
         let allDataTeachers = [];
         let allDataStudents = [];
-        let globalSettings = { periodeTagihan: "Bulan Ini", nominalTagihan: 5000, nominalDenda: 2000 };
+        // FITUR BARU: Menambahkan 'adminPin' ke state internal (default 'admin123' jika kosong)
+        let globalSettings = { periodeTagihan: "Bulan Ini", nominalTagihan: 5000, nominalDenda: 2000, isSholatModuleActive: true, adminPin: "admin123" };
         let confirmActionCallback = null;
         let confirmRequiredText = "1";
         
         let currentFinanceFilterStatus = 'all';
         
-        // Scope Penahan Memori untuk Listeners
         window.unsubscribeAdminClasses = null;
         window.unsubscribeAdminTeachers = null;
         window.unsubscribeAdminStudents = null;
         window.unsubscribeAdminSettings = null;
 
-        // Inisialisasi & Cek Auto-Login
         window.addEventListener('DOMContentLoaded', () => {
             window.lucide.createIcons();
             
@@ -844,19 +831,131 @@
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('dashboard-view').style.display = 'block';
                 startRealtimeListeners();
+            } else {
+                // Diperlukan agar PIN default ter-load sebelum login pertama kali, 
+                // namun karena user belum login, kita tidak listen semua. Cukup load admin config
+                listenSatuKaliUntukAdminPin();
             }
         });
 
         // =====================================
-        // LOGIKA PENCARIAN KEUANGAN (FITUR BARU X ICON)
+        // KREDENSIAL SUPER ADMIN (FITUR BARU)
+        // =====================================
+        
+        // Memastikan PIN admin didapatkan tanpa membocorkan data lain sebelum login
+        function listenSatuKaliUntukAdminPin() {
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), (docSnap) => {
+                if (docSnap.exists() && docSnap.data().adminPin) {
+                    globalSettings.adminPin = docSnap.data().adminPin;
+                }
+            });
+        }
+
+        window.loginAdmin = function() {
+            const pin = document.getElementById('admin-pin').value;
+            const validPin = globalSettings.adminPin || 'admin123';
+
+            if(pin === validPin) { 
+                localStorage.setItem('tahfizhpro_admin_session', 'active');
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('dashboard-view').style.display = 'block';
+                startRealtimeListeners();
+                window.showToast("Otorisasi Master Diterima.");
+            } else {
+                window.showToast("Akses Ditolak. PIN Master Salah!", true);
+            }
+        };
+
+        window.ubahPinAdmin = async function() {
+            const newPin = document.getElementById('input-new-admin-pin').value.trim();
+            if(!newPin || newPin.length < 6) return window.showToast("PIN minimal harus 6 karakter!", true);
+
+            window.customConfirm("Ubah PIN Master", "Apakah Anda yakin ingin merubah kata sandi Super Admin? Pastikan Anda mengingat sandi baru ini.", "UBAH", async () => {
+                try {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), {
+                        adminPin: newPin
+                    }, { merge: true });
+                    window.showToast("Kredensial Super Admin berhasil diubah!");
+                    document.getElementById('input-new-admin-pin').value = '';
+                    return true;
+                } catch (error) {
+                    window.showToast("Gagal mengubah PIN.", true);
+                    return false;
+                }
+            }, true);
+        };
+
+        // =====================================
+        // MODAL RINCIAN SANTRI DI KELAS KEUANGAN (FITUR BARU)
+        // =====================================
+        window.showClassBillingDetails = function(classId) {
+            let students = [];
+            let title = '';
+
+            if (classId === 'unassigned') {
+                students = allDataStudents.filter(s => !s.kelas_id || !allDataClasses.find(c => c.id === s.kelas_id));
+                title = 'Santri Tanpa Kelas';
+            } else {
+                students = allDataStudents.filter(s => s.kelas_id === classId);
+                const cls = allDataClasses.find(c => c.id === classId);
+                title = cls ? (cls.nama_kelas || cls.name) : 'Detail Kelas';
+            }
+
+            document.getElementById('class-billing-modal-title').textContent = title;
+
+            const lunas = students.filter(s => s.pembayaranLunas === true).length;
+            const tunggak = students.length - lunas;
+
+            document.getElementById('class-billing-stats').innerHTML = `
+                <span class="badge badge-success" style="font-size: 12px; padding: 6px 12px; border: 1px solid #A7F3D0;"><i data-lucide="check-circle" style="width: 14px; margin-right: 4px;"></i> ${lunas} Lunas</span>
+                <span class="badge badge-danger" style="font-size: 12px; padding: 6px 12px; border: 1px solid #FECACA;"><i data-lucide="alert-circle" style="width: 14px; margin-right: 4px;"></i> ${tunggak} Tunggakan</span>
+            `;
+
+            const listContainer = document.getElementById('class-billing-student-list');
+            
+            if (students.length === 0) {
+                listContainer.innerHTML = '<li style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 13px;">Tidak ada data santri.</li>';
+            } else {
+                // Urutkan: Tunggakan di Atas, kemudian Alfabetis
+                students.sort((a, b) => {
+                    if(a.pembayaranLunas === b.pembayaranLunas) return (a.nama || '').localeCompare(b.nama || '');
+                    return a.pembayaranLunas ? 1 : -1;
+                });
+
+                listContainer.innerHTML = students.map(s => {
+                    const isPaid = s.pembayaranLunas === true;
+                    const badge = isPaid ? '<span class="badge badge-success" style="font-size: 10px;">Lunas</span>' : '<span class="badge badge-danger" style="font-size: 10px;">Tunggak</span>';
+                    const name = s.nama || s.name || 'Tanpa Nama';
+                    const code = s.kodeSiswa || '-';
+                    const inisial = name.charAt(0).toUpperCase();
+
+                    return `
+                    <li class="billing-student-item">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 34px; height: 34px; border-radius: 50%; background: ${isPaid ? 'var(--success-bg)' : 'var(--danger-bg)'}; color: ${isPaid ? 'var(--success)' : 'var(--danger)'}; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; border: 1px solid ${isPaid ? '#A7F3D0' : '#FECACA'};">
+                                ${inisial}
+                            </div>
+                            <div class="billing-student-info">
+                                <span class="billing-student-name">${name}</span>
+                                <span class="billing-student-meta"><i data-lucide="fingerprint" style="width: 10px; display: inline;"></i> ID: ${code}</span>
+                            </div>
+                        </div>
+                        <div>${badge}</div>
+                    </li>
+                    `;
+                }).join('');
+            }
+
+            window.openModal('modal-class-billing-details');
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        // =====================================
+        // LOGIKA KEUANGAN & FILTER DATA
         // =====================================
         window.handleSearchInput = function(el) {
             const btn = document.getElementById('clear-search-btn');
-            if (el.value.length > 0) {
-                btn.style.display = 'flex';
-            } else {
-                btn.style.display = 'none';
-            }
+            if (el.value.length > 0) { btn.style.display = 'flex'; } else { btn.style.display = 'none'; }
             window.renderFinanceTable();
         };
 
@@ -868,17 +967,10 @@
             input.focus();
         };
 
-        // =====================================
-        // LOGIKA KEUANGAN & FILTER
-        // =====================================
-        
         window.setFinanceFilter = function(status, btnElement) {
             currentFinanceFilterStatus = status;
-            
-            const buttons = document.querySelectorAll('.pill-nav .pill-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.pill-nav .pill-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
-            
             window.renderFinanceTable();
         };
 
@@ -888,14 +980,9 @@
             
             let filteredStudents = allDataStudents;
 
-            // Filter Status
-            if (currentFinanceFilterStatus === 'lunas') {
-                filteredStudents = filteredStudents.filter(s => s.pembayaranLunas === true);
-            } else if (currentFinanceFilterStatus === 'tunggak') {
-                filteredStudents = filteredStudents.filter(s => s.pembayaranLunas !== true);
-            }
+            if (currentFinanceFilterStatus === 'lunas') { filteredStudents = filteredStudents.filter(s => s.pembayaranLunas === true); } 
+            else if (currentFinanceFilterStatus === 'tunggak') { filteredStudents = filteredStudents.filter(s => s.pembayaranLunas !== true); }
 
-            // Filter Search
             if (searchQuery) {
                 filteredStudents = filteredStudents.filter(s => {
                     const name = (s.nama || s.name || '').toLowerCase();
@@ -906,8 +993,7 @@
 
             if(filteredStudents.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 30px;" class="text-muted"><i data-lucide="inbox" style="width: 32px; height: 32px; margin-bottom: 12px; color: var(--border-color); display: block; margin-left: auto; margin-right: auto;"></i> Tidak ada data tagihan yang sesuai kriteria.</td></tr>`;
-                if(window.lucide) window.lucide.createIcons();
-                return;
+                if(window.lucide) window.lucide.createIcons(); return;
             }
 
             tbody.innerHTML = filteredStudents.map(student => {
@@ -918,39 +1004,27 @@
                 const className = cls ? (cls.nama_kelas || cls.name) : '<span style="color:var(--danger);">Tanpa Kelas</span>';
                 const namaSiswa = student.nama || student.name || 'Tanpa Nama';
                 
-                let waOrtu = student.waOrtu || '';
-                if(waOrtu && waOrtu.startsWith('0')) waOrtu = '62' + waOrtu.substring(1);
+                let waOrtu = student.waOrtu || ''; if(waOrtu && waOrtu.startsWith('0')) waOrtu = '62' + waOrtu.substring(1);
 
-                // Actions: Toggle Payment & WA Reminder
                 const btnPayClass = isPaid ? 'btn-outline' : 'btn-primary';
                 const btnPayText = isPaid ? '<i data-lucide="x-circle" style="width:14px;"></i> Batalkan' : '<i data-lucide="check-circle" style="width:14px;"></i> Lunasi';
                 const btnPayColor = isPaid ? 'color: var(--danger);' : '';
                 
                 let btnWA = '';
                 if (!isPaid && waOrtu) {
-                    btnWA = `<button class="btn btn-outline" style="padding: 6px 10px; color: var(--success); border-color: #A7F3D0;" onclick="window.sendWAReminder('${waOrtu}', '${namaSiswa}')" title="Kirim Reminder WA (Tagihan)"><i data-lucide="message-circle" style="width:14px;"></i></button>`;
+                    btnWA = `<button class="btn btn-outline" style="padding: 6px 10px; color: var(--warning); border-color: #FDE68A;" onclick="window.sendWAReminder('${waOrtu}', '${namaSiswa}')" title="Kirim Reminder WA (Tagihan)"><i data-lucide="message-circle" style="width:14px;"></i></button>`;
                 } else if (!waOrtu) {
                     btnWA = `<button class="btn btn-outline" style="padding: 6px 10px; opacity: 0.5; cursor: not-allowed;" title="WA Ortu Belum Terdaftar"><i data-lucide="message-circle" style="width:14px;"></i></button>`;
                 } else if (isPaid && waOrtu) {
                     btnWA = `<button class="btn btn-outline" style="padding: 6px 10px; color: var(--success); border-color: #A7F3D0;" onclick="window.sendWAThanks('${waOrtu}', '${namaSiswa}')" title="Kirim WA Terima Kasih (Lunas)"><i data-lucide="heart" style="width:14px;"></i></button>`;
                 }
 
-                return `
-                <tr>
-                    <td>
-                        <div style="font-weight: 700; color: var(--text-main); font-size: 14px;">${namaSiswa}</div>
-                        <div class="text-xs text-muted" style="margin-top: 2px;">ID: ${student.kodeSiswa || '-'} | WA: ${student.waOrtu || '-'}</div>
-                    </td>
+                return `<tr>
+                    <td><div style="font-weight: 700; color: var(--text-main); font-size: 14px;">${namaSiswa}</div><div class="text-xs text-muted" style="margin-top: 2px;">ID: ${student.kodeSiswa || '-'} | WA: ${student.waOrtu || '-'}</div></td>
                     <td>${className}</td>
                     <td>${badgePay}</td>
-                    <td>
-                        <div class="action-flex" style="justify-content: flex-end;">
-                            <button class="btn ${btnPayClass}" style="padding: 6px 10px; font-size: 12px; ${btnPayColor}" onclick="window.togglePaymentFinance('${student.id}', ${!isPaid})">${btnPayText}</button>
-                            ${btnWA}
-                        </div>
-                    </td>
-                </tr>
-            `}).join('');
+                    <td><div class="action-flex" style="justify-content: flex-end;"><button class="btn ${btnPayClass}" style="padding: 6px 10px; font-size: 12px; ${btnPayColor}" onclick="window.togglePaymentFinance('${student.id}', ${!isPaid})">${btnPayText}</button>${btnWA}</div></td>
+                </tr>`}).join('');
             
             if(window.lucide) window.lucide.createIcons();
         };
@@ -959,7 +1033,6 @@
             try {
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', id), { pembayaranLunas: status });
                 window.showToast(status ? "Tagihan berhasil dilunasi." : "Status lunas dibatalkan.");
-                // Listeners will automatically trigger updateStats(), updateFinanceChart(), and renderFinanceTable()
             } catch(e) { window.showToast("Gagal memproses tagihan.", true); }
         };
 
@@ -967,58 +1040,40 @@
             const periode = globalSettings.periodeTagihan || "Bulan Ini";
             const nominalLokal = globalSettings.nominalTagihan !== undefined ? globalSettings.nominalTagihan : 5000;
             const nominalStr = nominalLokal.toLocaleString('id-ID');
-            
-            const teksPesan = `Assalamu'alaikum Bapak/Ibu Wali dari Ananda *${namaSiswa}*.\n\nMengingatkan dengan hormat bahwa administrasi mutaba'ah digital (Rp ${nominalStr}) untuk periode *${periode}* saat ini belum tercatat lunas di sistem kami.\n\nMohon konfirmasinya jika sudah melakukan penyelesaian, atau hubungi admin kami. Jazakumullah khairan.`;
-            
-            const encodedText = encodeURIComponent(teksPesan);
-            const waUrl = `https://wa.me/${phone}?text=${encodedText}`;
-            window.open(waUrl, '_blank');
+            const teksPesan = `Assalamu'alaikum Ayah/Bunda dari Ananda *${namaSiswa}*.\n\nMengingatkan dengan hormat bahwa administrasi mutaba'ah digital (Rp ${nominalStr}) untuk periode *${periode}* saat ini belum tercatat lunas di sistem kami.\n\nMohon konfirmasinya jika sudah melakukan penyelesaian, atau hubungi admin kami. Jazakumullah khairan.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(teksPesan)}`, '_blank');
         };
 
         window.sendWAThanks = function(phone, namaSiswa) {
             const periode = globalSettings.periodeTagihan || "Bulan Ini";
-            const teksPesan = `Assalamu'alaikum Bapak/Ibu Wali dari Ananda *${namaSiswa}*.\n\nJazakumullah khairan atas penyelesaian administrasi mutaba'ah digital periode *${periode}*.\nSemoga Allah berkahi rezeki Bapak/Ibu dan menjadikan ananda penghafal Al-Quran yang istiqomah. Aamiin.`;
-            
-            const encodedText = encodeURIComponent(teksPesan);
-            const waUrl = `https://wa.me/${phone}?text=${encodedText}`;
-            window.open(waUrl, '_blank');
+            const teksPesan = `Assalamu'alaikum Ayah/Bunda dari Ananda *${namaSiswa}*.\n\nJazakumullah khairan atas penyelesaian administrasi mutaba'ah digital periode *${periode}*.\nSemoga Allah berkahi rezeki Ayah/Bunda dan menjadikan ananda penghafal Al-Quran yang istiqomah. Aamiin.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(teksPesan)}`, '_blank');
         };
 
-        // =====================================
-        // LOGIKA CETAK PAMFLET & PENGATURAN KEUANGAN
-        // =====================================
         window.toggleQRAccess = async function(element) {
             const isChecked = element.checked;
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), {
-                    isRegistrationOpen: isChecked
-                }, { merge: true });
-
-                if(isChecked) {
-                    window.showToast("Portal Registrasi Wali Murid DIBUKA.");
-                } else {
-                    window.showToast("Portal Registrasi Wali Murid DITUTUP.", true);
-                }
-            } catch (error) {
-                window.showToast("Gagal menyimpan status akses QR.", true);
-                element.checked = !isChecked; 
-            }
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), { isRegistrationOpen: isChecked }, { merge: true });
+                window.showToast(isChecked ? "Portal Registrasi Wali Murid DIBUKA." : "Portal Registrasi Wali Murid DITUTUP.", !isChecked);
+            } catch (error) { window.showToast("Gagal menyimpan status akses QR.", true); element.checked = !isChecked; }
         };
 
         window.toggleBillingStatus = async function(element) {
             const isChecked = element.checked;
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), {
-                    isTagihanAktif: isChecked
-                }, { merge: true });
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), { isTagihanAktif: isChecked }, { merge: true });
                 window.showToast(isChecked ? "Notifikasi tagihan DIAKTIFKAN." : "Notifikasi tagihan DINONAKTIFKAN.");
-            } catch (error) {
-                window.showToast("Gagal menyimpan status tagihan.", true);
-                element.checked = !isChecked; 
-            }
+            } catch (error) { window.showToast("Gagal menyimpan status tagihan.", true); element.checked = !isChecked; }
         };
 
-        // FUNGSI BARU: Simpan Konfigurasi Keuangan Dinamis (Periode, Tarif, Denda)
+        window.toggleSholatModule = async function(element) {
+            const isChecked = element.checked;
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), { isSholatModuleActive: isChecked }, { merge: true });
+                window.showToast(isChecked ? "Modul Absensi Sholat DIAKTIFKAN." : "Modul Absensi Sholat DINONAKTIFKAN.");
+            } catch (error) { window.showToast("Gagal menyimpan pengaturan fitur.", true); element.checked = !isChecked; }
+        };
+
         window.simpanKonfigurasiKeuangan = async function() {
             const periode = document.getElementById('input-periode-tagihan').value.trim();
             const nominal = parseInt(document.getElementById('input-nominal-tagihan').value) || 0;
@@ -1028,70 +1083,36 @@
             if (nominal < 0 || denda < 0) return window.showToast("Nominal tarif/denda tidak boleh minus!", true);
 
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), {
-                    periodeTagihan: periode,
-                    nominalTagihan: nominal,
-                    nominalDenda: denda
-                }, { merge: true });
-                
-                window.showToast("Konfigurasi keuangan berhasil diperbarui.");
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), { periodeTagihan: periode, nominalTagihan: nominal, nominalDenda: denda }, { merge: true });
+                window.showToast("Konfigurasi sistem berhasil diperbarui.");
                 document.getElementById('teks-finance-periode').textContent = `Pantau pembayaran mutaba'ah untuk periode: ${periode}`;
-                
-                // Memicu rendering ulang chart dan stats untuk kalkulasi harga baru
                 updateStats(); 
-                
-            } catch (error) {
-                window.showToast("Gagal menyimpan konfigurasi keuangan.", true);
-            }
+            } catch (error) { window.showToast("Gagal menyimpan konfigurasi sistem.", true); }
         };
 
         window.bukaPreviewA4 = function() {
             window.showToast("Membuka Mode Preview A4...");
-            
             const dashView = document.getElementById('dashboard-view');
             const printArea = document.getElementById('print-area');
             const qrImg = document.getElementById('print-qr-img');
             
             let targetUrl = window.location.origin + '/portal-wali.html';
-            
             const currentPath = window.location.pathname;
-            if (currentPath.includes('admin.html')) {
-                targetUrl = window.location.origin + currentPath.replace('admin.html', 'portal-wali.html');
-            } else if (currentPath.endsWith('/admin') || currentPath.endsWith('/admin/')) {
-                targetUrl = window.location.origin + currentPath.replace(/admin\/?$/, 'portal-wali.html');
-            }
+            if (currentPath.includes('admin.html')) { targetUrl = window.location.origin + currentPath.replace('admin.html', 'portal-wali.html'); } 
+            else if (currentPath.endsWith('/admin') || currentPath.endsWith('/admin/')) { targetUrl = window.location.origin + currentPath.replace(/admin\/?$/, 'portal-wali.html'); }
             
             qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(targetUrl)}&color=0F172A&bgcolor=FFFFFF`;
-
-            dashView.style.display = 'none';
-            printArea.style.display = 'flex';
+            dashView.style.display = 'none'; printArea.style.display = 'flex';
         };
 
         window.tutupPreviewA4 = function() {
-            const dashView = document.getElementById('dashboard-view');
-            const printArea = document.getElementById('print-area');
-            
-            printArea.style.display = 'none';
-            dashView.style.display = 'block';
+            document.getElementById('print-area').style.display = 'none';
+            document.getElementById('dashboard-view').style.display = 'block';
         };
 
         // =====================================
-        // UI UTILITIES & AUTH
+        // UI UTILITIES
         // =====================================
-        window.togglePinAdmin = function() {
-            const pinInput = document.getElementById('admin-pin');
-            const eyeBtn = document.getElementById('icon-eye-admin').closest('button');
-            
-            if (pinInput.type === 'password') {
-                pinInput.type = 'text';
-                eyeBtn.innerHTML = '<i data-lucide="eye-off" id="icon-eye-admin" style="width: 20px;"></i>';
-            } else {
-                pinInput.type = 'password';
-                eyeBtn.innerHTML = '<i data-lucide="eye" id="icon-eye-admin" style="width: 20px;"></i>';
-            }
-            if(window.lucide) window.lucide.createIcons();
-        };
-
         window.showToast = function(msg, isError = false) {
             const toast = document.getElementById('toast');
             toast.className = `toast show ${isError ? 'error' : ''}`;
@@ -1107,14 +1128,12 @@
             const sidebar = document.getElementById('main-sidebar');
             const backdrop = document.getElementById('sidebar-backdrop');
             sidebar.classList.toggle('open');
-            if (sidebar.classList.contains('open')) { backdrop.classList.add('active'); } 
-            else { backdrop.classList.remove('active'); }
+            if (sidebar.classList.contains('open')) { backdrop.classList.add('active'); } else { backdrop.classList.remove('active'); }
         };
 
         window.switchTab = function(tabId) {
             document.querySelectorAll('.content-area').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(`tab-${tabId}`).classList.add('active');
             event.currentTarget.classList.add('active');
             
@@ -1122,35 +1141,16 @@
             
             if (tabId === 'finance') {
                 window.renderFinanceTable();
-                // Ensure chart renders properly if tab is shown
-                if(window.financeChartObj) {
-                    setTimeout(() => window.financeChartObj.resize(), 50);
-                }
-            }
-        };
-
-        window.loginAdmin = function() {
-            const pin = document.getElementById('admin-pin').value;
-            if(pin === 'admin123') { 
-                localStorage.setItem('tahfizhpro_admin_session', 'active');
-                
-                document.getElementById('login-view').style.display = 'none';
-                document.getElementById('dashboard-view').style.display = 'block';
-                startRealtimeListeners();
-                window.showToast("Otorisasi Master Diterima.");
-            } else {
-                window.showToast("Akses Ditolak. PIN Master Salah!", true);
+                if(window.financeChartObj) { setTimeout(() => window.financeChartObj.resize(), 50); }
             }
         };
 
         window.logoutAdmin = function() {
             localStorage.removeItem('tahfizhpro_admin_session');
-
             if (window.unsubscribeAdminClasses) { window.unsubscribeAdminClasses(); window.unsubscribeAdminClasses = null; }
             if (window.unsubscribeAdminTeachers) { window.unsubscribeAdminTeachers(); window.unsubscribeAdminTeachers = null; }
             if (window.unsubscribeAdminStudents) { window.unsubscribeAdminStudents(); window.unsubscribeAdminStudents = null; }
             if (window.unsubscribeAdminSettings) { window.unsubscribeAdminSettings(); window.unsubscribeAdminSettings = null; }
-
             document.getElementById('dashboard-view').style.display = 'none';
             document.getElementById('login-view').style.display = 'flex';
             document.getElementById('admin-pin').value = '';
@@ -1164,7 +1164,7 @@
             window.unsubscribeAdminSettings = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    globalSettings = { ...globalSettings, ...data }; // Merge data agar yang undefined fallback ke default
+                    globalSettings = { ...globalSettings, ...data }; 
                     
                     const toggleQR = document.getElementById('qr-access-toggle');
                     if (toggleQR && data.isRegistrationOpen !== undefined) toggleQR.checked = data.isRegistrationOpen;
@@ -1172,7 +1172,9 @@
                     const toggleBilling = document.getElementById('billing-status-toggle');
                     if (toggleBilling && data.isTagihanAktif !== undefined) toggleBilling.checked = data.isTagihanAktif;
 
-                    // Update Nilai Input di Form Konfigurasi Keuangan
+                    const toggleSholat = document.getElementById('sholat-module-toggle');
+                    if (toggleSholat && data.isSholatModuleActive !== undefined) toggleSholat.checked = data.isSholatModuleActive;
+
                     const inputPeriode = document.getElementById('input-periode-tagihan');
                     const inputNominal = document.getElementById('input-nominal-tagihan');
                     const inputDenda = document.getElementById('input-nominal-denda');
@@ -1182,14 +1184,9 @@
                         const teksFinance = document.getElementById('teks-finance-periode');
                         if(teksFinance) teksFinance.textContent = `Pantau pembayaran mutaba'ah untuk periode: ${data.periodeTagihan}`;
                     }
-                    if (inputNominal && data.nominalTagihan !== undefined) {
-                        inputNominal.value = data.nominalTagihan;
-                    }
-                    if (inputDenda && data.nominalDenda !== undefined) {
-                        inputDenda.value = data.nominalDenda;
-                    }
+                    if (inputNominal && data.nominalTagihan !== undefined) { inputNominal.value = data.nominalTagihan; }
+                    if (inputDenda && data.nominalDenda !== undefined) { inputDenda.value = data.nominalDenda; }
 
-                    // Render ulang angka karena tarif tagihan mungkin berubah
                     updateStats();
                 }
             });
@@ -1237,26 +1234,13 @@
                     type: 'doughnut',
                     data: {
                         labels: ['Lunas', 'Menunggak'],
-                        datasets: [{
-                            data: [paid, unpaid],
-                            backgroundColor: ['#10B981', '#EF4444'],
-                            borderWidth: 0,
-                            hoverOffset: 6
-                        }]
+                        datasets: [{ data: [paid, unpaid], backgroundColor: ['#10B981', '#EF4444'], borderWidth: 0, hoverOffset: 6 }]
                     },
                     options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '75%',
+                        responsive: true, maintainAspectRatio: false, cutout: '75%',
                         plugins: {
                             legend: { position: 'bottom', labels: { usePointStyle: true, font: { family: 'Inter', size: 12, weight: '600' } } },
-                            tooltip: {
-                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                                titleFont: { family: 'Inter', size: 13 },
-                                bodyFont: { family: 'Inter', size: 13, weight: '600' },
-                                padding: 12,
-                                cornerRadius: 8
-                            }
+                            tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', titleFont: { family: 'Inter', size: 13 }, bodyFont: { family: 'Inter', size: 13, weight: '600' }, padding: 12, cornerRadius: 8 }
                         }
                     }
                 });
@@ -1274,21 +1258,19 @@
 
             let html = '';
             
-            // Render berdasarkan Kelas
             allDataClasses.forEach(cls => {
                 const studentsInClass = allDataStudents.filter(s => s.kelas_id === cls.id);
                 const total = studentsInClass.length;
-                if (total === 0) return; // Skip kelas kosong untuk kerapihan dashboard
+                if (total === 0) return; 
 
                 const lunas = studentsInClass.filter(s => s.pembayaranLunas === true).length;
                 const tunggak = total - lunas;
                 const percent = total > 0 ? Math.round((lunas / total) * 100) : 0;
                 const clsName = cls.nama_kelas || cls.name || 'Tanpa Nama';
 
-                html += generateClassFinanceCard(clsName, total, lunas, tunggak, percent);
+                html += generateClassFinanceCard(cls.id, clsName, total, lunas, tunggak, percent);
             });
 
-            // Edge Case: Render Santri tanpa Kelas (jika ada)
             const unassignedStudents = allDataStudents.filter(s => !s.kelas_id || !allDataClasses.find(c => c.id === s.kelas_id));
             if(unassignedStudents.length > 0) {
                 const total = unassignedStudents.length;
@@ -1296,7 +1278,7 @@
                 const tunggak = total - lunas;
                 const percent = total > 0 ? Math.round((lunas / total) * 100) : 0;
                 
-                html += generateClassFinanceCard('Tanpa Kelas', total, lunas, tunggak, percent, true);
+                html += generateClassFinanceCard('unassigned', 'Tanpa Kelas', total, lunas, tunggak, percent, true);
             }
 
             if(html === '') {
@@ -1304,15 +1286,16 @@
             } else {
                 container.innerHTML = html;
             }
+            if(window.lucide) window.lucide.createIcons();
         }
 
-        // Helper untuk render card
-        function generateClassFinanceCard(title, total, lunas, tunggak, percent, isDanger = false) {
+        // FITUR BARU: Menambahkan cursor dan onclick di Kartu
+        function generateClassFinanceCard(classId, title, total, lunas, tunggak, percent, isDanger = false) {
             const titleColor = isDanger ? 'var(--danger)' : 'var(--text-main)';
             const barColor = percent === 100 ? 'var(--success)' : (percent > 50 ? 'var(--warning)' : 'var(--danger)');
             
             return `
-            <div class="class-finance-card">
+            <div class="class-finance-card" style="cursor: pointer;" onclick="window.showClassBillingDetails('${classId}')">
                 <div style="font-weight: 700; color: ${titleColor}; margin-bottom: 16px; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
                     <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px;">${title}</span>
                     <span class="badge badge-neutral" style="flex-shrink: 0;">${total} Santri</span>
@@ -1328,34 +1311,31 @@
                 <div class="progress-container" style="height: 6px; margin-top: 14px; background: #F1F5F9;">
                     <div class="progress-bar" style="width: ${percent}%; background: ${barColor};"></div>
                 </div>
-                <div style="text-align: right; margin-top: 6px; font-size: 11px; font-weight: 600; color: ${barColor};">${percent}% Terselesaikan</div>
+                <div style="border-top: 1px dashed var(--border-color); margin-top: 16px; padding-top: 12px; text-align: right; font-size: 12px; font-weight: 600; color: var(--primary); display: flex; align-items: center; justify-content: flex-end; gap: 4px;">
+                    Lihat Daftar Santri <i data-lucide="chevron-right" style="width: 14px;"></i>
+                </div>
             </div>
             `;
         }
 
         function updateStats() {
-            // General Stats
             document.getElementById('stat-kelas').textContent = allDataClasses.length;
             document.getElementById('stat-pengajar').textContent = allDataTeachers.length;
             document.getElementById('stat-santri').textContent = allDataStudents.length;
 
-            // Ambil nominal dinamis dari state yang telah di-sinkronisasikan Firebase
             const currentNominal = globalSettings.nominalTagihan !== undefined ? globalSettings.nominalTagihan : 5000;
 
             const paidStudents = allDataStudents.filter(s => s.pembayaranLunas === true).length;
             const revenue = paidStudents * currentNominal;
             document.getElementById('stat-revenue').textContent = `Rp ${revenue.toLocaleString('id-ID')}`;
 
-            // Finance Specific Stats
             const totalSantri = allDataStudents.length;
             const targetRevenue = totalSantri * currentNominal;
             const unpaidStudents = totalSantri - paidStudents;
             const tunggakan = targetRevenue - revenue;
             
             let collectionRate = 0;
-            if(totalSantri > 0) {
-                collectionRate = Math.round((paidStudents / totalSantri) * 100);
-            }
+            if(totalSantri > 0) { collectionRate = Math.round((paidStudents / totalSantri) * 100); }
 
             document.getElementById('finance-stat-total').textContent = `Rp ${targetRevenue.toLocaleString('id-ID')}`;
             document.getElementById('finance-stat-lunas').textContent = `Rp ${revenue.toLocaleString('id-ID')}`;
@@ -1363,13 +1343,11 @@
             document.getElementById('finance-stat-rate-text').textContent = `${collectionRate}%`;
             document.getElementById('finance-stat-rate-bar').style.width = `${collectionRate}%`;
             
-            // Adjust bar color based on performance
             const bar = document.getElementById('finance-stat-rate-bar');
             if(collectionRate >= 80) bar.style.background = 'var(--success)';
             else if(collectionRate >= 50) bar.style.background = 'var(--warning)';
             else bar.style.background = 'var(--danger)';
 
-            // Update Chart.js & Ringkasan Per Kelas
             updateFinanceChart(paidStudents, unpaidStudents);
             renderFinanceClassSummary();
         }
@@ -1414,8 +1392,7 @@
         window.checkConfirmVerify = function() {
             const inputVal = document.getElementById('input-confirm-verify').value.trim();
             const btnExec = document.getElementById('btn-execute-confirm');
-            if (inputVal === confirmRequiredText) { btnExec.disabled = false; } 
-            else { btnExec.disabled = true; }
+            if (inputVal === confirmRequiredText) { btnExec.disabled = false; } else { btnExec.disabled = true; }
         };
 
         document.getElementById('btn-execute-confirm').addEventListener('click', async () => {
@@ -1486,17 +1463,12 @@
         }
 
         window.executeDeleteClass = function(id) {
-            window.customConfirm(
-                "Hapus Kelas", 
-                "Apakah Anda yakin? Penghapusan kelas dapat menghilangkan rujukan data santri di dalamnya.", 
-                "1", 
-                async () => {
-                    try {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', id));
-                        window.showToast("Kelas berhasil dihapus."); return true;
-                    } catch(e) { window.showToast("Gagal menghapus.", true); return false; }
-                }, true
-            );
+            window.customConfirm("Hapus Kelas", "Apakah Anda yakin? Penghapusan kelas dapat menghilangkan rujukan data santri di dalamnya.", "1", async () => {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', id));
+                    window.showToast("Kelas berhasil dihapus."); return true;
+                } catch(e) { window.showToast("Gagal menghapus.", true); return false; }
+            }, true);
         };
 
         // =====================================
@@ -1544,7 +1516,6 @@
 
             const existingId = document.getElementById('teacher-id').value;
             const docId = existingId || `teacher_${Date.now()}`;
-            
             const payload = { name: name, nama: name, pin: pin, kelas_ids: assignedClasses };
 
             try {
@@ -1592,17 +1563,12 @@
         }
 
         window.executeDeleteTeacher = function(id) {
-            window.customConfirm(
-                "Cabut Akses Pengajar", 
-                "Apakah Anda yakin? Akun pengajar ini akan dihapus dan tidak bisa login kembali.", 
-                "1", 
-                async () => {
-                    try {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teachers', id));
-                        window.showToast("Akses pengajar telah dicabut."); return true;
-                    } catch(e) { window.showToast("Gagal menghapus.", true); return false; }
-                }, true
-            );
+            window.customConfirm("Cabut Akses Pengajar", "Apakah Anda yakin? Akun pengajar ini akan dihapus dan tidak bisa login kembali.", "1", async () => {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teachers', id));
+                    window.showToast("Akses pengajar telah dicabut."); return true;
+                } catch(e) { window.showToast("Gagal menghapus.", true); return false; }
+            }, true);
         };
 
         // =====================================
@@ -1671,9 +1637,7 @@
             if (wa && wa.startsWith('0')) wa = '62' + wa.slice(1);
 
             try {
-                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', id), {
-                    nama: nama, waOrtu: wa, kelas_id: kelasId
-                });
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', id), { nama: nama, waOrtu: wa, kelas_id: kelasId });
                 window.showToast("Data master santri diperbarui.");
                 window.closeModal('modal-student');
             } catch(e) { window.showToast("Gagal memperbarui santri.", true); }
@@ -1687,17 +1651,12 @@
         };
 
         window.executeDeleteStudent = function(id) {
-            window.customConfirm(
-                "Keluarkan Santri", 
-                "Apakah Anda yakin? Seluruh data hafalan santri ini akan terhapus dari sistem.", 
-                "1", 
-                async () => {
-                    try {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', id));
-                        window.showToast("Santri berhasil dikeluarkan."); return true;
-                    } catch(e) { window.showToast("Gagal menghapus.", true); return false; }
-                }, true
-            );
+            window.customConfirm("Keluarkan Santri", "Apakah Anda yakin? Seluruh data hafalan santri ini akan terhapus dari sistem.", "1", async () => {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', id));
+                    window.showToast("Santri berhasil dikeluarkan."); return true;
+                } catch(e) { window.showToast("Gagal menghapus.", true); return false; }
+            }, true);
         };
 
         // =====================================
@@ -1729,36 +1688,27 @@
         async function executeMassUpdateStudents(updateData, successMsg) {
             try {
                 window.showToast("Mengeksekusi perintah massal...");
-                const promises = allDataStudents.map(student => {
-                    return updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', student.id), updateData);
-                });
+                const promises = allDataStudents.map(student => { return updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', student.id), updateData); });
                 await Promise.all(promises);
-                window.showToast(successMsg);
-                return true;
+                window.showToast(successMsg); return true;
             } catch(e) { window.showToast("Gagal melakukan aksi massal.", true); return false; }
         }
 
         async function executeMassUpdateTeachers(updateData, successMsg) {
             try {
                 window.showToast("Mereset PIN...");
-                const promises = allDataTeachers.map(teacher => {
-                    return updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teachers', teacher.id), updateData);
-                });
+                const promises = allDataTeachers.map(teacher => { return updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teachers', teacher.id), updateData); });
                 await Promise.all(promises);
-                window.showToast(successMsg);
-                return true;
+                window.showToast(successMsg); return true;
             } catch(e) { window.showToast("Gagal mereset PIN.", true); return false; }
         }
 
         async function executeMassDeleteStudents() {
             try {
                 window.showToast("Memulai proses Wipe Out...");
-                const promises = allDataStudents.map(student => {
-                    return deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', student.id));
-                });
+                const promises = allDataStudents.map(student => { return deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', student.id)); });
                 await Promise.all(promises);
-                window.showToast("Database Santri berhasil dikosongkan.");
-                return true;
+                window.showToast("Database Santri berhasil dikosongkan."); return true;
             } catch(e) { window.showToast("Gagal mengosongkan database.", true); return false; }
         }
 

@@ -33,11 +33,11 @@
     <meta property="twitter:image" content="https://i.ibb.co.com/NnSrcJvc/Desain-tanpa-judul-7.jpg">
 
     <!-- Ikon Aplikasi -->
-    <link rel="icon" href="./logo.svg" type="image/svg+xml">
+    <link rel="icon" href="./logo.png" type="image/png">
     <link rel="apple-touch-icon" href="./logo.png">
     <link rel="manifest" href="manifest.json">
 
-    <!-- Google Fonts & Icons (Ditambahkan font Premium: Cinzel untuk Canvas Twibbon) -->
+    <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800&family=Playfair+Display:ital,wght@0,700;1,700&family=Cinzel:wght@700;800&display=swap" rel="stylesheet">
@@ -60,6 +60,8 @@
             
             --success: #10B981; 
             --success-bg: #ECFDF5;
+            --success-text: #047857;
+            
             --warning: #F59E0B; 
             --warning-bg: #FFFBEB;
             --warning-text: #B45309;
@@ -67,6 +69,10 @@
             --danger: #EF4444; 
             --danger-bg: #FEF2F2;
             --danger-text: #B91C1C;
+
+            --purple: #8B5CF6;
+            --purple-bg: #F5F3FF;
+            --purple-text: #5B21B6;
             
             --radius-sm: 6px;
             --radius-md: 8px;
@@ -78,7 +84,6 @@
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.2);
 
-            /* Native App Bottom Nav Spacing */
             --bottom-nav-height: 65px;
         }
 
@@ -121,6 +126,7 @@
         .chip-btn.active { background: var(--primary-light); color: var(--primary); border-color: var(--border-focus); font-weight: 600; box-shadow: var(--shadow-sm); }
 
         .badge { display: inline-flex; align-items: center; padding: 4px 8px; font-size: 11px; font-weight: 600; border-radius: var(--radius-full); text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge-sholat { padding: 4px 8px; font-size: 11px; font-weight: 700; border-radius: var(--radius-md); display: inline-flex; align-items: center; gap: 4px; }
 
         .mini-progress-track { width: 100%; height: 4px; background: #E2E8F0; border-radius: var(--radius-full); overflow: hidden; margin-top: 8px; }
         .mini-progress-fill { height: 100%; background: var(--primary); border-radius: var(--radius-full); width: 0%; transition: width 1s ease; }
@@ -138,11 +144,9 @@
         .arrow-icon { width: 16px; height: 16px; transition: transform 0.2s; color: var(--text-muted); }
         .custom-select.open .arrow-icon { transform: rotate(180deg); color: var(--primary); }
 
-        /* Views & Tabs (Native Feel) */
         .view-section { display: none; width: 100%; min-height: 100vh; background: var(--bg-body); }
         .view-section.active { display: block; animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        /* Animasi Transisi Swipe */
         .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
         .tab-content.active { display: block; }
         .tab-content.slide-left { animation: slideInLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
@@ -156,9 +160,8 @@
         .app-bar-brand { font-size: 16px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px; letter-spacing: -0.01em; }
         .app-bar-brand .logo-icon { color: var(--primary); }
         
-        .dashboard-container { max-width: 800px; margin: 0 auto; padding: 24px 20px calc(var(--bottom-nav-height) + 20px); display: flex; flex-direction: column; gap: 20px; }
+        .dashboard-container { max-width: 900px; margin: 0 auto; padding: 24px 20px calc(var(--bottom-nav-height) + 20px); display: flex; flex-direction: column; gap: 20px; }
 
-        /* Native App Bottom Navigation */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--bottom-nav-height); background: var(--bg-surface); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; z-index: 100; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); padding-bottom: env(safe-area-inset-bottom); }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--text-light); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; position: relative; height: 100%; -webkit-tap-highlight-color: transparent; }
         .nav-item:hover { color: var(--text-muted); }
@@ -166,7 +169,6 @@
         .nav-item.active i { transform: scale(1.15); stroke-width: 2.5; }
         .nav-item i { width: 22px; height: 22px; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-        /* Notification Badges */
         .badge-notif { position: absolute; top: -6px; right: -6px; background: var(--danger); color: white; font-size: 10px; font-weight: 700; height: 18px; min-width: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg-surface); padding: 0 4px; z-index: 2; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3); }
         .nav-badge { position: absolute; top: 8px; right: calc(50% - 16px); width: 10px; height: 10px; background: var(--danger); border-radius: 50%; border: 2px solid var(--bg-surface); }
 
@@ -181,7 +183,7 @@
         .class-selector-card { background: var(--primary-light); border: 1px solid var(--border-focus); padding: 16px; border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 8px; }
         
         .student-list { display: flex; flex-direction: column; gap: 16px; }
-        .student-list.grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); align-items: stretch; gap: 12px; }
+        .student-list.grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); align-items: stretch; gap: 12px; }
         
         .student-card { padding: 16px; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s, border-color 0.2s; user-select: none; -webkit-user-select: none; cursor: default; }
         .student-card:active { transform: scale(0.98); background-color: #F8FAFC; }
@@ -220,7 +222,6 @@
         .flex-row { display: flex; gap: 16px; }
         .flex-row > * { flex: 1; min-width: 0; }
 
-        /* Chat UI (Visual Chat) */
         .chat-history { display: flex; flex-direction: column; gap: 12px; }
         .chat-row { display: flex; flex-direction: column; max-width: 85%; }
         .chat-row.guru { align-self: flex-end; align-items: flex-end; }
@@ -256,20 +257,9 @@
         .toast.error { background: var(--danger); }
         .toast.show { transform: translateY(0); }
         
-        /* Modifikasi untuk twibbon responsif (Sistem Interaktif Pan & Zoom) */
-        .twibbon-preview-area {
-            width: 100%; aspect-ratio: 1/1; background: #E2E8F0; border-radius: var(--radius-md);
-            border: 2px dashed #94A3B8; display: flex; align-items: center; justify-content: center;
-            overflow: hidden; position: relative; margin-bottom: 8px; touch-action: none;
-        }
+        .twibbon-preview-area { width: 100%; aspect-ratio: 1/1; background: #E2E8F0; border-radius: var(--radius-md); border: 2px dashed #94A3B8; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; margin-bottom: 8px; touch-action: none; }
         .twibbon-preview-area canvas { width: 100%; height: 100%; cursor: move; }
-        .file-upload-btn {
-            position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); color: white;
-            padding: 8px 16px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600;
-            display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2);
-            z-index: 10;
-        }
+        .file-upload-btn { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); color: white; padding: 8px 16px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); z-index: 10; }
         .zoom-slider-container { display: none; margin-bottom: 20px; background: var(--bg-surface); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
         .zoom-slider { width: 100%; accent-color: var(--primary); }
 
@@ -280,10 +270,8 @@
 </head>
 <body>
 
-    <!-- TOAST NOTIFICATION -->
     <div id="toast" class="toast"><i data-lucide="info" style="width: 18px;"></i> <span id="toast-msg">Memuat sistem...</span></div>
 
-    <!-- VIEW: LOGIN GURU -->
     <div id="view-login" class="view-section active">
         <div class="login-wrapper">
             <div class="login-card">
@@ -310,7 +298,7 @@
 
                 <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color);">
                     <p style="font-size: 13px; color: var(--text-muted);">
-                        Wali Murid? <a href="index" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Pantau di sini</a>
+                        Wali Murid? <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Pantau di sini</a>
                     </p>
                 </div>
             </div>
@@ -320,7 +308,6 @@
         </div>
     </div>
 
-    <!-- VIEW: TEACHER DASHBOARD DENGAN TABS (NATIVE APP) -->
     <div id="view-guru" class="view-section">
         <header class="app-bar">
             <div class="app-bar-brand">
@@ -337,7 +324,6 @@
 
         <div class="dashboard-container" id="swipeable-dashboard-guru">
             
-            <!-- Filter Kelas Master -->
             <div class="class-selector-card" style="margin-bottom: 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <label style="font-size: 12px; font-weight: 700; color: var(--primary); margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Konteks Kelas Aktif</label>
@@ -356,7 +342,6 @@
                 </div>
             </div>
 
-            <!-- TAB 1: DIREKTORI SANTRI -->
             <div id="tab-direktori" class="tab-content active">
                 <div id="search-sticky-wrapper" class="search-sticky-wrapper">
                     <div class="section-header" style="margin-bottom: 12px;">
@@ -391,7 +376,6 @@
                 </div>
             </div>
 
-            <!-- TAB 2: REKAPITULASI (RAPORT) -->
             <div id="tab-rekap" class="tab-content">
                 <div class="card" style="padding: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
@@ -403,19 +387,21 @@
                             <i data-lucide="copy" style="width: 14px;"></i> Salin Data Raport
                         </button>
                     </div>
-                    <p style="font-size: 12px; color: var(--text-muted); margin: 0 0 16px 0; line-height: 1.5;">
-                        *Peringkat disusun berdasarkan Nilai Akhir tertinggi. Jika ada nilai yang sama, akan dilihat dari Total Hafalan terbanyak.
+                    
+                    <p id="keterangan-bobot-rekap" style="font-size: 12px; color: var(--text-muted); margin: 0 0 16px 0; line-height: 1.5;">
+                        *Peringkat disusun berdasarkan Nilai Akhir tertinggi. Komposisi: <strong>Kelancaran (50%) + Tajwid (30%) + Disiplin Sholat (20%)</strong>.
                     </p>
                     
                     <div style="overflow-x: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                        <table class="table-rekap" style="width: 100%; border-collapse: collapse; min-width: 700px;" id="tabel-rekap-nilai">
+                        <table class="table-rekap" style="width: 100%; border-collapse: collapse; min-width: 850px;" id="tabel-rekap-nilai">
                             <thead>
                                 <tr>
                                     <th style="text-align: center;">Rank</th>
                                     <th>Nama Santri</th>
                                     <th>Tot. Hafalan</th>
-                                    <th>Nilai Kelancaran</th>
-                                    <th>Nilai Tajwid</th>
+                                    <th>Kelancaran</th>
+                                    <th>Tajwid</th>
+                                    <th id="th-disiplin-sholat">Disiplin Sholat</th>
                                     <th>Nilai Akhir</th>
                                     <th>Predikat</th>
                                 </tr>
@@ -427,7 +413,6 @@
                 </div>
             </div>
 
-            <!-- TAB 3: DELEGASI (BADAL GURU) -->
             <div id="tab-delegasi" class="tab-content">
                 <div class="card" style="padding: 20px;">
                     <div style="background: #FFFBEB; border: 1px solid #FDE68A; padding: 12px; border-radius: var(--radius-md); display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px;">
@@ -477,7 +462,6 @@
 
         </div>
 
-        <!-- NATIVE APP BOTTOM NAVIGATION -->
         <nav class="bottom-nav">
             <div class="nav-item active" onclick="window.switchTabGuru('tab-direktori', this)">
                 <i data-lucide="users"></i>
@@ -495,7 +479,6 @@
         </nav>
     </div>
 
-    <!-- MODAL: DISKUSI BUKU PENGHUBUNG GURU (VISUAL CHAT) -->
     <div id="modal-diskusi-guru" class="modal-overlay">
         <div class="card modal-container" style="padding: 0;">
             <div class="modal-header">
@@ -522,7 +505,6 @@
         </div>
     </div>
 
-    <!-- MODAL: CUSTOM CALENDAR & TIME PICKER -->
     <div id="modal-calendar" class="modal-overlay" style="z-index: 3000;">
         <div class="modal-container" style="max-width: 320px; border-radius: var(--radius-lg); background: transparent; box-shadow: none;">
             <div class="custom-calendar">
@@ -559,7 +541,6 @@
         </div>
     </div>
 
-    <!-- MODAL: OPSI LANJUTAN (EDIT & HAPUS) DARI LONG-PRESS -->
     <div id="modal-opsi-lanjutan" class="modal-overlay">
         <div class="card modal-container" style="max-width: 340px; padding: 0;">
             <div class="modal-header">
@@ -576,7 +557,6 @@
                     <button class="btn btn-primary" onclick="window.lanjutEdit()" style="width: 100%; padding: 12px;">
                         <i data-lucide="edit-3" style="width: 16px;"></i> Edit Profil & Misi
                     </button>
-                    <!-- FITUR BARU: Tombol untuk membuat Twibbon Kapan Saja -->
                     <button class="btn" onclick="window.bukaDaftarApresiasi()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%); color: #78350F; border: 1px solid #D97706; box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.2); font-weight: 700;">
                         <i data-lucide="award" style="width: 16px;"></i> Buat Twibbon Apresiasi
                     </button>
@@ -588,7 +568,6 @@
         </div>
     </div>
 
-    <!-- MODAL: DAFTAR PENCAPAIAN UNTUK TWIBBON RETROSPECTIVE -->
     <div id="modal-daftar-apresiasi" class="modal-overlay">
         <div class="card modal-container" style="padding: 0; max-width: 380px;">
             <div class="modal-header">
@@ -606,7 +585,6 @@
         </div>
     </div>
 
-    <!-- MODAL: INPUT SETORAN -->
     <div id="modal-setoran" class="modal-overlay">
         <div class="card modal-container" style="padding: 0;">
             <div class="modal-header">
@@ -679,7 +657,6 @@
         </div>
     </div>
 
-    <!-- MODAL: TAMBAH SISWA -->
     <div id="modal-tambah-siswa" class="modal-overlay">
         <div class="card modal-container" style="padding: 0;">
             <div class="modal-header">
@@ -707,7 +684,6 @@
         </div>
     </div>
 
-    <!-- MODAL: EDIT SISWA & MISI AKTIF -->
     <div id="modal-edit-siswa" class="modal-overlay">
         <div class="card modal-container" style="padding: 0;">
             <div class="modal-header">
@@ -724,7 +700,6 @@
                     <input type="number" id="edit-wa-ortu" class="input-field">
                 </div>
                 
-                <!-- FITUR BARU: MANAJEMEN MISI AKTIF -->
                 <div class="input-group" style="margin-top: 16px; border-top: 1px dashed var(--border-color); padding-top: 16px;">
                     <label class="input-label" style="color: var(--primary); display: flex; align-items: center; gap: 6px;"><i data-lucide="target" style="width: 16px;"></i> Pengaturan Misi Hafalan Aktif</label>
                     <div class="custom-select-wrapper" style="margin-bottom: 12px;">
@@ -760,7 +735,6 @@
         </div>
     </div>
 
-    <!-- MODAL: RIWAYAT SETORAN CRUD -->
     <div id="modal-riwayat-setoran" class="modal-overlay">
         <div class="card modal-container" style="padding: 0;">
             <div class="modal-header">
@@ -773,7 +747,6 @@
         </div>
     </div>
 
-    <!-- MODAL: KONFIRMASI TINDAKAN DENGAN KEAMANAN GANDA -->
     <div id="modal-konfirmasi" class="modal-overlay">
         <div class="card modal-container" style="max-width: 360px; padding: 0;">
             <div class="modal-body" style="text-align: center; padding: 32px 24px 24px; background: var(--bg-surface); border-radius: var(--radius-lg);">
@@ -796,7 +769,6 @@
         </div>
     </div>
 
-    <!-- MODAL 1: KONFIRMASI PEMBUATAN TWIBBON (TETAP ADA SEBAGAI INTERCEPT SETORAN) -->
     <div id="modal-konfirmasi-twibbon" class="modal-overlay">
         <div class="card modal-container" style="max-width: 360px; padding: 0;">
             <div class="modal-body" style="text-align: center; padding: 32px 24px 24px; background: var(--bg-surface); border-radius: var(--radius-lg);">
@@ -814,7 +786,6 @@
         </div>
     </div>
 
-    <!-- MODAL 2: STUDIO TWIBBON LOKAL (INTERAKTIF DENGAN DRAG & ZOOM) -->
     <div id="modal-studio-twibbon" class="modal-overlay">
         <div class="modal-container" style="background: var(--bg-surface);">
             <div class="modal-header">
@@ -836,7 +807,6 @@
                     </label>
                 </div>
 
-                <!-- Kontrol Zoom Interaktif -->
                 <div id="twibbon-controls" class="zoom-slider-container">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Perbesar / Perkecil Foto</label>
@@ -860,7 +830,10 @@
         import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { collection, doc, setDoc, updateDoc, deleteDoc, getDoc, onSnapshot, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // DATA AL-QURAN
+        // Variabel Pengaturan Global
+        window.appSettings = { isSholatModuleActive: true };
+        window.unsubscribeSettings = null;
+
         const dataAlQuran = {
             "Al-Fatihah": { urutan: 1, ayat: 7 }, "Al-Baqarah": { urutan: 2, ayat: 286 }, "Ali 'Imran": { urutan: 3, ayat: 200 },
             "An-Nisa'": { urutan: 4, ayat: 176 }, "Al-Ma'idah": { urutan: 5, ayat: 120 }, "Al-An'am": { urutan: 6, ayat: 165 },
@@ -903,7 +876,6 @@
         };
         const TOTAL_AYAT_ALQURAN = 6236;
 
-        // DATA PRESET MISI
         function generateRentang(startSurahId, endSurahId) {
             let rentang = []; let totalAyat = 0;
             for (let i = startSurahId; i <= endSurahId; i++) {
@@ -940,10 +912,12 @@
         let semuaSiswa = []; 
         let semuaKelas = [];
         let semuaGuru = [];
+        let semuaSholat = [];
         
         window.unsubscribeSiswa = null; 
         window.unsubscribeKelas = null;
         window.unsubscribeGuru = null;
+        window.unsubscribeSholat = null; 
         
         let siswaTerpilih = null; 
         let aksiHapusTipe = ''; 
@@ -957,25 +931,16 @@
         let calMinute = 0;
         let rekapSortMode = 'rank'; 
 
-        // State Twibbon Internal
         window.tempTwibbonData = null;
         let twibbonState = {
-            imgUser: null,
-            imgFrame: null,
-            baseScale: 1,
-            scaleMultiplier: 1,
-            x: 0,
-            y: 0,
-            isDragging: false,
-            startX: 0,
-            startY: 0
+            imgUser: null, imgFrame: null, baseScale: 1, scaleMultiplier: 1, x: 0, y: 0, isDragging: false, startX: 0, startY: 0
         };
 
         window.addEventListener('DOMContentLoaded', () => {
             setupCustomSelects();
             if (window.lucide) window.lucide.createIcons();
             pasangListenerSwipeGuru();
-            initTwibbonListenersGuru(); // Inisialisasi listener Canvas Interaktif
+            initTwibbonListenersGuru(); 
         });
 
         window.addEventListener('scroll', () => {
@@ -986,10 +951,6 @@
             }
         });
 
-        // ========================================================
-        // FITUR STUDIO TWIBBON INTERAKTIF (LOKAL) & WHATSAPP
-        // ========================================================
-        
         window.konfirmasiTwibbon = function(nama, pencapaian, wa, kirimWAState, pesanFallback) {
             window.tempTwibbonData = { nama, pencapaian, wa, kirimWAState, pesanFallback };
             document.getElementById('teks-pencapaian-konfirmasi').textContent = pencapaian;
@@ -999,7 +960,6 @@
         window.lewatiTwibbon = function() {
             window.tutupModal('modal-konfirmasi-twibbon');
             if(window.tempTwibbonData && window.tempTwibbonData.kirimWAState) {
-                // Eksekusi fallback WA standar karena tidak mau kirim gambar
                 let wa = window.tempTwibbonData.wa;
                 if (wa && wa.startsWith('0')) wa = '62' + wa.slice(1);
                 window.open(`https://wa.me/${wa}?text=${encodeURIComponent(window.tempTwibbonData.pesanFallback)}`, '_blank');
@@ -1013,7 +973,6 @@
         window.bukaStudioTwibbon = function() {
             window.tutupModal('modal-konfirmasi-twibbon');
             
-            // Reset state UI ke awal
             document.getElementById('twibbon-canvas').style.display = 'none';
             document.getElementById('twibbon-placeholder').style.display = 'block';
             document.getElementById('twibbon-controls').style.display = 'none';
@@ -1023,10 +982,9 @@
             twibbonState.imgUser = null;
             window.bukaModal('modal-studio-twibbon');
 
-            // Preload frame.png agar siap saat render
             if(!twibbonState.imgFrame) {
                 twibbonState.imgFrame = new Image();
-                twibbonState.imgFrame.src = 'frame.png'; // FRAME IDENTIK DENGAN INDEX.HTML
+                twibbonState.imgFrame.src = 'frame.png'; 
             }
         };
 
@@ -1049,13 +1007,11 @@
             const canvas = document.getElementById('twibbon-canvas');
             const img = twibbonState.imgUser;
             
-            // Hitung skala agar gambar menutup seluruh kanvas (cover logic)
             const scaleX = 1080 / img.width;
             const scaleY = 1080 / img.height;
             twibbonState.baseScale = Math.max(scaleX, scaleY);
             twibbonState.scaleMultiplier = 1;
             
-            // Posisikan di tengah
             twibbonState.x = (1080 - (img.width * twibbonState.baseScale)) / 2;
             twibbonState.y = (1080 - (img.height * twibbonState.baseScale)) / 2;
 
@@ -1064,7 +1020,7 @@
             document.getElementById('btn-unduh-twibbon').style.display = 'block';
             canvas.style.display = 'block';
             
-            document.getElementById('twibbon-zoom').value = 1; // Reset slider
+            document.getElementById('twibbon-zoom').value = 1;
             
             renderInteractiveTwibbon();
         }
@@ -1073,11 +1029,9 @@
             const canvas = document.getElementById('twibbon-canvas');
             const slider = document.getElementById('twibbon-zoom');
 
-            // Slider Zoom Logic
             slider.addEventListener('input', (e) => {
                 const newMult = parseFloat(e.target.value);
                 const center1080 = 540;
-                // Hitung posisi relatif agar zoom berpusat
                 const relX = (center1080 - twibbonState.x) / twibbonState.scaleMultiplier;
                 const relY = (center1080 - twibbonState.y) / twibbonState.scaleMultiplier;
                 
@@ -1088,7 +1042,6 @@
                 renderInteractiveTwibbon();
             });
 
-            // Normalisasi koordinat pointer
             function getPointerPos(e) {
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -1131,11 +1084,9 @@
             const canvas = document.getElementById('twibbon-canvas');
             const ctx = canvas.getContext('2d');
             
-            // 1. Background Dasar
             ctx.fillStyle = '#E2E8F0';
             ctx.fillRect(0,0,1080,1080);
 
-            // 2. Gambar User dengan Skala & Posisi
             if (twibbonState.imgUser) {
                 const currentScale = twibbonState.baseScale * twibbonState.scaleMultiplier;
                 const dw = twibbonState.imgUser.width * currentScale;
@@ -1143,12 +1094,10 @@
                 ctx.drawImage(twibbonState.imgUser, twibbonState.x, twibbonState.y, dw, dh);
             }
 
-            // 3. Overlay Frame (frame.png)
             if (twibbonState.imgFrame) {
                 ctx.drawImage(twibbonState.imgFrame, 0, 0, 1080, 1080);
             }
 
-            // 4. Render Teks sesuai Frame Index.html
             if(!window.tempTwibbonData) return;
             
             ctx.textAlign = 'center';
@@ -1164,7 +1113,6 @@
                 ctx.fillText(text, x, y, maxWidth);
             }
             
-            // Nama Santri (Tengah pita, Y=755, Cinzel)
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
             ctx.shadowBlur = 12;
             ctx.shadowOffsetX = 0;
@@ -1172,7 +1120,6 @@
             ctx.fillStyle = '#FFFFFF';
             fillTextToFit(ctx, window.tempTwibbonData.nama.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
             
-            // Pencapaian (Bawah, Y=860, Montserrat)
             let teksMisiBersih = window.tempTwibbonData.pencapaian || 'Pencapaian';
             teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
             teksMisiBersih = `Lulus: ${teksMisiBersih}`;
@@ -1184,7 +1131,6 @@
             ctx.fillStyle = '#D97706'; 
             fillTextToFit(ctx, teksMisiBersih, 540, 860, 34, 450, '"Montserrat", sans-serif');
             
-            // Reset Shadow
             ctx.shadowColor = 'transparent';
             ctx.shadowBlur = 0;
         }
@@ -1192,18 +1138,14 @@
         window.unduhDanWA = function() {
             if(!window.tempTwibbonData) return;
 
-            // 1. Format Nomor WA Otomatis (Ubah 0 jadi 62)
             let wa = window.tempTwibbonData.wa;
             if (wa && wa.startsWith('0')) wa = '62' + wa.slice(1);
             
-            // Pesan yang Interaktif & Hangat
             const pesan = `Assalamu'alaikum Ayah/Bunda yang dirahmati Allah,\n\nAlhamdulillah wa syukurillah, hari ini ananda *${window.tempTwibbonData.nama}* telah berhasil menyelesaikan capaian luar biasa, yaitu *${window.tempTwibbonData.pencapaian}*! 🎉\n\nSebagai bentuk apresiasi atas kerja keras ananda, kami telah menyiapkan sebuah Twibbon spesial. Ayah/Bunda dapat melampirkan gambar yang baru saja tersimpan di galeri HP untuk dibagikan ke keluarga tercinta, agar ananda semakin termotivasi.\n\nTerima kasih atas doa dan pendampingan Ayah/Bunda di rumah. Semoga menjadi amal jariyah bagi kita semua. Amin ya Rabbal 'Alamin. 🙏`;
             
-            // 2. Buka WA Langsung (Synchronous) agar bebas blokir popup HP
             const waUrl = `https://wa.me/${wa}?text=${encodeURIComponent(pesan)}`;
             window.open(waUrl, '_blank');
 
-            // 3. Unduh secara paralel ke memori lokal HP
             const canvas = document.getElementById('twibbon-canvas');
             const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
             const link = document.createElement('a');
@@ -1214,14 +1156,8 @@
             
             window.tampilkanToast("Gambar diunduh & WA dibuka. Silakan lampirkan foto di WA!");
             
-            setTimeout(() => {
-                window.tutupModalTwibbon();
-            }, 500);
+            setTimeout(() => { window.tutupModalTwibbon(); }, 500);
         };
-
-        // ========================================================
-        // FITUR "BUAT ULANG TWIBBON" (RETROSPECTIVE)
-        // ========================================================
         
         window.bukaDaftarApresiasi = function() {
             window.tutupModal('modal-opsi-lanjutan');
@@ -1264,15 +1200,9 @@
                 kirimWAState: true, 
                 pesanFallback: '' 
             };
-            setTimeout(() => {
-                window.bukaStudioTwibbon();
-            }, 300);
+            setTimeout(() => { window.bukaStudioTwibbon(); }, 300);
         };
 
-
-        // ========================================================
-        // FITUR SWIPE (GESER LAYAR) GURU
-        // ========================================================
         function pasangListenerSwipeGuru() {
             const areaGeser = document.getElementById('swipeable-dashboard-guru');
             if(!areaGeser) return;
@@ -1304,10 +1234,6 @@
                 if (indeksSaatIni > 0) window.switchTabGuru(SWIPE_TABS_GURU[indeksSaatIni - 1], null, 'right');
             }
         }
-
-        // ========================================================
-        // 1. UTILITAS & UI SETUP
-        // ========================================================
 
         window.tampilkanToast = function(pesan, isError = false) {
             const toast = document.getElementById('toast');
@@ -1503,10 +1429,6 @@
             if(id === 'cs-preset-misi') selectedPresetMisi = val;
         }
 
-        // ========================================================
-        // 2. OTENTIKASI & DATABASE (FIREBASE AUTO LOGIN)
-        // ========================================================
-
         const initAuth = async () => { 
             try { await signInAnonymously(auth); } 
             catch (error) { window.tampilkanToast("Koneksi database terputus.", true); } 
@@ -1566,6 +1488,17 @@
         };
 
         function mulaiListenData() {
+            const qSettings = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
+            if (window.unsubscribeSettings) window.unsubscribeSettings();
+            window.unsubscribeSettings = onSnapshot(qSettings, (docSnap) => {
+                if(docSnap.exists()) {
+                    window.appSettings = { ...window.appSettings, ...docSnap.data() };
+                }
+                if(loggedInTeacher && document.getElementById('tab-rekap').classList.contains('active')) {
+                    window.renderTabelRekap(rekapSortMode);
+                }
+            });
+
             if (window.unsubscribeSiswa) window.unsubscribeSiswa();
             window.unsubscribeSiswa = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'students')), (snapshot) => {
                 semuaSiswa = []; snapshot.forEach(doc => semuaSiswa.push({ docId: doc.id, ...doc.data() }));
@@ -1593,6 +1526,15 @@
                     prosesAutoLoginGuru();
                 }
             });
+
+            if (window.unsubscribeSholat) window.unsubscribeSholat();
+            window.unsubscribeSholat = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'sholat_records')), (snapshot) => {
+                semuaSholat = []; 
+                snapshot.forEach(doc => semuaSholat.push({ docId: doc.id, ...doc.data() }));
+                if(loggedInTeacher && document.getElementById('tab-rekap').classList.contains('active')) {
+                    window.renderTabelRekap(rekapSortMode); 
+                }
+            });
         }
 
         window.loginGuru = async function() {
@@ -1607,7 +1549,6 @@
 
             if(!foundTeacher) return window.tampilkanToast("PIN Pengajar tidak valid.", true);
 
-            // Simpan Sesi
             if (currentUser) {
                 try {
                     const sessionRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'session', 'guru_current');
@@ -1625,10 +1566,6 @@
             document.getElementById('login-pin-guru').value = '';
         };
 
-        // ========================================================
-        // 3. UI DASHBOARD GURU & NATIVE TABS
-        // ========================================================
-        
         window.switchTabGuru = function(tabId, element, animasi = 'fade') {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active', 'slide-left', 'slide-right');
@@ -1802,10 +1739,6 @@
             if(window.lucide) window.lucide.createIcons();
         };
 
-        // ========================================================
-        // 4. LOGIKA BUKU PENGHUBUNG (VISUAL CHAT) & UNREAD NOTIF
-        // ========================================================
-
         window.bukaDiskusiLangsung = async function(docId) {
             siswaTerpilih = semuaSiswa.find(s => s.docId === docId);
             if(!siswaTerpilih) return;
@@ -1875,10 +1808,6 @@
                 window.tampilkanToast("Gagal mengirim pesan.", true);
             }
         };
-
-        // ========================================================
-        // 5. LOGIKA INPUT SETORAN & CHIPS UI
-        // ========================================================
 
         window.pilihKelancaran = function(val) {
             selectedKelancaran = val;
@@ -1957,7 +1886,6 @@
             const riwayatBaru = [...(siswaTerpilih.riwayat || []), dataSetoranBaru];
             const totalAyatAfter = window.hitungProgresAlQuran(riwayatBaru);
 
-            // Deteksi Milestone Lencana
             const milestones = [100, 500, 1000, 2000, 3000, 4000, 5000, 6236];
             let reachedMilestone = null;
             for(let ms of milestones) {
@@ -1983,7 +1911,6 @@
                 
                 window.tampilkanToast("Evaluasi terekam sistem!"); window.tutupModal('modal-setoran');
 
-                // Siapkan Pesan WA Standard (Dengan Gaya Hangat)
                 const persen = ((totalAyatAfter / TOTAL_AYAT_ALQURAN) * 100).toFixed(1);
                 const rentangSurah = sAwal === sAkhir ? `${sAwal} ayat ${aAwal}-${aAkhir}` : `${sAwal}:${aAwal} - ${sAkhir}:${aAkhir}`;
                 let pesanWA = `Assalamu'alaikum Ayah/Bunda yang dirahmati Allah,\n\nAlhamdulillah, hari ini evaluasi hafalan ananda *${siswaTerpilih.nama}* telah berhasil kami catat di sistem:\n\n📖 *Cakupan:* ${rentangSurah}\n📊 *Kelancaran:* ${kelancaran}\n🎯 *Tajwid:* ${tajwid}\n\n🌟 *Capaian Keseluruhan:* ${persen}% (${totalAyatAfter} dari 6236 Ayat)\n\n`;
@@ -1991,7 +1918,6 @@
                 if(!siswaTerpilih.pembayaranLunas) pesanWA += `⚠️ *Info Tagihan:* Administrasi sistem (Rp 5.000) belum lunas. Mohon selesaikan via Admin. 🙏\n\n`;
                 pesanWA += `Terima kasih banyak atas sinergi dan doa Ayah/Bunda di rumah. Semoga ananda senantiasa semangat menjaga hafalannya. Amin. 🙏`;
 
-                // Intercept jika mencapai milestone
                 if(reachedMilestone) {
                     window.konfirmasiTwibbon(siswaTerpilih.nama, `Hafalan ${reachedMilestone} Ayat`, siswaTerpilih.waOrtu, kirimWA, pesanWA);
                 } else if(kirimWA) {
@@ -2001,10 +1927,6 @@
                 }
             } catch (error) { window.tampilkanToast("Gagal menyimpan ke server.", true); }
         };
-
-        // ========================================================
-        // 6. OPSI LANJUTAN & CRUD SISWA (DENGAN MISI AKTIF)
-        // ========================================================
 
         window.bukaOpsiLanjutan = function(docId) {
             siswaTerpilih = semuaSiswa.find(s => s.docId === docId);
@@ -2089,7 +2011,7 @@
 
             let misiUpdate = siswaTerpilih.misiAktif || null;
             if (selectedPresetMisi === '') {
-                misiUpdate = null; // Hapus misi jika di-clear
+                misiUpdate = null; 
             } else if (selectedPresetMisi === 'custom') {
                 const namaMisiC = document.getElementById('edit-misi-nama').value.trim();
                 const targetC = parseInt(document.getElementById('edit-misi-target').value);
@@ -2127,10 +2049,6 @@
                 window.tampilkanToast("Pembaruan data sukses!"); window.tutupModal('modal-edit-siswa');
             } catch (error) { window.tampilkanToast("Pembaruan gagal diproses.", true); }
         };
-
-        // ========================================================
-        // 7. RIWAYAT CRUD & PENGHAPUSAN
-        // ========================================================
 
         window.bukaRiwayatLangsung = function(docId) {
             siswaTerpilih = semuaSiswa.find(s => s.docId === docId);
@@ -2239,13 +2157,36 @@
         });
 
 
-        // ========================================================
-        // 8. ALGORITMA REKAPITULASI (RANKING) & EXCEL
-        // ========================================================
+        // FUNGSI HELPER MENGHITUNG KEPATUHAN SHOLAT
+        function hitungSkorSholat(siswaId) {
+            const records = semuaSholat.filter(r => r.siswaId === siswaId);
+            if (!records || records.length === 0) return '-';
+            
+            let totalSlots = 0;
+            let earnedSlots = 0;
+            
+            records.forEach(r => {
+                ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'].forEach(w => {
+                    if (r[w] !== undefined) {
+                        totalSlots++;
+                        if (r[w] === 'berjamaah' || r[w] === 'sendiri' || r[w] === 'udzur' || r[w] === 'sudah' || r[w] === true) {
+                            earnedSlots++;
+                        }
+                    } else {
+                        totalSlots++;
+                    }
+                });
+            });
+            
+            if (totalSlots === 0) return '-';
+            return Math.round((earnedSlots / totalSlots) * 100);
+        }
 
-        function hitungSkorAngka(riwayat) {
-            if (!riwayat || riwayat.length === 0) return { akhir: 0, k: 0, t: 0 };
+        // FUNGSI HELPER MENGHITUNG MURNI HAFALAN & TAJWID (Tanpa Sholat)
+        function hitungSkorHafalan(riwayat) {
+            if (!riwayat || riwayat.length === 0) return { k: 0, t: 0 };
             let totalKScore = 0; let totalTScore = 0;
+            
             riwayat.forEach(r => {
                 let kScore = 0; let tScore = 0;
                 if (r.kelancaran.includes('Mumtaz')) kScore = 100;
@@ -2259,10 +2200,10 @@
                 
                 totalKScore += kScore; totalTScore += tScore;
             });
+            
             let avgK = Math.round(totalKScore / riwayat.length);
             let avgT = Math.round(totalTScore / riwayat.length);
-            let avgAkhir = Math.round((avgK * 0.6) + (avgT * 0.4));
-            return { akhir: avgAkhir, k: avgK, t: avgT };
+            return { k: avgK, t: avgT };
         }
 
         window.renderTabelRekap = function(mode = 'rank') {
@@ -2284,13 +2225,43 @@
 
             const siswaKelasIni = semuaSiswa.filter(s => s.kelas_id === activeClassId);
             if (siswaKelasIni.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:16px;" class="text-muted">Belum ada data santri di kelas ini.</td></tr>`; return;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:16px;" class="text-muted">Belum ada data santri di kelas ini.</td></tr>`; return;
+            }
+
+            // CEK STATUS MODUL SHOLAT GLOBAL
+            const isSholatAktif = window.appSettings && window.appSettings.isSholatModuleActive !== false;
+
+            // UPDATE TAMPILAN HEADER TABEL & KETERANGAN
+            const thSholat = document.getElementById('th-disiplin-sholat');
+            if (thSholat) thSholat.style.display = isSholatAktif ? 'table-cell' : 'none';
+
+            const textKet = document.getElementById('keterangan-bobot-rekap');
+            if (textKet) {
+                if (isSholatAktif) {
+                    textKet.innerHTML = '*Peringkat disusun berdasarkan Nilai Akhir tertinggi. Komposisi: <strong>Kelancaran (50%) + Tajwid (30%) + Disiplin Sholat (20%)</strong>.';
+                } else {
+                    textKet.innerHTML = '*Peringkat disusun berdasarkan Nilai Akhir tertinggi. Komposisi: <strong>Kelancaran (60%) + Tajwid (40%)</strong>.';
+                }
             }
 
             let rekapData = siswaKelasIni.map(siswa => {
                 const totalAyat = window.hitungProgresAlQuran(siswa.riwayat || []);
-                const skorObj = hitungSkorAngka(siswa.riwayat || []);
-                return { ...siswa, totalAyat, skorAkhir: skorObj.akhir, skorK: skorObj.k, skorT: skorObj.t };
+                const skorObj = hitungSkorHafalan(siswa.riwayat || []);
+                const skorSholatValue = hitungSkorSholat(siswa.docId);
+
+                let valS = skorSholatValue !== '-' ? skorSholatValue : 0; 
+                let skorAkhirBaru = 0;
+                
+                // KALKULASI DINAMIS BERDASARKAN STATUS MODUL
+                if (skorObj.k > 0 || skorObj.t > 0) {
+                    if (isSholatAktif) {
+                        skorAkhirBaru = Math.round((skorObj.k * 0.5) + (skorObj.t * 0.3) + (valS * 0.2));
+                    } else {
+                        skorAkhirBaru = Math.round((skorObj.k * 0.6) + (skorObj.t * 0.4));
+                    }
+                }
+
+                return { ...siswa, totalAyat, skorAkhir: skorAkhirBaru, skorK: skorObj.k, skorT: skorObj.t, skorS: skorSholatValue };
             });
 
             let dataWithRank = [...rekapData].sort((a, b) => b.skorAkhir - a.skorAkhir || b.totalAyat - a.totalAyat);
@@ -2311,18 +2282,43 @@
                 if (data.rankAsli === 2 && data.skorAkhir > 0) rankBadge = `<span style="display: inline-flex; width: 24px; height: 24px; background: #E2E8F0; color: #334155; border-radius: 50%; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">2</span>`;
                 if (data.rankAsli === 3 && data.skorAkhir > 0) rankBadge = `<span style="display: inline-flex; width: 24px; height: 24px; background: #FED7AA; color: #9A3412; border-radius: 50%; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">3</span>`;
                 
-                tbody.innerHTML += `<tr><td style="text-align: center;">${rankBadge}</td><td style="font-weight: 600; color: var(--text-main);">${data.nama}</td><td style="color: var(--text-muted);">${data.totalAyat}</td><td style="color: var(--text-muted); font-family: monospace;">${vLancar}</td><td style="color: var(--text-muted); font-family: monospace;">${vTajwid}</td><td style="font-weight: 700; color: var(--primary); font-family: monospace;">${vAkhir}</td><td>${statusPredikat}</td></tr>`;
+                let badgeSholatVisual = '-';
+                if (data.skorS !== '-') {
+                    if (data.skorS >= 85) badgeSholatVisual = `<span class="badge-sholat" style="background:var(--success-bg); color:var(--success-text); border: 1px solid #A7F3D0;"><i data-lucide="check-circle" style="width:12px;"></i> ${data.skorS}%</span>`;
+                    else if (data.skorS >= 60) badgeSholatVisual = `<span class="badge-sholat" style="background:var(--warning-bg); color:var(--warning-text); border: 1px solid #FDE68A;"><i data-lucide="alert-circle" style="width:12px;"></i> ${data.skorS}%</span>`;
+                    else badgeSholatVisual = `<span class="badge-sholat" style="background:var(--danger-bg); color:var(--danger-text); border: 1px solid #FECACA;"><i data-lucide="x-circle" style="width:12px;"></i> ${data.skorS}%</span>`;
+                }
+
+                let tdSholatHTML = isSholatAktif ? `<td>${badgeSholatVisual}</td>` : '';
+
+                tbody.innerHTML += `<tr><td style="text-align: center;">${rankBadge}</td><td style="font-weight: 600; color: var(--text-main);">${data.nama}</td><td style="color: var(--text-muted);">${data.totalAyat}</td><td style="color: var(--text-muted); font-family: monospace;">${vLancar}</td><td style="color: var(--text-muted); font-family: monospace;">${vTajwid}</td>${tdSholatHTML}<td style="font-weight: 700; color: var(--primary); font-family: monospace;">${vAkhir}</td><td>${statusPredikat}</td></tr>`;
             });
+            if(window.lucide) window.lucide.createIcons();
         };
 
         window.salinRekapExcel = function() {
             const siswaKelasIni = semuaSiswa.filter(s => s.kelas_id === activeClassId);
             if (siswaKelasIni.length === 0) return window.tampilkanToast("Tidak ada data untuk disalin", true);
             
+            const isSholatAktif = window.appSettings && window.appSettings.isSholatModuleActive !== false;
+
             let rekapData = siswaKelasIni.map(siswa => {
                 const totalAyat = window.hitungProgresAlQuran(siswa.riwayat || []);
-                const skorObj = hitungSkorAngka(siswa.riwayat || []);
-                return { ...siswa, totalAyat, skorAkhir: skorObj.akhir, skorK: skorObj.k, skorT: skorObj.t };
+                const skorObj = hitungSkorHafalan(siswa.riwayat || []);
+                const skorSholatValue = hitungSkorSholat(siswa.docId);
+
+                let valS = skorSholatValue !== '-' ? skorSholatValue : 0; 
+                let skorAkhirBaru = 0;
+                
+                if (skorObj.k > 0 || skorObj.t > 0) {
+                    if (isSholatAktif) {
+                        skorAkhirBaru = Math.round((skorObj.k * 0.5) + (skorObj.t * 0.3) + (valS * 0.2));
+                    } else {
+                        skorAkhirBaru = Math.round((skorObj.k * 0.6) + (skorObj.t * 0.4));
+                    }
+                }
+                
+                return { ...siswa, totalAyat, skorAkhir: skorAkhirBaru, skorK: skorObj.k, skorT: skorObj.t, skorS: skorSholatValue };
             });
             
             let dataWithRank = [...rekapData].sort((a, b) => b.skorAkhir - a.skorAkhir || b.totalAyat - a.totalAyat);
@@ -2331,22 +2327,26 @@
             if (rekapSortMode === 'name') { rekapData = dataWithRank.sort((a, b) => a.nama.localeCompare(b.nama)); } 
             else { rekapData = dataWithRank; }
 
-            let tsvText = "Peringkat\tNama Santri\tTotal Hafalan (Ayat)\tNilai Kelancaran\tNilai Tajwid\tNilai Akhir (0-100)\tPredikat Huruf\n";
+            // Menyesuaikan Header TSV
+            let tsvText = "Peringkat\tNama Santri\tTotal Hafalan (Ayat)\tNilai Kelancaran\tNilai Tajwid";
+            if (isSholatAktif) tsvText += "\tDisiplin Sholat (%)";
+            tsvText += "\tNilai Akhir\tPredikat\n";
             
             rekapData.forEach((data) => {
                 let predikat = 'D'; if (data.skorAkhir >= 90) predikat = 'A'; else if (data.skorAkhir >= 80) predikat = 'B'; else if (data.skorAkhir >= 70) predikat = 'C';
                 let sK = data.skorK > 0 ? data.skorK : '-'; let sT = data.skorT > 0 ? data.skorT : '-'; let sA = data.skorAkhir > 0 ? data.skorAkhir : '-'; let sP = data.skorAkhir > 0 ? predikat : '-';
-                tsvText += `${data.rankAsli}\t${data.nama}\t${data.totalAyat}\t${sK}\t${sT}\t${sA}\t${sP}\n`;
+                let sholatExport = data.skorS !== '-' ? `${data.skorS}%` : '-';
+                
+                let row = `${data.rankAsli}\t${data.nama}\t${data.totalAyat}\t${sK}\t${sT}`;
+                if (isSholatAktif) row += `\t${sholatExport}`;
+                row += `\t${sA}\t${sP}\n`;
+                tsvText += row;
             });
 
             const tempInput = document.createElement("textarea"); tempInput.value = tsvText; document.body.appendChild(tempInput); tempInput.select();
             try { document.execCommand("copy"); window.tampilkanToast("Berhasil disalin! Silakan Paste (Ctrl+V) di Excel."); } catch (err) { window.tampilkanToast("Gagal menyalin data.", true); }
             document.body.removeChild(tempInput);
         };
-
-        // ========================================================
-        // 9. MANAJEMEN DELEGASI (BADAL GURU) & KALENDER CUSTOM
-        // ========================================================
 
         window.populateDropdownGuruDelegasi = function() {
             if (!loggedInTeacher) return;
@@ -2461,7 +2461,6 @@
             document.getElementById(`val-del-${calTargetId}`).value = ts; document.getElementById(`input-del-${calTargetId}`).value = strDate;
             window.tutupModal('modal-calendar');
         };
-
     </script>
 </body>
 </html>
