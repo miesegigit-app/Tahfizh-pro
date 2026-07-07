@@ -131,7 +131,7 @@
         .mini-progress-track { width: 100%; height: 4px; background: #E2E8F0; border-radius: var(--radius-full); overflow: hidden; margin-top: 8px; }
         .mini-progress-fill { height: 100%; background: var(--primary); border-radius: var(--radius-full); width: 0%; transition: width 1s ease; }
 
-        .custom-select-wrapper { position: relative; user-select: none; width: 100%; }
+        .custom-select-wrapper { position: relative; user-select: none; width: 100%; z-index: 10; }
         .custom-select { position: relative; display: flex; flex-direction: column; }
         .custom-select__trigger { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; font-size: 14px; color: var(--text-main); background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; transition: all 0.15s; }
         .custom-select.open .custom-select__trigger { border-color: var(--primary); box-shadow: var(--shadow-focus); }
@@ -281,8 +281,16 @@
                 <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 8px; color: #0F172A; letter-spacing: -0.03em;">TahfizhPro</h1>
                 <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 36px;">Portal Akademi Pengajar</p>
                 
+                <div class="input-group" style="text-align: left; margin-bottom: 16px;">
+                    <label class="input-label">Identitas Pengajar (Nama / ID)</label>
+                    <div style="position: relative;">
+                        <i data-lucide="user" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; color: var(--text-light);"></i>
+                        <input type="text" id="login-id-guru" class="input-field" placeholder="Ketik nama terdaftar..." autocomplete="off" style="padding-left: 40px;">
+                    </div>
+                </div>
+
                 <div class="input-group" style="text-align: left;">
-                    <label class="input-label">Akses Aman Pengajar</label>
+                    <label class="input-label">Akses Aman Pengajar (PIN)</label>
                     <div style="position: relative;">
                         <i data-lucide="lock" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; color: var(--text-light);"></i>
                         <input type="password" id="login-pin-guru" class="input-field" placeholder="Masukkan 6 Digit PIN..." autocomplete="off" style="padding-left: 40px; padding-right: 40px; font-family: monospace; letter-spacing: 2px; font-size: 16px;">
@@ -324,7 +332,7 @@
 
         <div class="dashboard-container" id="swipeable-dashboard-guru">
             
-            <div class="class-selector-card" style="margin-bottom: 0;">
+            <div class="class-selector-card" style="margin-bottom: 0; position: relative; z-index: 60;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <label style="font-size: 12px; font-weight: 700; color: var(--primary); margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Konteks Kelas Aktif</label>
                     <div style="display: flex; gap: 6px;">
@@ -897,6 +905,7 @@
         let sentuhanMulaiX = 0;
         let sentuhanSelesaiX = 0;
 
+        let selectedLoginGuruId = ""; // Penambahan variabel global untuk login
         let selectedSurahAwal = "Al-Fatihah";
         let selectedSurahAkhir = "Al-Fatihah";
         let selectedKelancaran = "Mumtaz (Lancar Sekali)";
@@ -951,8 +960,8 @@
             }
         });
 
-        window.konfirmasiTwibbon = function(nama, pencapaian, wa, kirimWAState, pesanFallback) {
-            window.tempTwibbonData = { nama, pencapaian, wa, kirimWAState, pesanFallback };
+        window.konfirmasiTwibbon = function(nama, pencapaian, wa, kirimWAState, pesanFallback, kelasNama) {
+            window.tempTwibbonData = { nama, pencapaian, wa, kirimWAState, pesanFallback, kelasNama };
             document.getElementById('teks-pencapaian-konfirmasi').textContent = pencapaian;
             window.bukaModal('modal-konfirmasi-twibbon');
         };
@@ -1113,6 +1122,7 @@
                 ctx.fillText(text, x, y, maxWidth);
             }
             
+            // Render Nama
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
             ctx.shadowBlur = 12;
             ctx.shadowOffsetX = 0;
@@ -1120,6 +1130,15 @@
             ctx.fillStyle = '#FFFFFF';
             fillTextToFit(ctx, window.tempTwibbonData.nama.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
             
+            // Render Kelas
+            if (window.tempTwibbonData.kelasNama) {
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.shadowBlur = 8;
+                ctx.fillStyle = '#E2E8F0'; 
+                fillTextToFit(ctx, window.tempTwibbonData.kelasNama.toUpperCase(), 540, 805, 24, 400, '"Inter", sans-serif');
+            }
+
+            // Render Capaian
             let teksMisiBersih = window.tempTwibbonData.pencapaian || 'Pencapaian';
             teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
             teksMisiBersih = `Lulus: ${teksMisiBersih}`;
@@ -1193,12 +1212,16 @@
 
         window.siapkanTwibbonRetro = function(namaLencana) {
             window.tutupModal('modal-daftar-apresiasi');
+            const kelasObj = semuaKelas.find(k => k.docId === activeClassId);
+            const kelasNama = kelasObj ? (kelasObj.nama_kelas || kelasObj.name) : "";
+
             window.tempTwibbonData = { 
                 nama: siswaTerpilih.nama, 
                 pencapaian: namaLencana, 
                 wa: siswaTerpilih.waOrtu, 
                 kirimWAState: true, 
-                pesanFallback: '' 
+                pesanFallback: '',
+                kelasNama: kelasNama
             };
             setTimeout(() => { window.bukaStudioTwibbon(); }, 300);
         };
@@ -1354,7 +1377,9 @@
                 });
                 
                 window.tampilkanToast("Misi berhasil divalidasi!");
-                window.konfirmasiTwibbon(siswa.nama, namaLencana, siswa.waOrtu, false, ""); 
+                const kelasObj = semuaKelas.find(k => k.docId === activeClassId);
+                const kelasNama = kelasObj ? (kelasObj.nama_kelas || kelasObj.name) : "";
+                window.konfirmasiTwibbon(siswa.nama, namaLencana, siswa.waOrtu, false, "", kelasNama); 
             } catch (error) { window.tampilkanToast("Gagal memvalidasi kelulusan misi.", true); }
         };
 
@@ -1396,6 +1421,7 @@
                     }
                     if(select.id === 'cs-surah-akhir') selectedSurahAkhir = value;
                     if(select.id === 'cs-guru-delegasi') selectedGuruDelegasi = value;
+                    if(select.id === 'cs-login-guru') selectedLoginGuruId = value; // Untuk login form
                     if(select.id === 'cs-pilih-kelas') {
                         activeClassId = value;
                         window.clearSearchInput(); 
@@ -1485,6 +1511,7 @@
             document.getElementById('view-login').classList.add('active');
             loggedInTeacher = null; activeClassId = null;
             document.getElementById('login-pin-guru').value = '';
+            if(document.getElementById('login-id-guru')) document.getElementById('login-id-guru').value = '';
         };
 
         function mulaiListenData() {
@@ -1522,6 +1549,10 @@
             if (window.unsubscribeGuru) window.unsubscribeGuru();
             window.unsubscribeGuru = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'teachers')), (snapshot) => {
                 semuaGuru = []; snapshot.forEach(doc => semuaGuru.push({ docId: doc.id, ...doc.data() }));
+                
+                // Perbarui Dropdown Login Guru
+                window.populateDropdownLoginGuru();
+
                 if (window.autoLoginTeacherId) {
                     prosesAutoLoginGuru();
                 }
@@ -1539,15 +1570,21 @@
 
         window.loginGuru = async function() {
             if(!currentUser) return window.tampilkanToast("Koneksi database terputus.", true);
+            
+            const identitas = document.getElementById('login-id-guru').value.trim();
             const pin = document.getElementById('login-pin-guru').value.trim();
+            
+            if (!identitas) return window.tampilkanToast("Masukkan Nama atau ID Pengajar!", true);
             if (!pin) return window.tampilkanToast("Masukkan PIN Pengajar!", true);
 
-            const tQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'teachers'));
-            const tSnap = await getDocs(tQuery);
-            let foundTeacher = null;
-            tSnap.forEach(doc => { const data = doc.data(); if(data.pin === pin) foundTeacher = { docId: doc.id, ...data }; });
+            // Cari di memori lokal (semuaGuru) agar lebih cepat
+            const foundTeacher = semuaGuru.find(g => {
+                const matchName = g.nama.toLowerCase() === identitas.toLowerCase();
+                const matchId = (g.username && g.username.toLowerCase() === identitas.toLowerCase()) || (g.docId === identitas);
+                return (matchName || matchId) && g.pin === pin;
+            });
 
-            if(!foundTeacher) return window.tampilkanToast("PIN Pengajar tidak valid.", true);
+            if(!foundTeacher) return window.tampilkanToast("Kredensial tidak valid. Periksa kembali Nama dan PIN.", true);
 
             if (currentUser) {
                 try {
@@ -1919,7 +1956,9 @@
                 pesanWA += `Terima kasih banyak atas sinergi dan doa Ayah/Bunda di rumah. Semoga ananda senantiasa semangat menjaga hafalannya. Amin. 🙏`;
 
                 if(reachedMilestone) {
-                    window.konfirmasiTwibbon(siswaTerpilih.nama, `Hafalan ${reachedMilestone} Ayat`, siswaTerpilih.waOrtu, kirimWA, pesanWA);
+                    const kelasObj = semuaKelas.find(k => k.docId === activeClassId);
+                    const kelasNama = kelasObj ? (kelasObj.nama_kelas || kelasObj.name) : "";
+                    window.konfirmasiTwibbon(siswaTerpilih.nama, `Hafalan ${reachedMilestone} Ayat`, siswaTerpilih.waOrtu, kirimWA, pesanWA, kelasNama);
                 } else if(kirimWA) {
                     let waOrtu = siswaTerpilih.waOrtu;
                     if (waOrtu && waOrtu.startsWith('0')) waOrtu = '62' + waOrtu.slice(1);
@@ -2156,8 +2195,6 @@
             } catch (error) { window.tampilkanToast("Gagal memproses penghapusan.", true); }
         });
 
-
-        // FUNGSI HELPER MENGHITUNG KEPATUHAN SHOLAT
         function hitungSkorSholat(siswaId) {
             const records = semuaSholat.filter(r => r.siswaId === siswaId);
             if (!records || records.length === 0) return '-';
@@ -2182,7 +2219,6 @@
             return Math.round((earnedSlots / totalSlots) * 100);
         }
 
-        // FUNGSI HELPER MENGHITUNG MURNI HAFALAN & TAJWID (Tanpa Sholat)
         function hitungSkorHafalan(riwayat) {
             if (!riwayat || riwayat.length === 0) return { k: 0, t: 0 };
             let totalKScore = 0; let totalTScore = 0;
@@ -2228,10 +2264,8 @@
                 tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:16px;" class="text-muted">Belum ada data santri di kelas ini.</td></tr>`; return;
             }
 
-            // CEK STATUS MODUL SHOLAT GLOBAL
             const isSholatAktif = window.appSettings && window.appSettings.isSholatModuleActive !== false;
 
-            // UPDATE TAMPILAN HEADER TABEL & KETERANGAN
             const thSholat = document.getElementById('th-disiplin-sholat');
             if (thSholat) thSholat.style.display = isSholatAktif ? 'table-cell' : 'none';
 
@@ -2252,7 +2286,6 @@
                 let valS = skorSholatValue !== '-' ? skorSholatValue : 0; 
                 let skorAkhirBaru = 0;
                 
-                // KALKULASI DINAMIS BERDASARKAN STATUS MODUL
                 if (skorObj.k > 0 || skorObj.t > 0) {
                     if (isSholatAktif) {
                         skorAkhirBaru = Math.round((skorObj.k * 0.5) + (skorObj.t * 0.3) + (valS * 0.2));
@@ -2327,7 +2360,6 @@
             if (rekapSortMode === 'name') { rekapData = dataWithRank.sort((a, b) => a.nama.localeCompare(b.nama)); } 
             else { rekapData = dataWithRank; }
 
-            // Menyesuaikan Header TSV
             let tsvText = "Peringkat\tNama Santri\tTotal Hafalan (Ayat)\tNilai Kelancaran\tNilai Tajwid";
             if (isSholatAktif) tsvText += "\tDisiplin Sholat (%)";
             tsvText += "\tNilai Akhir\tPredikat\n";

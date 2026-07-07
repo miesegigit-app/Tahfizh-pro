@@ -645,6 +645,7 @@
 
                 <input type="hidden" id="twibbon-nama-anak">
                 <input type="hidden" id="twibbon-nama-misi">
+                <input type="hidden" id="twibbon-nama-kelas">
 
                 <button class="btn btn-primary" id="btn-unduh-twibbon" style="width: 100%; padding: 14px; display: none;" onclick="window.unduhTwibbonOrtu()">
                     <i data-lucide="download" style="width: 18px;"></i> Simpan ke Galeri HP
@@ -1343,6 +1344,13 @@
             
             setTimeout(() => {
                 try {
+                    const siswa = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
+                    let kelasNama = '';
+                    if (siswa) {
+                        const klsObj = semuaKelas.find(k => k.docId === siswa.kelas_id);
+                        kelasNama = klsObj ? (klsObj.nama_kelas || klsObj.name) : '';
+                    }
+
                     const canvas = document.createElement('canvas');
                     canvas.width = 1080;
                     canvas.height = 1080;
@@ -1374,6 +1382,7 @@
                             ctx.fillText(text, x, y, maxWidth);
                         }
                         
+                        // Render Nama
                         ctx.shadowColor = 'rgba(0,0,0,0.7)';
                         ctx.shadowBlur = 12;
                         ctx.shadowOffsetX = 0;
@@ -1381,6 +1390,17 @@
                         ctx.fillStyle = '#FFFFFF';
                         fillTextToFit(ctx, namaAnak.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
                         
+                        // Render Nama Kelas
+                        if (kelasNama) {
+                            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                            ctx.shadowBlur = 8;
+                            ctx.shadowOffsetX = 0;
+                            ctx.shadowOffsetY = 2;
+                            ctx.fillStyle = '#E2E8F0'; 
+                            fillTextToFit(ctx, kelasNama.toUpperCase(), 540, 805, 24, 400, '"Inter", sans-serif');
+                        }
+
+                        // Render Misi/Capaian
                         let teksMisiBersih = namaMisi || '';
                         teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
                         teksMisiBersih = `Lulus: ${teksMisiBersih}`;
@@ -1414,8 +1434,17 @@
         let twibbonState = { imgUser: null, imgFrame: null, baseScale: 1, scaleMultiplier: 1, x: 0, y: 0, isDragging: false, startX: 0, startY: 0 };
 
         window.bukaModalTwibbon = function(namaAnak, namaMisi) {
+            const siswa = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
+            let kelasNama = '';
+            if (siswa) {
+                const klsObj = semuaKelas.find(k => k.docId === siswa.kelas_id);
+                kelasNama = klsObj ? (klsObj.nama_kelas || klsObj.name) : '';
+            }
+
             document.getElementById('twibbon-nama-anak').value = namaAnak;
             document.getElementById('twibbon-nama-misi').value = namaMisi;
+            document.getElementById('twibbon-nama-kelas').value = kelasNama;
+            
             document.getElementById('twibbon-canvas').style.display = 'none';
             document.getElementById('twibbon-placeholder').style.display = 'block';
             document.getElementById('twibbon-controls').style.display = 'none';
@@ -1423,6 +1452,7 @@
             document.getElementById('input-foto-twibbon').value = '';
             twibbonState.imgUser = null;
             document.getElementById('modal-studio-twibbon').classList.add('active');
+            
             if(!twibbonState.imgFrame) {
                 twibbonState.imgFrame = new Image();
                 twibbonState.imgFrame.src = 'frame.png';
@@ -1518,17 +1548,23 @@
             const ctx = canvas.getContext('2d');
             ctx.fillStyle = "#E2E8F0";
             ctx.fillRect(0, 0, 1080, 1080);
+            
             if (twibbonState.imgUser) {
                 const currentScale = twibbonState.baseScale * twibbonState.scaleMultiplier;
                 const dw = twibbonState.imgUser.width * currentScale;
                 const dh = twibbonState.imgUser.height * currentScale;
                 ctx.drawImage(twibbonState.imgUser, twibbonState.x, twibbonState.y, dw, dh);
             }
+            
             if (twibbonState.imgFrame) ctx.drawImage(twibbonState.imgFrame, 0, 0, 1080, 1080);
+            
             const namaAnak = document.getElementById('twibbon-nama-anak').value || 'Nama Ananda';
             const namaMisiRaw = document.getElementById('twibbon-nama-misi').value || 'Pencapaian';
+            const kelasNama = document.getElementById('twibbon-nama-kelas').value || '';
+            
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle'; 
+            
             function fillTextToFit(ctx, text, x, y, maxFontSize, maxWidth, fontFace) {
                 let fontSize = maxFontSize;
                 ctx.font = `800 ${fontSize}px ${fontFace}`;
@@ -1537,14 +1573,39 @@
                 }
                 ctx.fillText(text, x, y, maxWidth);
             }
-            ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 12; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4; ctx.fillStyle = '#FFFFFF';
+            
+            // Render Nama
+            ctx.shadowColor = 'rgba(0,0,0,0.8)'; 
+            ctx.shadowBlur = 12; 
+            ctx.shadowOffsetX = 0; 
+            ctx.shadowOffsetY = 4; 
+            ctx.fillStyle = '#FFFFFF';
             fillTextToFit(ctx, namaAnak.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
+
+            // Render Kelas
+            if (kelasNama) {
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.shadowBlur = 8;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 2;
+                ctx.fillStyle = '#E2E8F0'; 
+                fillTextToFit(ctx, kelasNama.toUpperCase(), 540, 805, 24, 400, '"Inter", sans-serif');
+            }
+
+            // Render Misi
             let teksMisiBersih = namaMisiRaw || 'Pencapaian';
             teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
             teksMisiBersih = `Lulus: ${teksMisiBersih}`;
-            ctx.shadowColor = 'rgba(255,255,255,0.7)'; ctx.shadowBlur = 6; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; ctx.fillStyle = '#D97706'; 
+            
+            ctx.shadowColor = 'rgba(255,255,255,0.7)'; 
+            ctx.shadowBlur = 6; 
+            ctx.shadowOffsetX = 0; 
+            ctx.shadowOffsetY = 0; 
+            ctx.fillStyle = '#D97706'; 
             fillTextToFit(ctx, teksMisiBersih, 540, 860, 34, 450, '"Montserrat", sans-serif');
-            ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+            
+            ctx.shadowColor = 'transparent'; 
+            ctx.shadowBlur = 0;
         }
 
         window.unduhTwibbonOrtu = function() {
