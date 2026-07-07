@@ -613,7 +613,7 @@
                 </div>
 
                 <div class="system-ops-grid">
-                    <!-- FITUR BARU: Konfigurasi Kredensial Master PIN -->
+                    <!-- FITUR BARU: Konfigurasi Kredensial Master PIN dengan Eye Icon -->
                     <div class="ops-card" style="padding: 24px;">
                         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                             <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--danger-bg); color: var(--danger); display: flex; align-items: center; justify-content: center;"><i data-lucide="key" style="width: 24px; height: 24px;"></i></div>
@@ -624,7 +624,12 @@
                         </div>
                         <div class="input-group" style="margin-bottom: 16px; flex-grow: 1;">
                             <label>PIN Admin Baru</label>
-                            <input type="password" id="input-new-admin-pin" class="form-control" placeholder="Minimal 6 karakter..." autocomplete="off">
+                            <div style="position: relative;">
+                                <input type="password" id="input-new-admin-pin" class="form-control" placeholder="Minimal 6 karakter..." style="padding-right: 48px;" autocomplete="off">
+                                <button type="button" onclick="window.toggleNewPinAdmin()" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer;" title="Lihat/Sembunyikan PIN">
+                                    <i data-lucide="eye" id="icon-eye-new-admin" style="width: 20px;"></i>
+                                </button>
+                            </div>
                         </div>
                         <button class="btn btn-outline" style="width: 100%; color: var(--danger); border-color: #FECACA;" onclick="window.ubahPinAdmin()">Ubah PIN Master</button>
                     </div>
@@ -839,7 +844,7 @@
         });
 
         // =====================================
-        // KREDENSIAL SUPER ADMIN (FITUR BARU)
+        // KREDENSIAL SUPER ADMIN & FITUR SHOW/HIDE PIN
         // =====================================
         
         // Memastikan PIN admin didapatkan tanpa membocorkan data lain sebelum login
@@ -850,6 +855,32 @@
                 }
             });
         }
+
+        window.togglePinAdmin = function() {
+            const pinInput = document.getElementById('admin-pin');
+            const iconEye = document.getElementById('icon-eye-admin');
+            if (pinInput.type === 'password') {
+                pinInput.type = 'text';
+                iconEye.setAttribute('data-lucide', 'eye-off');
+            } else {
+                pinInput.type = 'password';
+                iconEye.setAttribute('data-lucide', 'eye');
+            }
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        window.toggleNewPinAdmin = function() {
+            const pinInput = document.getElementById('input-new-admin-pin');
+            const iconEye = document.getElementById('icon-eye-new-admin');
+            if (pinInput.type === 'password') {
+                pinInput.type = 'text';
+                iconEye.setAttribute('data-lucide', 'eye-off');
+            } else {
+                pinInput.type = 'password';
+                iconEye.setAttribute('data-lucide', 'eye');
+            }
+            if(window.lucide) window.lucide.createIcons();
+        };
 
         window.loginAdmin = function() {
             const pin = document.getElementById('admin-pin').value;
@@ -876,7 +907,15 @@
                         adminPin: newPin
                     }, { merge: true });
                     window.showToast("Kredensial Super Admin berhasil diubah!");
-                    document.getElementById('input-new-admin-pin').value = '';
+                    
+                    // Reset input field dan kembalikan tipe input ke password
+                    const pinInput = document.getElementById('input-new-admin-pin');
+                    const iconEye = document.getElementById('icon-eye-new-admin');
+                    pinInput.value = '';
+                    pinInput.type = 'password';
+                    iconEye.setAttribute('data-lucide', 'eye');
+                    if(window.lucide) window.lucide.createIcons();
+                    
                     return true;
                 } catch (error) {
                     window.showToast("Gagal mengubah PIN.", true);
