@@ -197,12 +197,126 @@
         .swot-title { font-size: 15px; font-weight: 800; color: var(--text-main); line-height: 1.2; }
         .swot-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
-        .ai-forecast-card { margin-top: 16px; padding: 16px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--purple-bg) 0%, #EEF2FF 100%); border: 1px solid #DDD6FE; display: flex; gap: 12px; align-items: flex-start; box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.05); }
-        .ai-icon-wrapper { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--purple-ai) 0%, #6366F1 100%); display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; box-shadow: 0 4px 6px rgba(139, 92, 246, 0.2); }
-        .ai-content { flex: 1; }
-        .ai-title { font-size: 13px; font-weight: 700; color: var(--purple-ai); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
-        .ai-text { font-size: 13px; color: var(--text-main); line-height: 1.5; font-weight: 500; }
-        .ai-text strong { color: #4338CA; font-weight: 800; }
+        /* AI Forecast Enterprise Design Enhancement */
+        .ai-forecast-card { 
+            margin-top: 20px; 
+            padding: 20px; 
+            border-radius: var(--radius-lg); 
+            background: linear-gradient(135deg, #F5F3FF 0%, #EEF2FF 100%); 
+            border: 1px solid #DDD6FE; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+            box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.12); 
+            position: relative; 
+            overflow: hidden; 
+        }
+        .ai-forecast-card::before { 
+            content: ''; 
+            position: absolute; 
+            top: -20px; 
+            right: -20px; 
+            width: 120px; 
+            height: 120px; 
+            background: rgba(139, 92, 246, 0.15); 
+            filter: blur(25px); 
+            border-radius: 50%; 
+            z-index: 0; 
+        }
+        .ai-forecast-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+            border-bottom: 1px dashed #C4B5FD;
+            padding-bottom: 12px;
+        }
+        .ai-icon-wrapper { 
+            width: 44px; 
+            height: 44px; 
+            border-radius: 12px; 
+            background: linear-gradient(135deg, var(--purple-ai) 0%, #4F46E5 100%); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            flex-shrink: 0; 
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3); 
+        }
+        .ai-title-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+        .ai-title { 
+            font-size: 15px; 
+            font-weight: 800; 
+            color: #4338CA; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; 
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-subtitle {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--purple-ai);
+        }
+        .ai-body {
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+            align-items: center;
+        }
+        .ai-metric-box {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #E0E7FF;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            min-width: 90px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .ai-metric-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: #3730A3;
+            line-height: 1.1;
+        }
+        .ai-metric-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .ai-text { 
+            flex: 1; 
+            font-size: 13px; 
+            color: var(--text-main); 
+            line-height: 1.6; 
+            font-weight: 500; 
+        }
+        .ai-text strong { 
+            color: #312E81; 
+            font-weight: 800; 
+            background: rgba(199, 210, 254, 0.4); 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+        }
+        
+        .pulse-animation i {
+            animation: pulse-ai 2s infinite;
+        }
+        @keyframes pulse-ai {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
         @keyframes popIn { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
@@ -586,7 +700,9 @@
                     <div id="gamification-badge-container" style="text-align: center; min-height: 45px;"></div>
                     <div class="radar-container"><canvas id="radarChart"></canvas></div>
                     <div class="swot-grid" id="swot-cards-container"></div>
-                    <div class="ai-forecast-card" id="ai-forecast-container"></div>
+                    
+                    <!-- AI Forecast Enterprise Component -->
+                    <div class="ai-forecast-card" id="ai-forecast-container" style="display: none;"></div>
                 </div>
             </div>
 
@@ -1969,14 +2085,41 @@
             if(window.lucide) window.lucide.createIcons();
         }
 
+        // Peningkatan Desain dan Logika AI Forecast
         function generateAIForecast(siswa, timeframe) {
             const cont = document.getElementById('ai-forecast-container');
             if(!cont) return;
+            
             const riwayat = siswa.riwayat || [];
             const totalAyat = hitungProgresAlQuran(riwayat);
-            if(riwayat.length < 3 || totalAyat === 0) { cont.style.display = 'none'; return; }
-            cont.style.display = 'flex';
+            
+            // 1. Tangani Kondisi Kurang Data (Learning State) agar UI Tetap Konsisten dan Muncul
+            if (riwayat.length < 3 || totalAyat === 0) { 
+                let sisaButuh = 3 - riwayat.length;
+                if (sisaButuh < 1) sisaButuh = 1;
 
+                cont.innerHTML = `
+                    <div class="ai-forecast-header">
+                        <div class="ai-icon-wrapper pulse-animation"><i data-lucide="brain" style="width: 22px;"></i></div>
+                        <div class="ai-title-wrap">
+                            <span class="ai-title">Estimasi Pencapaian <i data-lucide="sparkles" style="width: 14px; color: #F59E0B;"></i></span>
+                            <span class="ai-subtitle">Status: Mempelajari Pola Mutaba'ah</span>
+                        </div>
+                    </div>
+                    <div class="ai-body">
+                        <div class="ai-text" style="color: var(--text-muted); font-size: 13px;">
+                            Sistem AI kami masih menganalisis ritme hafalan ananda. 
+                            Mohon lengkapi <strong>${sisaButuh} setoran hafalan</strong> lagi agar AI dapat memberikan estimasi waktu penyelesaian misi yang presisi.
+                        </div>
+                    </div>
+                `;
+                cont.style.display = 'flex';
+                if(window.lucide) window.lucide.createIcons();
+                return; 
+            }
+
+            // 2. Jika Data Cukup, Lakukan Perhitungan Normal
+            cont.style.display = 'flex';
             const sortedRiwayat = [...riwayat].sort((a,b) => a.timestamp - b.timestamp);
             const firstDate = new Date(sortedRiwayat[0].timestamp);
             const lastDate = new Date(sortedRiwayat[sortedRiwayat.length - 1].timestamp);
@@ -1984,12 +2127,15 @@
             let monthsDiff = (lastDate.getFullYear() - firstDate.getFullYear()) * 12 + (lastDate.getMonth() - firstDate.getMonth());
             if(monthsDiff < 1) monthsDiff = 1; 
 
+            // Intensitas (ayat per bulan/hari)
             const ayatPerMonth = Math.round(totalAyat / monthsDiff);
+            const kecepatanPerHari = Math.max(Math.round(ayatPerMonth / 30), 1); // minimal 1 ayat
+
             let targetName = "Khatam Al-Quran";
             let ayatSisa = 6236 - totalAyat;
 
             if (siswa.misiAktif && !siswa.misiAktif.statusSelesai) {
-                targetName = `Misi: ${siswa.misiAktif.namaMisi}`;
+                targetName = `Misi ${siswa.misiAktif.namaMisi}`;
                 const progresMisi = hitungProgresMisiClient(riwayat, siswa.misiAktif);
                 const ayatSelesaiMisi = (progresMisi / 100) * siswa.misiAktif.totalAyatTarget;
                 ayatSisa = siswa.misiAktif.totalAyatTarget - ayatSelesaiMisi;
@@ -2006,15 +2152,26 @@
             datePrediksi.setMonth(datePrediksi.getMonth() + bulanSisa);
             const namaBulan = datePrediksi.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 
-            let aiText = `Berdasarkan kecepatan setoran (${ayatPerMonth} ayat/bulan), sistem memprediksi pencapaian <strong>${targetName}</strong> akan rampung pada <strong>${namaBulan}</strong>.`;
+            let aiText = `Menganalisis tren saat ini, target <strong>${targetName}</strong> diproyeksikan akan selesai pada <strong>${namaBulan}</strong>.`;
+            
             const m = extractMetrics(riwayat);
             if(m.d < 60) aiText += " <em>Tingkatkan kedisiplinan setoran agar target tercapai lebih cepat!</em>";
-            else if (m.d > 85) aiText += " <em>MasyaAllah, ritme hafalan sangat istiqomah. Pertahankan!</em>";
+            else if (m.d > 85) aiText += " <em>MasyaAllah, ritme hafalan sangat istiqomah. Prediksi ini bisa tercapai lebih cepat!</em>";
 
+            // 3. Render Card yang Cantik dan Estetik
             cont.innerHTML = `
-                <div class="ai-icon-wrapper"><i data-lucide="sparkles" style="width: 20px;"></i></div>
-                <div class="ai-content">
-                    <div class="ai-title">Prediksi Milestone AI</div>
+                <div class="ai-forecast-header">
+                    <div class="ai-icon-wrapper"><i data-lucide="zap" style="width: 22px;"></i></div>
+                    <div class="ai-title-wrap">
+                        <span class="ai-title">Estimasi Pencapaian <i data-lucide="sparkles" style="width: 14px; color: #F59E0B;"></i></span>
+                        <span class="ai-subtitle">Prediksi Cerdas Berbasis Pola Hafalan</span>
+                    </div>
+                </div>
+                <div class="ai-body">
+                    <div class="ai-metric-box">
+                        <div class="ai-metric-val">${kecepatanPerHari}</div>
+                        <div class="ai-metric-lbl">Ayat / Hari</div>
+                    </div>
                     <div class="ai-text">${aiText}</div>
                 </div>
             `;

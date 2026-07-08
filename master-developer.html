@@ -88,14 +88,26 @@
         .btn-ghost:hover { background: rgba(255,255,255,0.1); color: white; }
 
         /* Inputs */
-        .input-group { margin-bottom: 20px; }
+        .input-group { margin-bottom: 20px; position: relative; }
         .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
         .form-control { width: 100%; padding: 12px 16px; font-size: 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #0F172A; color: var(--text-main); transition: all 0.2s; }
         .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
         .form-control::placeholder { color: var(--text-light); }
         
-        /* Custom Select */
-        .custom-select { appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2394A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>'); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; cursor: pointer; }
+        .pwd-toggle-btn { position: absolute; right: 16px; top: 40px; background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer; transition: color 0.2s; display: flex; align-items: center; justify-content: center; }
+        .pwd-toggle-btn:hover { color: white; }
+
+        /* Custom Dropdown UI (Replaces Native Select) */
+        .custom-dropdown { position: relative; width: 100%; user-select: none; }
+        .dropdown-selected { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; font-size: 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #0F172A; color: var(--text-main); cursor: pointer; transition: all 0.2s; }
+        .dropdown-selected:hover { border-color: var(--text-muted); }
+        .custom-dropdown.open .dropdown-selected { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .custom-dropdown.open .dropdown-arrow { transform: rotate(180deg); }
+        .dropdown-options { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); overflow: hidden; z-index: 1001; display: none; transform: translateY(-10px); opacity: 0; transition: all 0.2s ease; }
+        .custom-dropdown.open .dropdown-options { display: block; transform: translateY(0); opacity: 1; }
+        .dropdown-option { padding: 12px 16px; font-size: 14px; font-weight: 500; color: var(--text-main); display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+        .dropdown-option:hover { background: var(--bg-surface-hover); }
+        .dropdown-arrow { width: 16px; color: var(--text-muted); transition: transform 0.2s; }
 
         /* Badges & Toggles */
         .badge { display: inline-flex; align-items: center; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: var(--radius-full); text-transform: uppercase; letter-spacing: 0.05em; gap: 4px; }
@@ -103,6 +115,7 @@
         .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
         .badge-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
         .badge-accent { background: var(--accent-bg); color: var(--accent); border: 1px solid rgba(139, 92, 246, 0.3); }
+        .badge-neutral { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); }
 
         .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -118,7 +131,9 @@
 
         #dashboard-view { display: none; width: 100%; }
 
-        /* Sidebar */
+        /* Sidebar & Backdrop */
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 30; opacity: 0; transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-backdrop.active { display: block; opacity: 1; }
         .sidebar { width: var(--sidebar-width); background: var(--bg-surface); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; height: 100vh; position: fixed; left: 0; top: 0; z-index: 40; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; }
         .sidebar-brand { font-size: 18px; font-weight: 800; color: white; letter-spacing: 1px; text-transform: uppercase; }
@@ -131,18 +146,18 @@
         .menu-item.deploy-btn:hover { background: var(--danger-bg); box-shadow: 0 0 15px var(--danger-glow); }
 
         /* Main Content */
-        .main-content { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; background: var(--bg-body); transition: margin-left 0.3s; width: calc(100% - var(--sidebar-width)); display: flex; flex-direction: column; }
-        .topbar { height: 76px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; position: sticky; top: 0; z-index: 10; }
+        .main-content { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; background: var(--bg-body); transition: margin-left 0.3s; width: calc(100% - var(--sidebar-width)); display: flex; flex-direction: column; position: relative; z-index: 10; }
+        .topbar { height: 76px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; position: sticky; top: 0; z-index: 20; }
         .content-area { padding: 32px; max-width: 1400px; margin: 0 auto; width: 100%; display: none; animation: fadeIn 0.4s ease; flex-grow: 1; }
         .content-area.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Cards & Grids */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 32px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 32px; }
         .stat-card { background: var(--bg-surface); padding: 28px; border-radius: var(--radius-xl); border: 1px solid var(--border-color); position: relative; overflow: hidden; }
         .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%); }
         .stat-card h3 { font-size: 13px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .stat-card .value { font-size: 36px; font-weight: 900; color: white; line-height: 1.2; font-family: 'Fira Code', monospace; }
+        .stat-card .value { font-size: 32px; font-weight: 900; color: white; line-height: 1.2; font-family: 'Fira Code', monospace; }
         .stat-bg-icon { position: absolute; right: -15px; bottom: -15px; opacity: 0.05; transform: scale(3); color: white; }
 
         .data-card { background: var(--bg-surface); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 24px; box-shadow: var(--shadow-md); }
@@ -191,6 +206,8 @@
         
         .menu-toggle-btn { display: none; background: transparent; border: none; color: white; cursor: pointer; padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
 
+        .chart-container { width: 100%; height: 320px; position: relative; margin-top: 24px; padding-top: 24px; border-top: 1px dashed var(--border-color); }
+
         @media (max-width: 1024px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
@@ -204,12 +221,16 @@
             .content-area { padding: 20px; }
             .stats-grid { grid-template-columns: 1fr; }
             .data-header { flex-direction: column; align-items: flex-start; }
+            .pwd-toggle-btn { right: 12px; }
         }
     </style>
 </head>
 <body>
 
     <div id="toast" class="toast"><i data-lucide="info" style="width:20px; color: var(--primary);"></i> <span id="toast-msg">Initialising Master Node...</span></div>
+    
+    <!-- Sidebar Backdrop untuk Mobile -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="window.toggleSidebar()"></div>
 
     <!-- VIEW 1: MASTER LOGIN -->
     <div id="login-view">
@@ -222,13 +243,11 @@
             
             <div class="input-group" style="text-align: left;">
                 <label>Developer Passkey</label>
-                <div style="position: relative;">
-                    <i data-lucide="key" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 20px; color: var(--text-light);"></i>
-                    <input type="password" id="dev-pin" class="form-control" placeholder="••••••••" style="padding-left: 48px; padding-right: 48px; font-size: 20px; letter-spacing: 8px; font-weight: 800; height: 60px;" autocomplete="off" onkeypress="if(event.key === 'Enter') window.loginDeveloper()">
-                    <button type="button" onclick="window.toggleDevPin()" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer;" title="Lihat/Sembunyikan">
-                        <i data-lucide="eye" id="icon-eye-dev" style="width: 20px;"></i>
-                    </button>
-                </div>
+                <input type="password" id="dev-pin" class="form-control" placeholder="••••••••" style="padding-left: 48px; padding-right: 48px; font-size: 20px; letter-spacing: 8px; font-weight: 800; height: 60px;" autocomplete="off" onkeypress="if(event.key === 'Enter') window.loginDeveloper()">
+                <i data-lucide="key" style="position: absolute; left: 16px; top: 40px; width: 20px; color: var(--text-light);"></i>
+                <button type="button" class="pwd-toggle-btn" onclick="window.togglePinVisibility('dev-pin', 'icon-eye-dev')" title="Lihat/Sembunyikan">
+                    <i data-lucide="eye" id="icon-eye-dev" style="width: 20px;"></i>
+                </button>
             </div>
             <button class="btn btn-primary" onclick="window.loginDeveloper()" style="width: 100%; padding: 16px; font-size: 15px; margin-top: 16px;">
                 <i data-lucide="zap" style="width: 18px;"></i> Inisialisasi Akses
@@ -248,11 +267,13 @@
             <nav class="sidebar-menu">
                 <div style="font-size: 11px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; padding-left: 16px;">Core System</div>
                 <button class="menu-item active" onclick="window.switchTab('overview')"><i data-lucide="activity"></i> Command Center</button>
+                <button class="menu-item" onclick="window.switchTab('finance')"><i data-lucide="pie-chart"></i> Keuangan & Aset</button>
                 <button class="menu-item" onclick="window.switchTab('clients')"><i data-lucide="building-2"></i> Manajemen Klien</button>
                 <button class="menu-item" onclick="window.switchTab('approvals')"><i data-lucide="check-square"></i> Approval Harga <span id="badge-approval" class="badge badge-warning" style="margin-left:auto; display:none;">0</span></button>
                 
                 <div style="font-size: 11px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 24px; margin-bottom: 8px; padding-left: 16px;">Operations</div>
                 <button class="menu-item" onclick="window.switchTab('updates')"><i data-lucide="rocket"></i> Deploy & Update</button>
+                <button class="menu-item" onclick="window.switchTab('settings')"><i data-lucide="shield-check"></i> Pengaturan Keamanan</button>
                 
                 <button class="menu-item deploy-btn" onclick="window.logoutDeveloper()"><i data-lucide="power"></i> Lock Terminal</button>
             </nav>
@@ -292,7 +313,7 @@
                     </div>
                     <div class="stat-card" style="border-top-color: var(--warning);">
                         <h3 style="color: var(--warning);"><i data-lucide="banknote" style="width: 16px;"></i> Potensi GMV / Bulan</h3>
-                        <div class="value" id="stat-total-revenue" style="color: var(--warning); font-size: 28px;">Rp 0</div>
+                        <div class="value" id="stat-total-revenue-overview" style="color: var(--warning); font-size: 28px;">Rp 0</div>
                         <p class="text-xs text-muted" style="margin-top: 8px;">*Kalkulasi berdasarkan real data santri klien.</p>
                         <i data-lucide="wallet" class="stat-bg-icon" style="color: var(--warning);"></i>
                     </div>
@@ -317,9 +338,51 @@
                         <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
                             <div style="display:flex; justify-content:space-between; margin-bottom: 16px;">
                                 <span class="text-sm font-mono text-muted">Versi Aplikasi Klien Terakhir</span>
-                                <span style="color: var(--primary); font-weight: 700; font-size: 13px;" id="sys-version-text">v2.0.0</span>
+                                <span style="color: var(--primary); font-weight: 700; font-size: 13px;" id="sys-version-text">v1.0.0</span>
                             </div>
                             <p class="text-xs text-muted">Auto-Update Push Mechanism: <strong style="color:var(--success);">Standby</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: KEUANGAN & ASET -->
+            <div id="tab-finance" class="content-area">
+                <div style="margin-bottom: 32px;">
+                    <h1 style="font-size: 28px; color: white; margin-bottom: 8px;">Keuangan & Aset Global</h1>
+                    <p class="text-muted">Analisis performa pendapatan bulanan, estimasi beban server, dan kalkulasi profitabilitas SaaS Anda.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card" style="border-top-color: var(--primary);">
+                        <h3 style="color: var(--primary);"><i data-lucide="bar-chart-2" style="width: 16px;"></i> Pendapatan Kotor (GMV)</h3>
+                        <div class="value" id="fin-gmv" style="font-size: 24px; color: var(--primary);">Rp 0</div>
+                        <p class="text-xs text-muted" style="margin-top: 8px;">Perputaran uang bulanan total.</p>
+                        <i data-lucide="bar-chart-2" class="stat-bg-icon" style="color: var(--primary);"></i>
+                    </div>
+                    <div class="stat-card" style="border-top-color: var(--danger);">
+                        <h3 style="color: var(--danger);"><i data-lucide="server" style="width: 16px;"></i> Estimasi Beban Server</h3>
+                        <div class="value" id="fin-server-cost" style="font-size: 24px; color: var(--danger);">Rp 0</div>
+                        <p class="text-xs text-muted" style="margin-top: 8px;">Biaya basis (Rp 500k) + Trafik/Santri.</p>
+                        <i data-lucide="server" class="stat-bg-icon" style="color: var(--danger);"></i>
+                    </div>
+                    <div class="stat-card" style="border-top-color: var(--success); background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(30, 41, 59, 1) 100%); border-width: 2px;">
+                        <h3 style="color: var(--success);"><i data-lucide="trending-up" style="width: 16px;"></i> Laba Bersih (Net Profit)</h3>
+                        <div class="value" id="fin-net-profit" style="font-size: 28px; color: var(--success);">Rp 0</div>
+                        <p class="text-xs text-muted" style="margin-top: 8px; color: #6EE7B7;">Estimasi keuntungan bersih pengembang.</p>
+                        <i data-lucide="dollar-sign" class="stat-bg-icon" style="color: var(--success);"></i>
+                    </div>
+                </div>
+
+                <div class="data-card">
+                    <div class="data-header">
+                        <h2 style="font-size: 18px; color: white;">Tren Pendapatan Tahunan</h2>
+                        <span class="badge badge-neutral"><i data-lucide="calendar" style="width: 12px;"></i> Tahun Ini</span>
+                    </div>
+                    <div style="padding: 24px;">
+                        <p class="text-muted text-sm">Grafik ini mensimulasikan pertumbuhan pendapatan historis yang dikalibrasi dengan data *Gross Merchandise Value* (GMV) bulan berjalan.</p>
+                        <div class="chart-container">
+                            <canvas id="financeChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -333,9 +396,11 @@
                             <h2 style="font-size: 20px; color: white;">Manajemen Tenant (Klien)</h2>
                             <p class="text-muted text-sm" style="margin-top: 4px;">Kelola sekolah/lembaga yang berlangganan SaaS Anda.</p>
                         </div>
-                        <button class="btn btn-primary" onclick="window.openModalClient()">
-                            <i data-lucide="plus-circle" style="width:18px;"></i> Daftarkan Klien Baru
-                        </button>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn btn-primary" onclick="window.openModalClient()">
+                                <i data-lucide="plus-circle" style="width:18px;"></i> Daftarkan Klien Baru
+                            </button>
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <table>
@@ -427,6 +492,47 @@
                 </div>
             </div>
 
+            <!-- TAB: PENGATURAN KEAMANAN -->
+            <div id="tab-settings" class="content-area">
+                <div style="margin-bottom: 32px; max-width: 600px;">
+                    <h1 style="font-size: 24px; color: white; margin-bottom: 8px;">Pengaturan Keamanan Master</h1>
+                    <p class="text-muted">Perbarui <i>Developer Passkey</i> (PIN) yang Anda gunakan untuk masuk ke dalam God Mode. Jaga kerahasiaan passkey ini dengan sangat hati-hati.</p>
+                </div>
+
+                <div class="data-card" style="max-width: 600px;">
+                    <div class="data-header">
+                        <h2 style="font-size: 18px; color: white;"><i data-lucide="shield" style="width: 18px; vertical-align: middle; margin-right: 6px; color: var(--primary);"></i> Ganti Passkey</h2>
+                    </div>
+                    <div style="padding: 32px 24px;">
+                        <div class="input-group">
+                            <label>Passkey Saat Ini</label>
+                            <input type="password" id="setting-old-pin" class="form-control font-mono" placeholder="Masukkan passkey lama" autocomplete="off" style="padding-right: 48px; letter-spacing: 4px;">
+                            <button type="button" class="pwd-toggle-btn" onclick="window.togglePinVisibility('setting-old-pin', 'eye-old-pin')" title="Lihat/Sembunyikan">
+                                <i data-lucide="eye" id="eye-old-pin" style="width: 18px;"></i>
+                            </button>
+                        </div>
+                        <div class="input-group">
+                            <label>Passkey Baru</label>
+                            <input type="password" id="setting-new-pin" class="form-control font-mono" placeholder="Buat passkey baru" autocomplete="off" style="padding-right: 48px; letter-spacing: 4px;">
+                            <button type="button" class="pwd-toggle-btn" onclick="window.togglePinVisibility('setting-new-pin', 'eye-new-pin')" title="Lihat/Sembunyikan">
+                                <i data-lucide="eye" id="eye-new-pin" style="width: 18px;"></i>
+                            </button>
+                        </div>
+                        <div class="input-group">
+                            <label>Konfirmasi Passkey Baru</label>
+                            <input type="password" id="setting-confirm-pin" class="form-control font-mono" placeholder="Ulangi passkey baru" autocomplete="off" style="padding-right: 48px; letter-spacing: 4px;">
+                            <button type="button" class="pwd-toggle-btn" onclick="window.togglePinVisibility('setting-confirm-pin', 'eye-confirm-pin')" title="Lihat/Sembunyikan">
+                                <i data-lucide="eye" id="eye-confirm-pin" style="width: 18px;"></i>
+                            </button>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="window.changeMasterPassword()" style="width: 100%; padding: 14px; margin-top: 16px;">
+                            <i data-lucide="save" style="width: 16px;"></i> Simpan Perubahan
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -454,15 +560,67 @@
                 </div>
                 <div class="input-group" style="margin-bottom: 0;">
                     <label>Status Langganan</label>
-                    <select id="select-client-status" class="form-control custom-select">
-                        <option value="active">Active (Akses Terbuka)</option>
-                        <option value="suspended">Suspended (Blokir Akses)</option>
-                    </select>
+                    
+                    <!-- PENGGANTI <select> NATIVE DENGAN CUSTOM UI -->
+                    <div class="custom-dropdown" id="dropdown-client-status">
+                        <div class="dropdown-selected" onclick="window.toggleClientStatusDropdown()">
+                            <span id="dropdown-selected-text" style="display:flex; align-items:center; gap:8px;">
+                                <i data-lucide="check-circle" style="width: 16px; color: var(--success);"></i> Active (Akses Terbuka)
+                            </span>
+                            <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                        </div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option" onclick="window.selectClientStatusOption('active', 'Active (Akses Terbuka)', 'check-circle', 'var(--success)')">
+                                <i data-lucide="check-circle" style="width: 16px; color: var(--success);"></i> Active (Akses Terbuka)
+                            </div>
+                            <div class="dropdown-option" onclick="window.selectClientStatusOption('suspended', 'Suspended (Blokir Akses)', 'lock', 'var(--danger)')">
+                                <i data-lucide="lock" style="width: 16px; color: var(--danger);"></i> Suspended (Blokir Akses)
+                            </div>
+                        </div>
+                        <input type="hidden" id="select-client-status" value="active">
+                    </div>
+                    
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="window.closeModal('modal-client')">Batal</button>
                 <button class="btn btn-primary" onclick="window.saveClient()">Simpan Registrasi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: KELOLA KREDENSIAL ADMIN KLIEN (TENANT) -->
+    <div id="modal-tenant-credential" class="modal-overlay">
+        <div class="modal-container" style="border: 1px solid rgba(239, 68, 68, 0.4);">
+            <div class="modal-header" style="background: rgba(239, 68, 68, 0.05); border-bottom: 1px solid rgba(239, 68, 68, 0.2);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i data-lucide="key" style="color: var(--danger);"></i>
+                    <h3 style="font-size: 16px; color: white;">Manajemen Akses Klien</h3>
+                </div>
+                <button class="btn-ghost" onclick="window.closeModal('modal-tenant-credential')" style="color: var(--danger);"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-sm text-muted" style="margin-bottom: 24px; line-height: 1.5;">Gunakan fungsi ini hanya jika <strong>Super Admin</strong> dari klien terkait meminta bantuan karena lupa PIN atau tidak bisa masuk ke dalam portal <code style="color:var(--warning);">admin.html</code>.</p>
+                
+                <div style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Nama Instansi Klien:</div>
+                    <div id="cred-tenant-name" style="font-size: 16px; font-weight: 700; color: white;">Memuat...</div>
+                </div>
+
+                <input type="hidden" id="cred-tenant-id">
+                
+                <div class="input-group" style="margin-bottom: 0;">
+                    <label>PIN Akses Super Admin Saat Ini</label>
+                    <input type="password" id="input-tenant-pin" class="form-control font-mono" placeholder="Sedang mengambil data..." autocomplete="off" style="padding-right: 48px; letter-spacing: 4px; font-weight: 700; font-size: 16px;">
+                    <button type="button" class="pwd-toggle-btn" onclick="window.togglePinVisibility('input-tenant-pin', 'icon-eye-tenant')" title="Lihat/Sembunyikan">
+                        <i data-lucide="eye" id="icon-eye-tenant" style="width: 20px;"></i>
+                    </button>
+                    <p class="text-xs text-muted" style="margin-top: 8px;">Ketikkan kombinasi baru di kolom atas untuk mereset dan mengganti PIN milik klien ini.</p>
+                </div>
+            </div>
+            <div class="modal-footer" style="background: rgba(239, 68, 68, 0.02); border-top: 1px solid rgba(239, 68, 68, 0.2);">
+                <button class="btn btn-outline" onclick="window.closeModal('modal-tenant-credential')">Tutup</button>
+                <button class="btn btn-danger" onclick="window.saveTenantCredential()"><i data-lucide="save" style="width:16px;"></i> Timpa & Simpan PIN</button>
             </div>
         </div>
     </div>
@@ -494,21 +652,25 @@
     <script type="module">
         import { db, auth } from './firebase-config.js';
         import { signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { collection, doc, setDoc, getDoc, updateDoc, deleteDoc, onSnapshot, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // MASTER CREDENTIALS (Hardcoded for Developer God Mode)
-        const MASTER_PIN = "dev2026"; 
+        // DEFAULT BACKBACK PIN (Digunakan jika database credential masih kosong)
+        const DEFAULT_MASTER_PIN = "dev2026"; 
+        let ACTIVE_MASTER_PIN = DEFAULT_MASTER_PIN;
 
         // State Global
         let allClients = [];
+        let allRegisteredStats = {}; // Menyimpan data sinkronisasi akurat dari Super Admin Klien
         let allApprovals = [];
         let globalSaaSSettings = { version: "v1.0.0", forceUpdateTimestamp: 0 };
+        let financeChartInstance = null;
         
         let confirmActionCallback = null;
         let confirmRequiredText = "DEPLOY";
 
         // Firebase Listeners Unsubscribe
         window.unsubscribeClients = null;
+        window.unsubscribeRegistered = null; // Menambah listener sinkronisasi
         window.unsubscribeApprovals = null;
         window.unsubscribeSettings = null;
 
@@ -523,15 +685,42 @@
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('dashboard-view').style.display = 'block';
                 initFirebaseDev();
+                fetchActivePin(); // Memastikan PIN tersinkron setelah refresh
             }
+
+            // Menutup custom dropdown jika klik di luar area
+            document.addEventListener('click', function(e) {
+                const dropdown = document.getElementById('dropdown-client-status');
+                if (dropdown && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('open');
+                }
+            });
         });
 
         // ==========================================
-        // LOGIN & AUTHENTICATION
+        // CUSTOM DROPDOWN UI LOGIC
         // ==========================================
-        window.toggleDevPin = function() {
-            const pinInput = document.getElementById('dev-pin');
-            const iconEye = document.getElementById('icon-eye-dev');
+        window.toggleClientStatusDropdown = function() {
+            const dropdown = document.getElementById('dropdown-client-status');
+            dropdown.classList.toggle('open');
+        };
+
+        window.selectClientStatusOption = function(value, text, icon, color) {
+            document.getElementById('select-client-status').value = value;
+            document.getElementById('dropdown-selected-text').innerHTML = `
+                <span style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="${icon}" style="width: 16px; color: ${color};"></i> ${text}
+                </span>`;
+            document.getElementById('dropdown-client-status').classList.remove('open');
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        // ==========================================
+        // FITUR VISIBILITAS PASSWORD (MATA INTI)
+        // ==========================================
+        window.togglePinVisibility = function(inputId, iconId) {
+            const pinInput = document.getElementById(inputId);
+            const iconEye = document.getElementById(iconId);
             if (pinInput.type === 'password') {
                 pinInput.type = 'text';
                 iconEye.setAttribute('data-lucide', 'eye-off');
@@ -542,9 +731,33 @@
             if(window.lucide) window.lucide.createIcons();
         };
 
+        // ==========================================
+        // LOGIN & AUTHENTICATION
+        // ==========================================
+        async function fetchActivePin() {
+            try {
+                const credRef = doc(db, 'saas_master', 'credentials');
+                const credSnap = await getDoc(credRef);
+                if (credSnap.exists() && credSnap.data().pin) {
+                    ACTIVE_MASTER_PIN = credSnap.data().pin;
+                } else {
+                    // Inisialisasi awal ke database jika belum ada
+                    await setDoc(credRef, { pin: DEFAULT_MASTER_PIN }, { merge: true });
+                    ACTIVE_MASTER_PIN = DEFAULT_MASTER_PIN;
+                }
+            } catch(e) {
+                console.warn("Gagal mengambil credential, fallback ke default pin.");
+                ACTIVE_MASTER_PIN = DEFAULT_MASTER_PIN;
+            }
+        }
+
         window.loginDeveloper = async function() {
-            const pin = document.getElementById('dev-pin').value;
-            if(pin === MASTER_PIN) {
+            const pinInput = document.getElementById('dev-pin').value;
+            window.showToast("Memvalidasi Kredensial...");
+            
+            await fetchActivePin();
+
+            if(pinInput === ACTIVE_MASTER_PIN) {
                 window.showToast("Passkey Diterima. Menginisialisasi God Mode...");
                 
                 try {
@@ -565,6 +778,7 @@
         window.logoutDeveloper = function() {
             localStorage.removeItem('tahfizhpro_dev_session');
             if (window.unsubscribeClients) window.unsubscribeClients();
+            if (window.unsubscribeRegistered) window.unsubscribeRegistered();
             if (window.unsubscribeApprovals) window.unsubscribeApprovals();
             if (window.unsubscribeSettings) window.unsubscribeSettings();
             
@@ -572,6 +786,43 @@
             document.getElementById('login-view').style.display = 'flex';
             document.getElementById('dev-pin').value = '';
             window.showToast("Sesi Developer Dikunci.");
+        };
+
+        window.changeMasterPassword = async function() {
+            const oldPin = document.getElementById('setting-old-pin').value;
+            const newPin = document.getElementById('setting-new-pin').value;
+            const confirmPin = document.getElementById('setting-confirm-pin').value;
+
+            if(!oldPin || !newPin || !confirmPin) {
+                return window.showToast("Seluruh kolom formulir wajib diisi.", true);
+            }
+
+            if(oldPin !== ACTIVE_MASTER_PIN) {
+                return window.showToast("Passkey Lama (Saat Ini) salah!", true);
+            }
+
+            if(newPin.length < 6) {
+                return window.showToast("Passkey baru minimal terdiri dari 6 karakter.", true);
+            }
+
+            if(newPin !== confirmPin) {
+                return window.showToast("Konfirmasi passkey baru tidak cocok.", true);
+            }
+
+            try {
+                const credRef = doc(db, 'saas_master', 'credentials');
+                await setDoc(credRef, { pin: newPin, updatedAt: Date.now() }, { merge: true });
+                ACTIVE_MASTER_PIN = newPin; // Update local state
+                
+                // Reset inputs
+                document.getElementById('setting-old-pin').value = '';
+                document.getElementById('setting-new-pin').value = '';
+                document.getElementById('setting-confirm-pin').value = '';
+                
+                window.showToast("Developer Passkey berhasil diperbarui!");
+            } catch(e) {
+                window.showToast("Gagal menyimpan perubahan ke database.", true);
+            }
         };
 
         // ==========================================
@@ -589,7 +840,18 @@
                 }
             });
 
-            // 2. Listen to Clients (Tenants)
+            // 2. MENDENGARKAN DATA REALTIME DARI ADMIN KLIEN (Akurasi GMV)
+            const registeredRef = collection(db, 'saas_master', 'clients', 'registered');
+            window.unsubscribeRegistered = onSnapshot(query(registeredRef), (snapshot) => {
+                allRegisteredStats = {};
+                snapshot.forEach(doc => {
+                    allRegisteredStats[doc.id] = doc.data();
+                });
+                renderClients();
+                calculateDashboardStats();
+            });
+
+            // 3. Listen to Clients (Tenants List Base)
             const clientsRef = collection(db, 'saas_master', 'clients', 'list');
             window.unsubscribeClients = onSnapshot(query(clientsRef), (snapshot) => {
                 allClients = [];
@@ -598,7 +860,7 @@
                 calculateDashboardStats();
             });
 
-            // 3. Listen to Price Approvals
+            // 4. Listen to Price Approvals
             const approvalsRef = collection(db, 'saas_master', 'approvals', 'price_changes');
             window.unsubscribeApprovals = onSnapshot(query(approvalsRef), (snapshot) => {
                 allApprovals = [];
@@ -617,12 +879,23 @@
             document.getElementById(`tab-${tabId}`).classList.add('active');
             event.currentTarget.classList.add('active');
             
+            if(tabId === 'finance') {
+                renderFinanceTab();
+            }
+
             if (window.innerWidth <= 768) { window.toggleSidebar(); }
         };
 
         window.toggleSidebar = function() {
             const sidebar = document.getElementById('main-sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
             sidebar.classList.toggle('open');
+            
+            if (sidebar.classList.contains('open')) {
+                backdrop.classList.add('active');
+            } else {
+                backdrop.classList.remove('active');
+            }
         };
 
         window.showToast = function(msg, isError = false) {
@@ -637,7 +910,7 @@
         window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
 
         // ==========================================
-        // DASHBOARD LOGIC
+        // DASHBOARD LOGIC (OVERVIEW & FINANCE)
         // ==========================================
         function calculateDashboardStats() {
             document.getElementById('stat-total-clients').textContent = allClients.length;
@@ -647,17 +920,149 @@
 
             allClients.forEach(client => {
                 if (client.status === 'active') {
-                    // REAL DATA (Murni tanpa dummy balikan 150/5000)
-                    const students = client.studentCount || 0; 
-                    const price = client.currentPrice || 0;
+                    // PENARIKAN DATA SUPER AKURAT (Dari sinkronisasi Admin)
+                    const tenantId = client.tenantId || client.id;
+                    const stats = allRegisteredStats[tenantId] || {};
+                    
+                    const students = stats.studentCount !== undefined ? stats.studentCount : (client.studentCount || 0);
+                    const revenue = stats.estimasiPendapatan !== undefined ? stats.estimasiPendapatan : (students * (client.currentPrice || 0));
                     
                     totalSantriEstimated += students;
-                    totalRevenueEstimated += (students * price);
+                    totalRevenueEstimated += revenue;
                 }
             });
 
             document.getElementById('stat-total-users').textContent = totalSantriEstimated.toLocaleString('id-ID');
-            document.getElementById('stat-total-revenue').textContent = `Rp ${totalRevenueEstimated.toLocaleString('id-ID')}`;
+            document.getElementById('stat-total-revenue-overview').textContent = `Rp ${totalRevenueEstimated.toLocaleString('id-ID')}`;
+
+            // Update tab Finance metrics silently
+            const BASE_SERVER_COST = 500000;
+            const COST_PER_STUDENT = 50; 
+            const estServerCost = BASE_SERVER_COST + (totalSantriEstimated * COST_PER_STUDENT);
+            const netProfit = totalRevenueEstimated - estServerCost;
+
+            const elGmv = document.getElementById('fin-gmv');
+            const elCost = document.getElementById('fin-server-cost');
+            const elProfit = document.getElementById('fin-net-profit');
+
+            if(elGmv) elGmv.textContent = `Rp ${totalRevenueEstimated.toLocaleString('id-ID')}`;
+            if(elCost) elCost.textContent = `Rp ${estServerCost.toLocaleString('id-ID')}`;
+            if(elProfit) {
+                if(netProfit < 0) {
+                    elProfit.style.color = 'var(--danger)';
+                    elProfit.textContent = `- Rp ${Math.abs(netProfit).toLocaleString('id-ID')}`;
+                } else {
+                    elProfit.style.color = 'var(--success)';
+                    elProfit.textContent = `Rp ${netProfit.toLocaleString('id-ID')}`;
+                }
+            }
+
+            // Jika tab aktif di 'finance', redraw graph dengan data baru
+            const financeTab = document.getElementById('tab-finance');
+            if(financeTab && financeTab.classList.contains('active')) {
+                renderFinanceTab();
+            }
+        }
+
+        function renderFinanceTab() {
+            if(!window.Chart) return;
+            const ctx = document.getElementById('financeChart');
+            if(!ctx) return;
+
+            // Kalkulasi ulang spesifik untuk grafik menggunakan data real-time
+            let currentMonthlyRevenue = 0;
+            allClients.forEach(client => {
+                if (client.status === 'active') {
+                    const tenantId = client.tenantId || client.id;
+                    const stats = allRegisteredStats[tenantId] || {};
+                    const students = stats.studentCount !== undefined ? stats.studentCount : (client.studentCount || 0);
+                    currentMonthlyRevenue += stats.estimasiPendapatan !== undefined ? stats.estimasiPendapatan : (students * (client.currentPrice || 0));
+                }
+            });
+
+            // Simulasi Tren Tahunan berdasarkan data riil bulan ini 
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+            const dataPoints = [];
+            
+            // Asumsi pertumbuhan organik 5% per bulan ke belakang
+            let simulatedBase = currentMonthlyRevenue;
+            const currentMonthIndex = new Date().getMonth();
+
+            for (let i = 0; i <= currentMonthIndex; i++) {
+                // Generate kurva naik mulus ke data asli
+                let monthRev = simulatedBase * Math.pow(0.95, currentMonthIndex - i);
+                dataPoints.push(Math.round(monthRev));
+            }
+            // Kosongkan sisa bulan yang belum lewat di tahun ini
+            for(let i = currentMonthIndex + 1; i < 12; i++) {
+                dataPoints.push(null); 
+            }
+
+            if(financeChartInstance) {
+                financeChartInstance.data.datasets[0].data = dataPoints;
+                financeChartInstance.update();
+                return;
+            }
+
+            financeChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Gross Merchandise Value (GMV)',
+                        data: dataPoints,
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#10B981',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#10B981',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleFont: { family: 'Inter', size: 13 },
+                            bodyFont: { family: 'Fira Code', size: 14, weight: 'bold' },
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Rp ' + context.raw.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                            ticks: { color: '#94A3B8', font: { family: 'Inter', size: 12 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                            ticks: { 
+                                color: '#94A3B8', 
+                                font: { family: 'Inter', size: 12 },
+                                callback: function(value) {
+                                    if(value >= 1000000) return 'Rp ' + (value/1000000) + ' Jt';
+                                    if(value >= 1000) return 'Rp ' + (value/1000) + ' Rb';
+                                    return 'Rp ' + value;
+                                }
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         }
 
         // ==========================================
@@ -673,14 +1078,22 @@
                 document.getElementById('input-client-tenantId').value = c.tenantId || c.id || '';
                 document.getElementById('input-client-tenantId').disabled = true;
                 document.getElementById('input-client-phone').value = c.phone || '';
-                document.getElementById('select-client-status').value = c.status || 'active';
+                
+                const status = c.status || 'active';
+                document.getElementById('select-client-status').value = status;
+                
+                if(status === 'suspended') {
+                    window.selectClientStatusOption('suspended', 'Suspended (Blokir Akses)', 'lock', 'var(--danger)');
+                } else {
+                    window.selectClientStatusOption('active', 'Active (Akses Terbuka)', 'check-circle', 'var(--success)');
+                }
             } else {
                 document.getElementById('client-modal-title').textContent = 'Daftarkan Tenant Baru';
                 document.getElementById('input-client-name').value = '';
                 document.getElementById('input-client-tenantId').value = '';
                 document.getElementById('input-client-tenantId').disabled = false;
                 document.getElementById('input-client-phone').value = '';
-                document.getElementById('select-client-status').value = 'active';
+                window.selectClientStatusOption('active', 'Active (Akses Terbuka)', 'check-circle', 'var(--success)');
             }
             window.openModal('modal-client');
         };
@@ -737,21 +1150,28 @@
                 const isSuspend = c.status === 'suspended';
                 const badgeStatus = isSuspend ? '<span class="badge badge-danger"><i data-lucide="lock" style="width:10px;"></i> Suspended</span>' : '<span class="badge badge-success"><i data-lucide="check-circle" style="width:10px;"></i> Active</span>';
                 
-                // Murni Data Asli
-                const estSantri = (c.studentCount || 0).toLocaleString('id-ID');
+                // Tarik angka aktual santri dari allRegisteredStats jika tersedia
+                const tenantId = c.tenantId || c.id;
+                const stats = allRegisteredStats[tenantId] || {};
+                const estSantri = (stats.studentCount !== undefined ? stats.studentCount : (c.studentCount || 0)).toLocaleString('id-ID');
                 
                 return `
                 <tr>
                     <td>
                         <div class="client-name">${c.name}</div>
-                        <div class="client-meta">App ID: <span style="color:var(--primary);">${c.tenantId || c.id}</span></div>
+                        <div class="client-meta">App ID: <span style="color:var(--primary);">${tenantId}</span></div>
                     </td>
                     <td class="font-mono text-muted">${c.phone || '-'}</td>
                     <td>${badgeStatus}</td>
                     <td style="color:var(--text-light); font-weight:600;">${estSantri} Santri</td>
                     <td>
                         <div style="display:flex; gap:8px; justify-content:flex-end;">
-                            <button class="btn btn-outline" style="padding: 6px 10px;" onclick="window.openModalClient('${c.id}')" title="Edit Klien"><i data-lucide="edit-3" style="width:14px;"></i></button>
+                            <button class="btn btn-outline" style="padding: 6px 10px; color: var(--warning); border-color: rgba(245, 158, 11, 0.3);" onclick="window.openTenantCredential('${tenantId}', '${c.name.replace(/'/g, "\\'")}')" title="Akses Kredensial Super Admin">
+                                <i data-lucide="key" style="width:14px;"></i>
+                            </button>
+                            <button class="btn btn-outline" style="padding: 6px 10px;" onclick="window.openModalClient('${c.id}')" title="Edit Klien">
+                                <i data-lucide="edit-3" style="width:14px;"></i>
+                            </button>
                             <button class="btn btn-outline" style="padding: 6px 10px; color: ${isSuspend ? 'var(--success)' : 'var(--danger)'}; border-color: ${isSuspend ? 'var(--success-bg)' : 'var(--danger-bg)'};" onclick="window.toggleSuspendClient('${c.id}', '${isSuspend ? 'active' : 'suspended'}')" title="${isSuspend ? 'Buka Akses' : 'Blokir Akses'}">
                                 <i data-lucide="${isSuspend ? 'unlock' : 'lock'}" style="width:14px;"></i>
                             </button>
@@ -769,6 +1189,64 @@
                 await setDoc(doc(db, 'saas_master', 'clients', 'list', id), { status: newStatus }, { merge: true });
                 window.showToast(`Status klien diubah menjadi ${newStatus.toUpperCase()}`);
             } catch(e) { window.showToast("Gagal mengubah status.", true); }
+        };
+
+        // ==========================================
+        // KREDENSIAL KLIEN (AKSES LINTAS DATABASE SILO)
+        // ==========================================
+        window.openTenantCredential = async function(tenantId, clientName) {
+            document.getElementById('cred-tenant-name').textContent = clientName;
+            document.getElementById('cred-tenant-id').value = tenantId;
+            const inputPin = document.getElementById('input-tenant-pin');
+            inputPin.value = 'Memuat...';
+            inputPin.type = 'text';
+
+            window.openModal('modal-tenant-credential');
+
+            try {
+                // Menembus database client untuk mengambil settingan globalnya
+                const docRef = doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global');
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists() && docSnap.data().adminPin) {
+                    inputPin.value = docSnap.data().adminPin;
+                } else {
+                    // Jika klien belum pernah mengatur/membuat, berikan nilai default
+                    inputPin.value = 'admin123'; 
+                }
+                
+                inputPin.type = 'password';
+                document.getElementById('icon-eye-tenant').setAttribute('data-lucide', 'eye');
+                if(window.lucide) window.lucide.createIcons();
+
+            } catch (error) {
+                console.error("Akses Ditolak/Gagal membaca Silo Klien", error);
+                inputPin.value = 'Gagal memuat!';
+            }
+        };
+
+        window.saveTenantCredential = async function() {
+            const tenantId = document.getElementById('cred-tenant-id').value;
+            const newPin = document.getElementById('input-tenant-pin').value.trim();
+
+            if (!newPin || newPin.length < 6) {
+                return window.showToast("PIN Admin Yayasan harus memiliki minimal 6 karakter!", true);
+            }
+
+            try {
+                window.showToast("Menimpa kredensial ke server klien...");
+                
+                // Memaksa penulisan (override) pada dokumen spesifik milik klien
+                const docRef = doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global');
+                await setDoc(docRef, { adminPin: newPin }, { merge: true });
+                
+                window.showToast("Berhasil mereset PIN Super Admin Yayasan!");
+                window.closeModal('modal-tenant-credential');
+                
+            } catch (error) {
+                console.error("Gagal menimpa Silo Database Klien:", error);
+                window.showToast("Gagal menyimpan PIN baru. Periksa koneksi atau rules database.", true);
+            }
         };
 
         // ==========================================
