@@ -39,9 +39,8 @@ if (paramSekolah) {
     // Simpan ke memori permanen HP/Browser pengguna (Local Storage)
     localStorage.setItem('tahfizhpro_tenant_id', appId);
     
-    // PERBAIKAN: Fitur UX Magic (penghapus URL) DIMATIKAN
-    // Agar ketika link di-copy/bookmark, kode '?sekolah=' tetap terbawa ke perangkat lain.
-    // window.history.replaceState({}, document.title, window.location.pathname);
+    // UX MAGIC: Hapus '?sekolah=alqudwah' dari address bar agar terlihat profesional dan bersih!
+    window.history.replaceState({}, document.title, window.location.pathname);
     
 } else {
     // B. Jika tidak ada di URL (Wali murid buka dari bookmark / ketik manual besok harinya)

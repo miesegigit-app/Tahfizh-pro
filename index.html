@@ -374,10 +374,30 @@
 
     <div id="toast" class="toast"><i data-lucide="info" style="width: 18px;"></i> <span id="toast-msg">Memuat sistem...</span></div>
 
+    <!-- SAFETY NET UI (MUNCUL JIKA ID SEKOLAH TIDAK ADA) -->
+    <div id="safety-net-ui" class="login-wrapper" style="display: none; align-items: center; justify-content: center;">
+        <div class="login-card" style="border-top: 4px solid var(--danger);">
+            <div class="logo-box" style="background: linear-gradient(135deg, var(--danger) 0%, #991B1B 100%); box-shadow: 0 8px 15px -3px rgba(239, 68, 68, 0.3);">
+                <i data-lucide="shield-alert" style="width: 32px; height: 32px; color: white;"></i>
+            </div>
+            <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #0F172A; letter-spacing: -0.02em;">Akses Portal Terkunci</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">
+                Sistem tidak dapat mengidentifikasi institusi anak Anda. Anda wajib mengakses portal melalui <strong>Tautan Khusus / Scan QR</strong> yang diberikan oleh admin sekolah Anda.
+            </p>
+            <div style="background: #F8FAFC; border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 12px; margin-bottom: 24px; text-align: left;">
+                <p style="font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px;">Contoh Tautan yang Benar:</p>
+                <p style="font-size: 13px; color: var(--primary); font-family: monospace; font-weight: 600; word-break: break-all;">tahfizhpro.my.id?sekolah=alqudwah</p>
+            </div>
+            <button class="btn btn-primary" onclick="window.location.reload()" style="width: 100%; padding: 12px; font-size: 14px;">
+                <i data-lucide="refresh-cw" style="width: 16px;"></i> Muat Ulang Halaman
+            </button>
+        </div>
+    </div>
+
     <div id="view-login" class="view-section active">
         <div class="login-wrapper">
             
-            <!-- Form Login Normal (Aktif jika Tenant ID ada) -->
+            <!-- Form Login Normal -->
             <div class="login-card" id="normal-login-form">
                 <div class="logo-box">
                     <img src="./logo.png" alt="TahfizhPro Logo" style="width: 48px; height: 48px; filter: brightness(0) invert(1);" onerror="this.src='https://placehold.co/48x48/2563EB/ffffff?text=TP'">
@@ -405,24 +425,6 @@
                         Anda Pengajar? <a href="guru" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Masuk Sistem Akademi</a>
                     </p>
                 </div>
-            </div>
-
-            <!-- Safety Net UI (Muncul jika Tenant ID tidak ditemukan oleh router) -->
-            <div class="login-card" id="safety-net-ui" style="display: none; border-top: 4px solid var(--danger);">
-                <div class="logo-box" style="background: linear-gradient(135deg, var(--danger) 0%, #991B1B 100%); box-shadow: 0 8px 15px -3px rgba(239, 68, 68, 0.3);">
-                    <i data-lucide="shield-alert" style="width: 32px; height: 32px; color: white;"></i>
-                </div>
-                <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #0F172A; letter-spacing: -0.02em;">Akses Portal Terkunci</h2>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">
-                    Sistem tidak dapat mengidentifikasi institusi Anda. Demi keamanan dan privasi data (Silo Database), Anda wajib mengakses portal melalui <strong>Tautan Khusus (Smart Link)</strong> yang diberikan oleh admin sekolah/instansi Anda.
-                </p>
-                <div style="background: #F8FAFC; border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 12px; margin-bottom: 24px; text-align: left;">
-                    <p style="font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px;">Contoh Tautan yang Benar:</p>
-                    <p style="font-size: 13px; color: var(--primary); font-family: monospace; font-weight: 600; word-break: break-all;">tahfizhpro.my.id?sekolah=alqudwah</p>
-                </div>
-                <button class="btn btn-primary" onclick="window.location.reload()" style="width: 100%; padding: 12px; font-size: 14px;">
-                    <i data-lucide="refresh-cw" style="width: 16px;"></i> Muat Ulang Halaman
-                </button>
             </div>
 
             <p style="margin-top: 32px; font-size: 12px; font-weight: 500; color: var(--text-muted); text-align: center; opacity: 0.8;">
@@ -768,7 +770,7 @@
         // =========================================================
         if (window.SAAS_TENANT_MISSING) {
             document.getElementById('normal-login-form').style.display = 'none';
-            document.getElementById('safety-net-ui').style.display = 'block';
+            document.getElementById('safety-net-ui').style.display = 'flex';
         }
 
         // Variabel Settings Global
@@ -834,6 +836,11 @@
             { id: 'full', nama: 'Khatam 30 Juz', target: 6236, icon: 'award' }
         ];
 
+        let currentUser = null; 
+        let semuaSiswa = []; 
+        let semuaKelas = [];
+        let isDataReady = false;
+
         window.unsubscribeSiswa = null; 
         window.unsubscribeKelas = null;
         window.activeTimeframe = 'all';
@@ -853,13 +860,11 @@
             pasangListenerSwipe();
             initTwibbonListeners();
             
-            // Inisialisasi SaaS Auto Update Listener
             setTimeout(() => {
                 if(window.unsubscribeSaasMaster) window.unsubscribeSaasMaster();
                 window.unsubscribeSaasMaster = onSnapshot(doc(db, 'saas_master', 'global_config'), (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        // Memicu force reload jika timestamp dari God Mode lebih baru
                         if (isForceUpdateInitialized && data.forceUpdateTimestamp && data.forceUpdateTimestamp > appLoadTime) {
                             const overlay = document.getElementById('system-update-overlay');
                             const overlayMsg = document.getElementById('system-update-msg');
@@ -867,7 +872,6 @@
                                 overlayMsg.innerHTML = `<strong>Versi ${data.version || 'Baru'}:</strong><br/>${data.updateMessage || 'Memuat pembaruan inti...'}`;
                                 overlay.classList.add('active');
                             }
-                            // Hard reload otomatis untuk mengambil kode klien terbaru
                             setTimeout(() => { window.location.reload(true); }, 3500);
                         }
                         isForceUpdateInitialized = true;
@@ -1001,9 +1005,6 @@
             if(el) el.textContent = greet;
         }
 
-        let currentUser = null; 
-        let semuaSiswa = []; 
-        let semuaKelas = [];
         window.activeSiswaDocId = null; 
         window.radarChartObj = null;    
 
@@ -1018,9 +1019,7 @@
         }
 
         const initAuth = async () => { 
-            // Jangan inisialisasi jika Tenant Missing (mencegah error firestore request dari root tanpa tenantID)
             if (window.SAAS_TENANT_MISSING) return;
-            
             try { await signInAnonymously(auth); } 
             catch (error) { window.tampilkanToast("Koneksi database terputus.", true); } 
         };
@@ -1028,13 +1027,47 @@
 
         onAuthStateChanged(auth, async (user) => { 
             if (window.SAAS_TENANT_MISSING) return;
-            
             currentUser = user; 
             if (user) {
                 mulaiListenData();
                 await periksaSesiLoginOtomatis(user.uid);
             }
         });
+
+        function mulaiListenData() {
+            const dbStudents = collection(db, 'artifacts', appId, 'public', 'data', 'students');
+            if (window.unsubscribeSiswa) window.unsubscribeSiswa();
+            window.unsubscribeSiswa = onSnapshot(dbStudents, (snapshot) => {
+                semuaSiswa = [];
+                snapshot.forEach(doc => semuaSiswa.push({ docId: doc.id, ...doc.data() }));
+                isDataReady = true;
+
+                if (window.activeSiswaDocId) {
+                    const siswaUpdated = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
+                    if (siswaUpdated) renderDasborOrangTua(siswaUpdated);
+                }
+            }, (error) => {
+                console.error("Gagal memuat data santri: ", error);
+            });
+
+            const dbClasses = collection(db, 'artifacts', appId, 'public', 'data', 'classes');
+            if (window.unsubscribeKelas) window.unsubscribeKelas();
+            window.unsubscribeKelas = onSnapshot(dbClasses, (snapshot) => {
+                semuaKelas = [];
+                snapshot.forEach(doc => semuaKelas.push({ docId: doc.id, ...doc.data() }));
+                
+                if (window.activeSiswaDocId) {
+                    const siswaAktif = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
+                    if (siswaAktif) {
+                        const klsObj = semuaKelas.find(k => k.docId === siswaAktif.kelas_id);
+                        const el = document.getElementById('parent-nama-kelas');
+                        if (el) el.textContent = klsObj ? (klsObj.nama_kelas || klsObj.name) : "Kelas Aktif";
+                    }
+                }
+            }, (error) => {
+                console.error("Gagal memuat data kelas: ", error);
+            });
+        }
 
         async function periksaSesiLoginOtomatis(uid) {
             try {
@@ -1045,7 +1078,13 @@
                     if (data && data.activeKodeSiswa) {
                         window.autoLoginKode = data.activeKodeSiswa;
                         window.tampilkanToast("Melanjutkan sesi aktif...");
-                        if (semuaSiswa.length > 0) prosesAutoLogin();
+                        // Tunggu sampai data siap sebelum auto login
+                        const checkDataReady = setInterval(() => {
+                            if(isDataReady) {
+                                clearInterval(checkDataReady);
+                                prosesAutoLogin();
+                            }
+                        }, 500);
                     }
                 }
             } catch (e) {}
@@ -1085,6 +1124,10 @@
         window.loginOrangTua = async function() {
             if (window.SAAS_TENANT_MISSING) {
                 return window.tampilkanToast("Akses dikunci. Gunakan tautan khusus sekolah Anda.", true);
+            }
+
+            if (!isDataReady && semuaSiswa.length === 0) {
+                return window.tampilkanToast("Menyinkronkan data dengan server. Klik lagi dalam 2 detik...", false);
             }
 
             const kode = document.getElementById('login-kode-siswa').value.trim();
