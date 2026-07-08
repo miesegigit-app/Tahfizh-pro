@@ -169,7 +169,6 @@
         .sholat-btn.locked { opacity: 0.55; cursor: not-allowed; background: #F1F5F9; border-style: dashed; }
         .sholat-btn.locked .sholat-icon { background: #E2E8F0; border-color: #CBD5E1; color: #94A3B8; }
 
-        /* Highlight Pulse Animation */
         .highlight-pulse { animation: pulseBorder 2s infinite; border-color: var(--primary) !important; }
         @keyframes pulseBorder {
             0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); }
@@ -303,8 +302,7 @@
         
         .glass-notif { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: var(--radius-md); padding: 12px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15); animation: slideDownGlass 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; overflow: hidden; margin-bottom: 16px; }
         .glass-notif::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(180deg, #FDE68A 0%, #F59E0B 100%); }
-        @keyframes slideDownGlass { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
+        
         .trophy-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
         .trophy-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: space-between; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-sm); min-height: 164px; }
         .trophy-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: #CBD5E1; }
@@ -355,17 +353,32 @@
         .opt-tidak .icon-wrap { background: var(--danger-bg); color: var(--danger); border: 1px solid #FECACA; }
         .opt-tidak.active { box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2); transform: scale(1.02); background: var(--danger-bg); border-width: 2px;}
 
+        /* Global System Update Overlay */
+        .system-update-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 99999; color: white; flex-direction: column; text-align: center; }
+        .system-update-overlay.active { display: flex; }
+        .loader-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
     </style>
 </head>
 <body>
+    <!-- OVERLAY AUTO UPDATE SAAS -->
+    <div id="system-update-overlay" class="system-update-overlay">
+        <div class="loader-spinner"></div>
+        <h2 style="font-size: 24px; margin-bottom: 8px;">Pembaruan Sistem Global</h2>
+        <p id="system-update-msg" style="color: var(--text-light); font-size: 14px; max-width: 400px; line-height: 1.5;">Menginisialisasi fitur baru dari Pusat Master Developer. Harap tunggu sebentar...</p>
+    </div>
+
     <div id="toast" class="toast"><i data-lucide="info" style="width: 18px;"></i> <span id="toast-msg">Memuat sistem...</span></div>
 
     <div id="view-login" class="view-section active">
         <div class="login-wrapper">
-            <div class="login-card">
+            
+            <!-- Form Login Normal (Aktif jika Tenant ID ada) -->
+            <div class="login-card" id="normal-login-form">
                 <div class="logo-box">
                     <img src="./logo.png" alt="TahfizhPro Logo" style="width: 48px; height: 48px; filter: brightness(0) invert(1);" onerror="this.src='https://placehold.co/48x48/2563EB/ffffff?text=TP'">
                 </div>
@@ -393,6 +406,25 @@
                     </p>
                 </div>
             </div>
+
+            <!-- Safety Net UI (Muncul jika Tenant ID tidak ditemukan oleh router) -->
+            <div class="login-card" id="safety-net-ui" style="display: none; border-top: 4px solid var(--danger);">
+                <div class="logo-box" style="background: linear-gradient(135deg, var(--danger) 0%, #991B1B 100%); box-shadow: 0 8px 15px -3px rgba(239, 68, 68, 0.3);">
+                    <i data-lucide="shield-alert" style="width: 32px; height: 32px; color: white;"></i>
+                </div>
+                <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #0F172A; letter-spacing: -0.02em;">Akses Portal Terkunci</h2>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">
+                    Sistem tidak dapat mengidentifikasi institusi Anda. Demi keamanan dan privasi data (Silo Database), Anda wajib mengakses portal melalui <strong>Tautan Khusus (Smart Link)</strong> yang diberikan oleh admin sekolah/instansi Anda.
+                </p>
+                <div style="background: #F8FAFC; border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 12px; margin-bottom: 24px; text-align: left;">
+                    <p style="font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px;">Contoh Tautan yang Benar:</p>
+                    <p style="font-size: 13px; color: var(--primary); font-family: monospace; font-weight: 600; word-break: break-all;">tahfizhpro.my.id?sekolah=alqudwah</p>
+                </div>
+                <button class="btn btn-primary" onclick="window.location.reload()" style="width: 100%; padding: 12px; font-size: 14px;">
+                    <i data-lucide="refresh-cw" style="width: 16px;"></i> Muat Ulang Halaman
+                </button>
+            </div>
+
             <p style="margin-top: 32px; font-size: 12px; font-weight: 500; color: var(--text-muted); text-align: center; opacity: 0.8;">
                 © 2026 TahfizhPro Enterprise
             </p>
@@ -623,7 +655,7 @@
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px; text-align: center;">Unggah foto ananda, lalu geser dan zoom agar pas di dalam bingkai.</p>
                 
                 <div class="twibbon-preview-area" id="twibbon-preview-area">
-                    <canvas id="twibbon-canvas" width="1080" height="1080" style="display: none; touch-action: none;"></canvas>
+                    <canvas id="twibbon-canvas" width="1080" height="1080" style="display: none; touch-action: none"></canvas>
                     <div id="twibbon-placeholder" style="text-align: center; color: var(--text-light);">
                         <i data-lucide="image-plus" style="width: 48px; height: 48px; margin-bottom: 8px;"></i>
                         <p style="font-size: 12px; font-weight: 600;">Area Pratinjau</p>
@@ -731,6 +763,14 @@
         import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { collection, onSnapshot, query, doc, setDoc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // =========================================================
+        // EKSEKUSI PENGECEKAN SAFETY NET (SaaS Tenant Router)
+        // =========================================================
+        if (window.SAAS_TENANT_MISSING) {
+            document.getElementById('normal-login-form').style.display = 'none';
+            document.getElementById('safety-net-ui').style.display = 'block';
+        }
+
         // Variabel Settings Global
         window.appSettings = { isTagihanAktif: true, periodeTagihan: "Bulan Ini", nominalTagihan: 5000, isSholatModuleActive: true };
         window.unsubscribeSettings = null;
@@ -801,6 +841,10 @@
         const SWIPE_TABS = ['tab-beranda', 'tab-analisis', 'tab-pesan', 'tab-riwayat'];
         let sentuhanMulaiX = 0;
         let sentuhanSelesaiX = 0;
+
+        window.unsubscribeSaasMaster = null;
+        const appLoadTime = Date.now();
+        let isForceUpdateInitialized = false;
         
         window.addEventListener('DOMContentLoaded', () => {
             if(window.lucide) window.lucide.createIcons();
@@ -808,6 +852,28 @@
             inisialisasiServiceWorker();
             pasangListenerSwipe();
             initTwibbonListeners();
+            
+            // Inisialisasi SaaS Auto Update Listener
+            setTimeout(() => {
+                if(window.unsubscribeSaasMaster) window.unsubscribeSaasMaster();
+                window.unsubscribeSaasMaster = onSnapshot(doc(db, 'saas_master', 'global_config'), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        // Memicu force reload jika timestamp dari God Mode lebih baru
+                        if (isForceUpdateInitialized && data.forceUpdateTimestamp && data.forceUpdateTimestamp > appLoadTime) {
+                            const overlay = document.getElementById('system-update-overlay');
+                            const overlayMsg = document.getElementById('system-update-msg');
+                            if (overlay && overlayMsg) {
+                                overlayMsg.innerHTML = `<strong>Versi ${data.version || 'Baru'}:</strong><br/>${data.updateMessage || 'Memuat pembaruan inti...'}`;
+                                overlay.classList.add('active');
+                            }
+                            // Hard reload otomatis untuk mengambil kode klien terbaru
+                            setTimeout(() => { window.location.reload(true); }, 3500);
+                        }
+                        isForceUpdateInitialized = true;
+                    }
+                });
+            }, 2000); 
         });
 
         window.lihatLencanaBaru = function() {
@@ -952,12 +1018,17 @@
         }
 
         const initAuth = async () => { 
+            // Jangan inisialisasi jika Tenant Missing (mencegah error firestore request dari root tanpa tenantID)
+            if (window.SAAS_TENANT_MISSING) return;
+            
             try { await signInAnonymously(auth); } 
             catch (error) { window.tampilkanToast("Koneksi database terputus.", true); } 
         };
         initAuth();
 
         onAuthStateChanged(auth, async (user) => { 
+            if (window.SAAS_TENANT_MISSING) return;
+            
             currentUser = user; 
             if (user) {
                 mulaiListenData();
@@ -1012,6 +1083,10 @@
         };
 
         window.loginOrangTua = async function() {
+            if (window.SAAS_TENANT_MISSING) {
+                return window.tampilkanToast("Akses dikunci. Gunakan tautan khusus sekolah Anda.", true);
+            }
+
             const kode = document.getElementById('login-kode-siswa').value.trim();
             if (!kode) return window.tampilkanToast("ID Siswa wajib diisi!", true);
 
@@ -1093,7 +1168,7 @@
             const mm = String(now.getMinutes()).padStart(2, '0');
             const currentTime = `${hh}:${mm}`;
             const targetTime = window.waktuSholatConfig[waktu];
-            if(!targetTime) return true; // Fallback jika waktu tidak ada di config
+            if(!targetTime) return true; 
             return currentTime >= targetTime;
         }
 
@@ -1129,7 +1204,7 @@
 
         function cekReminderSholat(dataSholat, siswaId, dateStr) {
             const sessionKey = `sholatReminderShown_${siswaId}_${dateStr}`;
-            if (sessionStorage.getItem(sessionKey)) return; // Sudah ditampilkan sesi ini
+            if (sessionStorage.getItem(sessionKey)) return; 
 
             const waktuList = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
             let unfilledPassed = [];
@@ -1155,16 +1230,14 @@
 
         window.tindakLanjutReminder = function() {
             window.tutupModalReminder();
-            // Scroll ke Sholat Card
             setTimeout(() => {
                 const sholatCard = document.getElementById('sholat-card');
                 if (sholatCard) {
                     sholatCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // Tambahkan animasi pulse 
                     sholatCard.classList.add('highlight-pulse');
                     setTimeout(() => {
                         sholatCard.classList.remove('highlight-pulse');
-                    }, 2500); // Pulse selama 2.5 detik lalu hilangkan
+                    }, 2500); 
                 }
             }, 300);
         };
@@ -1194,7 +1267,7 @@
                     if (!sudahMasuk && !status) {
                         btn.classList.add('locked');
                         btn.querySelector('.sholat-icon').innerHTML = `<i data-lucide="lock" style="width: 16px;"></i>`;
-                        return; // Stop styling if locked
+                        return; 
                     }
 
                     if (status === 'berjamaah') {
@@ -1218,7 +1291,6 @@
         }
 
         window.bukaOpsiSholat = function(waktu) {
-            // Validasi Real-time
             if (!isWaktuSudahMasuk(waktu)) {
                 window.tampilkanToast(`Waktu sholat ${waktu.charAt(0).toUpperCase() + waktu.slice(1)} belum tiba (${window.waktuSholatConfig[waktu]} WIB).`, true);
                 return;
@@ -1227,7 +1299,6 @@
             document.getElementById('hidden-waktu-sholat').value = waktu;
             document.getElementById('label-waktu-sholat').textContent = waktu;
             
-            // Highlight opsi yang sedang aktif
             const currentStatus = window.currentSholatData[waktu];
             document.querySelectorAll('.sholat-option-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -1251,7 +1322,6 @@
             const waktu = document.getElementById('hidden-waktu-sholat').value;
             const statusFinal = statusPilihan === 'hapus' ? null : statusPilihan;
             
-            // Optimistic Update UI
             window.currentSholatData[waktu] = statusFinal;
             renderSholatUI();
             window.tutupModalSholat();
@@ -1275,7 +1345,7 @@
                 }, { merge: true });
             } catch (error) {
                 window.tampilkanToast("Gagal menyimpan data sholat.", true);
-                listenSholatData(window.activeSiswaDocId); // Revert to server state
+                listenSholatData(window.activeSiswaDocId); 
             }
         };
 
@@ -1965,45 +2035,6 @@
                     ]
                 },
                 options: { responsive: true, maintainAspectRatio: false, layout: { padding: 5 }, scales: { r: { angleLines: { color: 'rgba(0, 0, 0, 0.1)', lineWidth: 1 }, grid: { color: 'rgba(0, 0, 0, 0.1)', circular: true, lineWidth: 1 }, pointLabels: { font: { family: 'Inter', size: 12, weight: '700' }, color: '#334155', padding: 10 }, ticks: { display: false, min: 0, max: 100, stepSize: 25 } } }, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12, weight: '600' }, boxWidth: 12, padding: 20, usePointStyle: true } }, tooltip: { enabled: true, backgroundColor: 'rgba(15, 23, 42, 0.95)', titleFont: { size: 13, family: 'Inter', weight: '700' }, bodyFont: { size: 13, family: 'Inter' }, padding: 12, cornerRadius: 8, displayColors: true, boxPadding: 4, callbacks: { label: function(context) { return ` ${context.dataset.label}: ${context.raw} Poin`; } } } } }
-            });
-        }
-
-        function mulaiListenData() {
-            const qSettings = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
-            if (window.unsubscribeSettings) window.unsubscribeSettings();
-            window.unsubscribeSettings = onSnapshot(qSettings, (docSnap) => {
-                if(docSnap.exists()) window.appSettings = { ...window.appSettings, ...docSnap.data() };
-                if (typeof renderSholatUI === 'function') renderSholatUI();
-                if (document.getElementById('view-parent').classList.contains('active')) {
-                    const elKode = document.getElementById('parent-kode-anak');
-                    if(elKode && elKode.textContent !== '---') {
-                        const siswaOrtu = semuaSiswa.find(s => s.kodeSiswa === elKode.textContent);
-                        if(siswaOrtu) { try { renderDasborOrangTua(siswaOrtu); } catch(e) {} }
-                    }
-                }
-            });
-
-            const qSiswa = query(collection(db, 'artifacts', appId, 'public', 'data', 'students'));
-            if (window.unsubscribeSiswa) window.unsubscribeSiswa();
-            window.unsubscribeSiswa = onSnapshot(qSiswa, (snapshot) => {
-                semuaSiswa = [];
-                snapshot.forEach(doc => semuaSiswa.push({ docId: doc.id, ...doc.data() }));
-                prosesAutoLogin();
-                if (document.getElementById('view-parent').classList.contains('active')) {
-                    const elKode = document.getElementById('parent-kode-anak');
-                    if(elKode && elKode.textContent !== '---') {
-                        const kodeAktif = elKode.textContent;
-                        const siswaOrtu = semuaSiswa.find(s => s.kodeSiswa === kodeAktif);
-                        if(siswaOrtu) { try { renderDasborOrangTua(siswaOrtu); } catch(e) {} }
-                    }
-                }
-            });
-
-            const qKelas = query(collection(db, 'artifacts', appId, 'public', 'data', 'classes'));
-            if (window.unsubscribeKelas) window.unsubscribeKelas();
-            window.unsubscribeKelas = onSnapshot(qKelas, (snapshot) => {
-                semuaKelas = [];
-                snapshot.forEach(doc => semuaKelas.push({ docId: doc.id, ...doc.data() }));
             });
         }
 

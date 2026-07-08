@@ -1,12 +1,14 @@
 // ==========================================
 // FILE: firebase-config.js
-// FUNGSI: Konfigurasi Terpusat Firebase (Enterprise Standard)
+// FUNGSI: Inisialisasi Database & SaaS Tenant Router
 // ==========================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+// 1. KONFIGURASI FIREBASE ANDA
+// TODO: Silakan ganti dengan kunci dari Firebase Console milik Anda
 const firebaseConfig = {
   apiKey: "AIzaSyC4KBqM6yMA0Do9Zx64zYYrNMMYh0VA7Hc",
   authDomain: "muthobaah.firebaseapp.com",
@@ -16,13 +18,45 @@ const firebaseConfig = {
   appId: "1:502582418252:web:088500cd149989fd69cde9"
 };
 
-// Inisialisasi Firebase
+// 2. INISIALISASI CORE SYSTEM
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// Namespace Enterprise agar data sinkron antara portal Admin dan Guru
-const appIdString = 'tahfizhpro-ent';
+// ==========================================
+// 3. SMART CACHING URL LOGIC (MULTI-TENANT SAAS)
+// ==========================================
+let appId = null;
 
-// Mengekspor modul agar bisa digunakan di file HTML lainnya
-export { app, auth, db, appIdString as appId };
+// A. Tangkap parameter dari URL (misal: tahfizhpro.my.id?sekolah=alqudwah)
+const urlParams = new URLSearchParams(window.location.search);
+const paramSekolah = urlParams.get('sekolah');
+
+if (paramSekolah) {
+    // Jika ada di URL, bersihkan formatnya (huruf kecil, tanpa spasi/simbol aneh)
+    appId = paramSekolah.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    
+    // Simpan ke memori permanen HP/Browser pengguna (Local Storage)
+    localStorage.setItem('tahfizhpro_tenant_id', appId);
+    
+    // UX MAGIC: Hapus '?sekolah=alqudwah' dari address bar agar terlihat profesional dan bersih!
+    window.history.replaceState({}, document.title, window.location.pathname);
+    
+} else {
+    // B. Jika tidak ada di URL (Wali murid buka dari bookmark / ketik manual besok harinya)
+    // Cek apakah HP ini pernah login sebelumnya
+    appId = localStorage.getItem('tahfizhpro_tenant_id');
+}
+
+// C. Sistem Pendeteksi Kehilangan Jejak (Untuk memicu UI "Safety Net" di HTML)
+if (!appId) {
+    // Peringatan global bahwa pengguna belum punya kamar
+    window.SAAS_TENANT_MISSING = true; 
+    console.warn("[SaaS Router] Tenant ID tidak ditemukan. Memicu layar Safety Net...");
+} else {
+    window.SAAS_TENANT_MISSING = false;
+    console.log(`[SaaS Router] Berhasil masuk ke Ruang Lingkup Klien: ${appId}`);
+}
+
+// 4. EKSPOR VARIABEL UNTUK DIGUNAKAN SELURUH APLIKASI
+export { db, auth, appId };

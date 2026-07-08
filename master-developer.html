@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>TahfizhPro - Master Developer Console</title>
+    <meta name="description" content="God Mode - Pusat kendali SaaS TahfizhPro Enterprise khusus pengembang.">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0F172A">
+
+    <!-- Ikon Aplikasi -->
+    <link rel="icon" href="./logo.png" type="image/png">
+
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            /* God Mode Dark Theme */
+            --bg-body: #0F172A;
+            --bg-surface: #1E293B;
+            --bg-surface-hover: #334155;
+            
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --text-light: #64748B;
+            
+            --border-color: #334155;
+            --border-focus: #3B82F6;
+            
+            --primary: #3B82F6;
+            --primary-hover: #2563EB;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            
+            --success: #10B981;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --success-glow: rgba(16, 185, 129, 0.4);
+            
+            --warning: #F59E0B;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            
+            --danger: #EF4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --danger-glow: rgba(239, 68, 68, 0.4);
+
+            --accent: #8B5CF6;
+            --accent-bg: rgba(139, 92, 246, 0.1);
+            
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-full: 9999px;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            
+            --sidebar-width: 280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; line-height: 1.5; }
+
+        h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; }
+        .text-sm { font-size: 14px; }
+        .text-xs { font-size: 12px; }
+        .text-muted { color: var(--text-muted); }
+        .font-mono { font-family: 'Fira Code', monospace; }
+
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; font-size: 13px; font-weight: 600; border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background-color: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
+        .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 0 20px var(--primary-glow); }
+        .btn-success { background-color: var(--success); color: white; box-shadow: 0 0 15px var(--success-glow); }
+        .btn-success:hover:not(:disabled) { background-color: #059669; transform: translateY(-1px); }
+        .btn-danger { background-color: var(--danger); color: white; box-shadow: 0 0 15px var(--danger-glow); }
+        .btn-danger:hover:not(:disabled) { background-color: #DC2626; transform: translateY(-1px); }
+        .btn-outline { background-color: transparent; border-color: var(--border-color); color: var(--text-main); }
+        .btn-outline:hover:not(:disabled) { background-color: var(--bg-surface-hover); border-color: var(--text-muted); }
+        
+        .btn-ghost { background: transparent; color: var(--text-muted); border: none; padding: 6px; border-radius: var(--radius-md); transition: all 0.2s; cursor: pointer; }
+        .btn-ghost:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        /* Inputs */
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .form-control { width: 100%; padding: 12px 16px; font-size: 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #0F172A; color: var(--text-main); transition: all 0.2s; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .form-control::placeholder { color: var(--text-light); }
+        
+        /* Custom Select */
+        .custom-select { appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2394A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>'); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; cursor: pointer; }
+
+        /* Badges & Toggles */
+        .badge { display: inline-flex; align-items: center; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: var(--radius-full); text-transform: uppercase; letter-spacing: 0.05em; gap: 4px; }
+        .badge-success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-accent { background: var(--accent-bg); color: var(--accent); border: 1px solid rgba(139, 92, 246, 0.3); }
+
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .3s; border-radius: 24px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .toggle-switch input:checked + .toggle-slider { background-color: var(--primary); }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+        /* Layout Views */
+        #login-view { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at center, #1E293B 0%, #0F172A 100%); position: fixed; top: 0; left: 0; z-index: 100; padding: 20px; }
+        .login-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); padding: 48px 40px; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; max-width: 420px; text-align: center; }
+        .dev-logo { width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%); border-radius: 20px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4); }
+
+        #dashboard-view { display: none; width: 100%; }
+
+        /* Sidebar */
+        .sidebar { width: var(--sidebar-width); background: var(--bg-surface); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; height: 100vh; position: fixed; left: 0; top: 0; z-index: 40; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; }
+        .sidebar-brand { font-size: 18px; font-weight: 800; color: white; letter-spacing: 1px; text-transform: uppercase; }
+        .sidebar-brand span { color: var(--primary); }
+        .sidebar-menu { padding: 24px 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; font-size: 14px; font-weight: 600; color: var(--text-muted); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s; border: 1px solid transparent; background: transparent; width: 100%; text-align: left; }
+        .menu-item:hover { background: rgba(255, 255, 255, 0.05); color: white; }
+        .menu-item.active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, transparent 100%); color: var(--primary); border-left: 3px solid var(--primary); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+        .menu-item.deploy-btn { border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); margin-top: auto; }
+        .menu-item.deploy-btn:hover { background: var(--danger-bg); box-shadow: 0 0 15px var(--danger-glow); }
+
+        /* Main Content */
+        .main-content { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; background: var(--bg-body); transition: margin-left 0.3s; width: calc(100% - var(--sidebar-width)); display: flex; flex-direction: column; }
+        .topbar { height: 76px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; position: sticky; top: 0; z-index: 10; }
+        .content-area { padding: 32px; max-width: 1400px; margin: 0 auto; width: 100%; display: none; animation: fadeIn 0.4s ease; flex-grow: 1; }
+        .content-area.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Cards & Grids */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 32px; }
+        .stat-card { background: var(--bg-surface); padding: 28px; border-radius: var(--radius-xl); border: 1px solid var(--border-color); position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%); }
+        .stat-card h3 { font-size: 13px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .stat-card .value { font-size: 36px; font-weight: 900; color: white; line-height: 1.2; font-family: 'Fira Code', monospace; }
+        .stat-bg-icon { position: absolute; right: -15px; bottom: -15px; opacity: 0.05; transform: scale(3); color: white; }
+
+        .data-card { background: var(--bg-surface); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 24px; box-shadow: var(--shadow-md); }
+        .data-header { padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; background: rgba(255, 255, 255, 0.02); }
+        
+        /* Tables */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th, td { padding: 16px 24px; text-align: left; font-size: 14px; border-bottom: 1px solid var(--border-color); }
+        th { font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; background: rgba(0,0,0,0.2); }
+        tbody tr { transition: background 0.2s; }
+        tbody tr:hover { background: rgba(255,255,255,0.03); }
+        tr:last-child td { border-bottom: none; }
+        
+        .client-name { font-weight: 700; color: white; font-size: 15px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .client-meta { font-size: 12px; color: var(--text-muted); font-family: 'Fira Code', monospace; }
+
+        /* Approval Card Specifics */
+        .approval-row { display: flex; align-items: center; gap: 16px; }
+        .price-change { display: flex; align-items: center; gap: 12px; font-family: 'Fira Code', monospace; font-weight: 600; background: #0F172A; padding: 8px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+        .price-old { color: var(--text-muted); text-decoration: line-through; }
+        .price-new { color: var(--warning); }
+
+        /* Terminal/Update Console */
+        .terminal-container { background: #000; border-radius: var(--radius-lg); border: 1px solid #334155; padding: 24px; font-family: 'Fira Code', monospace; position: relative; overflow: hidden; margin-bottom: 24px; }
+        .terminal-header { display: flex; gap: 8px; margin-bottom: 20px; }
+        .mac-btn { width: 12px; height: 12px; border-radius: 50%; }
+        .mac-close { background: #FF5F56; } .mac-min { background: #FFBD2E; } .mac-max { background: #27C93F; }
+        .terminal-body { color: #A5B4FC; font-size: 14px; line-height: 1.6; }
+        .cmd-prompt::before { content: 'dev@master:~$ '; color: var(--success); }
+        .cmd-cursor { display: inline-block; width: 8px; height: 16px; background: var(--text-main); animation: blink 1s step-end infinite; vertical-align: middle; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Modals & Toasts */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-container { background: var(--bg-surface); width: 100%; max-width: 500px; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); border: 1px solid var(--border-color); overflow: hidden; transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal-overlay.active .modal-container { transform: scale(1); }
+        .modal-header { padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); }
+        .modal-body { padding: 32px 24px; }
+        .modal-footer { padding: 20px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background: rgba(0,0,0,0.2); }
+        
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--bg-surface); color: white; padding: 16px 24px; border-radius: var(--radius-lg); font-size: 14px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--border-color); transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 2000; display: flex; align-items: center; gap: 12px; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.error { border-color: var(--danger); background: #450A0A; }
+        
+        .menu-toggle-btn { display: none; background: transparent; border: none; color: white; cursor: pointer; padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; width: 100%; }
+            .menu-toggle-btn { display: block; }
+            .topbar { padding: 0 20px; }
+            .content-area { padding: 20px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .data-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast" class="toast"><i data-lucide="info" style="width:20px; color: var(--primary);"></i> <span id="toast-msg">Initialising Master Node...</span></div>
+
+    <!-- VIEW 1: MASTER LOGIN -->
+    <div id="login-view">
+        <div class="login-card">
+            <div class="dev-logo">
+                <i data-lucide="terminal-square" style="width: 40px; height: 40px;"></i>
+            </div>
+            <h1 style="font-size: 28px; margin-bottom: 8px; color: white;">God Mode</h1>
+            <p class="text-muted text-sm" style="margin-bottom: 40px;">SaaS Master Developer Console</p>
+            
+            <div class="input-group" style="text-align: left;">
+                <label>Developer Passkey</label>
+                <div style="position: relative;">
+                    <i data-lucide="key" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 20px; color: var(--text-light);"></i>
+                    <input type="password" id="dev-pin" class="form-control" placeholder="••••••••" style="padding-left: 48px; padding-right: 48px; font-size: 20px; letter-spacing: 8px; font-weight: 800; height: 60px;" autocomplete="off" onkeypress="if(event.key === 'Enter') window.loginDeveloper()">
+                    <button type="button" onclick="window.toggleDevPin()" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer;" title="Lihat/Sembunyikan">
+                        <i data-lucide="eye" id="icon-eye-dev" style="width: 20px;"></i>
+                    </button>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="window.loginDeveloper()" style="width: 100%; padding: 16px; font-size: 15px; margin-top: 16px;">
+                <i data-lucide="zap" style="width: 18px;"></i> Inisialisasi Akses
+            </button>
+        </div>
+    </div>
+
+    <!-- VIEW 2: MASTER DASHBOARD -->
+    <div id="dashboard-view">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="main-sidebar">
+            <div class="sidebar-header">
+                <i data-lucide="box" style="color: var(--primary); width: 24px; height: 24px;"></i>
+                <span class="sidebar-brand">Tahfizh<span>Pro</span> SaaS</span>
+            </div>
+            <nav class="sidebar-menu">
+                <div style="font-size: 11px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; padding-left: 16px;">Core System</div>
+                <button class="menu-item active" onclick="window.switchTab('overview')"><i data-lucide="activity"></i> Command Center</button>
+                <button class="menu-item" onclick="window.switchTab('clients')"><i data-lucide="building-2"></i> Manajemen Klien</button>
+                <button class="menu-item" onclick="window.switchTab('approvals')"><i data-lucide="check-square"></i> Approval Harga <span id="badge-approval" class="badge badge-warning" style="margin-left:auto; display:none;">0</span></button>
+                
+                <div style="font-size: 11px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 24px; margin-bottom: 8px; padding-left: 16px;">Operations</div>
+                <button class="menu-item" onclick="window.switchTab('updates')"><i data-lucide="rocket"></i> Deploy & Update</button>
+                
+                <button class="menu-item deploy-btn" onclick="window.logoutDeveloper()"><i data-lucide="power"></i> Lock Terminal</button>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <button class="menu-toggle-btn" onclick="window.toggleSidebar()"><i data-lucide="menu"></i></button>
+                    <h2 style="font-size: 16px; font-weight: 700; margin: 0; color: white;">Global Operations</h2>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600;">
+                    <span class="badge badge-success"><i data-lucide="wifi" style="width:12px;"></i> System Online</span>
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);">
+                        <i data-lucide="cpu" style="width: 20px;"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB: COMMAND CENTER -->
+            <div id="tab-overview" class="content-area active">
+                <div style="margin-bottom: 32px;">
+                    <h1 style="font-size: 28px; color: white; margin-bottom: 8px;">Kekuasaan & Kendali</h1>
+                    <p class="text-muted">Pantau metrik makro dari seluruh instansi (Tenant) yang menggunakan SaaS Anda.</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3><i data-lucide="building" style="width: 16px;"></i> Total Klien Aktif</h3>
+                        <div class="value" id="stat-total-clients">0</div>
+                        <i data-lucide="globe" class="stat-bg-icon"></i>
+                    </div>
+                    <div class="stat-card" style="border-top-color: var(--success);">
+                        <h3 style="color: var(--success);"><i data-lucide="users" style="width: 16px;"></i> Total Santri Aktif</h3>
+                        <div class="value" id="stat-total-users" style="color: var(--success);">0</div>
+                        <i data-lucide="users" class="stat-bg-icon" style="color: var(--success);"></i>
+                    </div>
+                    <div class="stat-card" style="border-top-color: var(--warning);">
+                        <h3 style="color: var(--warning);"><i data-lucide="banknote" style="width: 16px;"></i> Potensi GMV / Bulan</h3>
+                        <div class="value" id="stat-total-revenue" style="color: var(--warning); font-size: 28px;">Rp 0</div>
+                        <p class="text-xs text-muted" style="margin-top: 8px;">*Kalkulasi berdasarkan real data santri klien.</p>
+                        <i data-lucide="wallet" class="stat-bg-icon" style="color: var(--warning);"></i>
+                    </div>
+                </div>
+
+                <div class="data-card">
+                    <div class="data-header">
+                        <h2 style="font-size: 18px; color: white;">Status Infrastruktur</h2>
+                        <span class="badge badge-accent">Production Environment</span>
+                    </div>
+                    <div style="padding: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom: 16px;">
+                                <span class="text-sm font-mono text-muted">Database Server (Firestore)</span>
+                                <span style="color: var(--success); font-weight: 700; font-size: 13px;">Connected</span>
+                            </div>
+                            <div style="width: 100%; height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden;">
+                                <div style="width: 15%; height: 100%; background: var(--success); box-shadow: 0 0 10px var(--success);"></div>
+                            </div>
+                            <p class="text-xs text-muted" style="margin-top: 8px; text-align: right;">Beban Rendah</p>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom: 16px;">
+                                <span class="text-sm font-mono text-muted">Versi Aplikasi Klien Terakhir</span>
+                                <span style="color: var(--primary); font-weight: 700; font-size: 13px;" id="sys-version-text">v2.0.0</span>
+                            </div>
+                            <p class="text-xs text-muted">Auto-Update Push Mechanism: <strong style="color:var(--success);">Standby</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: MANAJEMEN KLIEN -->
+            <div id="tab-clients" class="content-area">
+                <div class="data-card">
+                    <div class="data-header">
+                        <div>
+                            <h2 style="font-size: 20px; color: white;">Manajemen Tenant (Klien)</h2>
+                            <p class="text-muted text-sm" style="margin-top: 4px;">Kelola sekolah/lembaga yang berlangganan SaaS Anda.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="window.openModalClient()">
+                            <i data-lucide="plus-circle" style="width:18px;"></i> Daftarkan Klien Baru
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Nama Instansi / Tenant ID</th><th>Kontak Owner</th><th>Status Langganan</th><th>Jumlah Santri</th><th style="text-align: right;">Aksi Master</th></tr></thead>
+                            <tbody id="table-clients">
+                                <tr><td colspan="5" style="text-align:center; padding: 40px;" class="text-muted">Memuat data infrastruktur...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: APPROVAL HARGA -->
+            <div id="tab-approvals" class="content-area">
+                <div style="margin-bottom: 32px;">
+                    <h1 style="font-size: 24px; color: white; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;">
+                        Otorisasi Kebijakan Harga
+                        <span class="badge badge-warning" id="title-badge-approval" style="display: none;">0 Pending</span>
+                    </h1>
+                    <p class="text-muted">Setiap perubahan harga tagihan oleh Super Admin klien harus melalui persetujuan Anda di sini untuk menjaga standarisasi SaaS.</p>
+                </div>
+
+                <div class="data-card">
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Nama Instansi</th><th>Tanggal Pengajuan</th><th>Perubahan Tarif Pokok</th><th>Status</th><th style="text-align: right;">Otorisasi</th></tr></thead>
+                            <tbody id="table-approvals">
+                                <tr><td colspan="5" style="text-align:center; padding: 40px;" class="text-muted">Tidak ada permintaan otorisasi tertunda.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: DEPLOY & UPDATE -->
+            <div id="tab-updates" class="content-area">
+                <div style="margin-bottom: 32px; max-width: 800px;">
+                    <h1 style="font-size: 24px; color: white; margin-bottom: 8px;">Pusat Deploy & Update</h1>
+                    <p class="text-muted">Kendalikan pembaruan fitur secara instan. Fitur ini akan memaksa seluruh browser pengguna (Ortu, Guru, Admin Klien) untuk melakukan <i>hard reload</i> guna memuat kode terbaru Anda.</p>
+                </div>
+
+                <div class="terminal-container">
+                    <div class="terminal-header">
+                        <div class="mac-btn mac-close"></div>
+                        <div class="mac-btn mac-min"></div>
+                        <div class="mac-btn mac-max"></div>
+                    </div>
+                    <div class="terminal-body" id="terminal-output">
+                        <div>[SYSTEM] Inisialisasi modul deployment... OK</div>
+                        <div>[SYSTEM] Menghubungkan ke node klien... <span style="color: var(--success);">Connected</span></div>
+                        <div style="margin-top: 12px;" class="cmd-prompt">Menunggu perintah eksekusi deploy...<span class="cmd-cursor"></span></div>
+                    </div>
+                </div>
+
+                <div class="data-card" style="max-width: 800px;">
+                    <div class="data-header" style="background: rgba(59, 130, 246, 0.1); border-bottom-color: rgba(59, 130, 246, 0.2);">
+                        <h3 style="color: var(--primary); font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="radio" style="width: 20px;"></i> Broadcast Update Signal
+                        </h3>
+                    </div>
+                    <div style="padding: 24px;">
+                        <div class="input-group">
+                            <label>Versi Rilis Baru</label>
+                            <input type="text" id="input-update-version" class="form-control" placeholder="Contoh: v2.1.0" autocomplete="off">
+                        </div>
+                        <div class="input-group">
+                            <label>Pesan Changelog (Ditampilkan ke Klien sebelum Reload)</label>
+                            <input type="text" id="input-update-message" class="form-control" placeholder="Misal: Penambahan fitur grafik performa baru. Harap muat ulang." autocomplete="off">
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding: 16px; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: var(--radius-md);">
+                            <div>
+                                <span class="text-sm" style="font-weight: 700; color: var(--warning);">Maintenance Mode (Coming Soon)</span>
+                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Kunci seluruh akses aplikasi klien dan tampilkan halaman perbaikan.</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" disabled title="Fitur akan datang">
+                                <span class="toggle-slider" style="background-color: var(--border-color); cursor: not-allowed;"></span>
+                            </label>
+                        </div>
+
+                        <button class="btn btn-danger" style="width: 100%; padding: 16px; font-size: 15px; text-transform: uppercase; letter-spacing: 2px;" onclick="window.confirmDeployUpdate()">
+                            <i data-lucide="rocket" style="width: 20px;"></i> PUSH DEPLOY UPDATE
+                        </button>
+                        <p style="font-size: 11px; color: var(--danger); margin-top: 12px; text-align: center;">
+                            *Peringatan: Tindakan ini bersifat global dan akan mempengaruhi ribuan pengguna secara instan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL: ADD/EDIT CLIENT -->
+    <div id="modal-client" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 style="font-size: 18px; color: white;" id="client-modal-title">Daftarkan Tenant Baru</h3>
+                <button class="btn-ghost" onclick="window.closeModal('modal-client')"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="client-id">
+                <div class="input-group">
+                    <label>Nama Instansi / Sekolah</label>
+                    <input type="text" id="input-client-name" class="form-control" placeholder="Contoh: SDIT Tahfizh Al-Qudwah" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Tenant ID / App ID</label>
+                    <input type="text" id="input-client-tenantId" class="form-control font-mono" placeholder="alqudwah_jkt" autocomplete="off">
+                    <p class="text-xs text-muted" style="margin-top: 6px;">ID unik ini digunakan sebagai 'appId' untuk memisahkan data Klien (Silo Database).</p>
+                </div>
+                <div class="input-group">
+                    <label>No. WhatsApp Pengelola (Opsional)</label>
+                    <input type="number" id="input-client-phone" class="form-control" placeholder="0812xxxxxx">
+                </div>
+                <div class="input-group" style="margin-bottom: 0;">
+                    <label>Status Langganan</label>
+                    <select id="select-client-status" class="form-control custom-select">
+                        <option value="active">Active (Akses Terbuka)</option>
+                        <option value="suspended">Suspended (Blokir Akses)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="window.closeModal('modal-client')">Batal</button>
+                <button class="btn btn-primary" onclick="window.saveClient()">Simpan Registrasi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DOUBLE CONFIRMATION DANGER ZONE -->
+    <div id="modal-confirm" class="modal-overlay">
+        <div class="modal-container" style="max-width: 400px; text-align: center;">
+            <div class="modal-body" style="padding-top: 40px;">
+                <div style="width: 64px; height: 64px; background: var(--danger-bg); color: var(--danger); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 0 20px var(--danger-glow);">
+                    <i data-lucide="alert-triangle" style="width: 32px; height: 32px;"></i>
+                </div>
+                <h3 id="confirm-title" style="font-size: 20px; color: white; margin-bottom: 12px;">Konfirmasi Eksekusi</h3>
+                <p id="confirm-desc" class="text-muted text-sm" style="margin-bottom: 24px; line-height: 1.6;"></p>
+                
+                <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 24px;">
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: var(--danger); margin-bottom: 12px; text-transform: uppercase;">Ketik "DEPLOY" untuk konfirmasi:</label>
+                    <input type="text" id="input-confirm-verify" class="form-control" style="text-align: center; font-weight: bold; border-color: var(--danger);" onkeyup="window.checkConfirmVerify()" autocomplete="off" placeholder="DEPLOY">
+                </div>
+                
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-outline" onclick="window.closeModal('modal-confirm')" style="flex: 1;">Batal</button>
+                    <button class="btn btn-danger" id="btn-execute-confirm" style="flex: 1;" disabled>Eksekusi Global</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Logic Firebase & App -->
+    <script type="module">
+        import { db, auth } from './firebase-config.js';
+        import { signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // MASTER CREDENTIALS (Hardcoded for Developer God Mode)
+        const MASTER_PIN = "dev2026"; 
+
+        // State Global
+        let allClients = [];
+        let allApprovals = [];
+        let globalSaaSSettings = { version: "v1.0.0", forceUpdateTimestamp: 0 };
+        
+        let confirmActionCallback = null;
+        let confirmRequiredText = "DEPLOY";
+
+        // Firebase Listeners Unsubscribe
+        window.unsubscribeClients = null;
+        window.unsubscribeApprovals = null;
+        window.unsubscribeSettings = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            window.lucide.createIcons();
+            
+            // Catatan: Console Master Developer ini tidak dikunci oleh "SAAS_TENANT_MISSING" 
+            // karena portal ini digunakan untuk mengelola SELURUH tenant di tingkat global.
+
+            // Cek Sesi
+            if (localStorage.getItem('tahfizhpro_dev_session') === 'active') {
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('dashboard-view').style.display = 'block';
+                initFirebaseDev();
+            }
+        });
+
+        // ==========================================
+        // LOGIN & AUTHENTICATION
+        // ==========================================
+        window.toggleDevPin = function() {
+            const pinInput = document.getElementById('dev-pin');
+            const iconEye = document.getElementById('icon-eye-dev');
+            if (pinInput.type === 'password') {
+                pinInput.type = 'text';
+                iconEye.setAttribute('data-lucide', 'eye-off');
+            } else {
+                pinInput.type = 'password';
+                iconEye.setAttribute('data-lucide', 'eye');
+            }
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        window.loginDeveloper = async function() {
+            const pin = document.getElementById('dev-pin').value;
+            if(pin === MASTER_PIN) {
+                window.showToast("Passkey Diterima. Menginisialisasi God Mode...");
+                
+                try {
+                    await signInAnonymously(auth);
+                    localStorage.setItem('tahfizhpro_dev_session', 'active');
+                    document.getElementById('login-view').style.display = 'none';
+                    document.getElementById('dashboard-view').style.display = 'block';
+                    initFirebaseDev();
+                } catch(e) {
+                    window.showToast("Koneksi Firebase Gagal. Cek internet.", true);
+                }
+            } else {
+                window.showToast("Akses Ditolak. Passkey Tidak Valid!", true);
+                document.getElementById('dev-pin').value = '';
+            }
+        };
+
+        window.logoutDeveloper = function() {
+            localStorage.removeItem('tahfizhpro_dev_session');
+            if (window.unsubscribeClients) window.unsubscribeClients();
+            if (window.unsubscribeApprovals) window.unsubscribeApprovals();
+            if (window.unsubscribeSettings) window.unsubscribeSettings();
+            
+            document.getElementById('dashboard-view').style.display = 'none';
+            document.getElementById('login-view').style.display = 'flex';
+            document.getElementById('dev-pin').value = '';
+            window.showToast("Sesi Developer Dikunci.");
+        };
+
+        // ==========================================
+        // FIREBASE DATA INITIALIZATION
+        // ==========================================
+        function initFirebaseDev() {
+            // 1. Listen to Master SaaS Settings
+            const settingsRef = doc(db, 'saas_master', 'global_config');
+            window.unsubscribeSettings = onSnapshot(settingsRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    globalSaaSSettings = { ...globalSaaSSettings, ...docSnap.data() };
+                    document.getElementById('sys-version-text').textContent = globalSaaSSettings.version || 'v1.0.0';
+                } else {
+                    setDoc(settingsRef, { version: "v1.0.0", forceUpdateTimestamp: 0 });
+                }
+            });
+
+            // 2. Listen to Clients (Tenants)
+            const clientsRef = collection(db, 'saas_master', 'clients', 'list');
+            window.unsubscribeClients = onSnapshot(query(clientsRef), (snapshot) => {
+                allClients = [];
+                snapshot.forEach(doc => allClients.push({ id: doc.id, ...doc.data() }));
+                renderClients();
+                calculateDashboardStats();
+            });
+
+            // 3. Listen to Price Approvals
+            const approvalsRef = collection(db, 'saas_master', 'approvals', 'price_changes');
+            window.unsubscribeApprovals = onSnapshot(query(approvalsRef), (snapshot) => {
+                allApprovals = [];
+                snapshot.forEach(doc => allApprovals.push({ id: doc.id, ...doc.data() }));
+                renderApprovals();
+            });
+        }
+
+        // ==========================================
+        // UI INTERACTIONS & TABS
+        // ==========================================
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.content-area').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            if (window.innerWidth <= 768) { window.toggleSidebar(); }
+        };
+
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('main-sidebar');
+            sidebar.classList.toggle('open');
+        };
+
+        window.showToast = function(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.className = `toast show ${isError ? 'error' : ''}`;
+            toast.innerHTML = `<i data-lucide="${isError ? 'alert-octagon' : 'check-circle'}" style="width:20px;"></i> <span id="toast-msg">${msg}</span>`;
+            if(window.lucide) window.lucide.createIcons();
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        };
+
+        window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
+        window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
+
+        // ==========================================
+        // DASHBOARD LOGIC
+        // ==========================================
+        function calculateDashboardStats() {
+            document.getElementById('stat-total-clients').textContent = allClients.length;
+            
+            let totalSantriEstimated = 0;
+            let totalRevenueEstimated = 0;
+
+            allClients.forEach(client => {
+                if (client.status === 'active') {
+                    // REAL DATA (Murni tanpa dummy balikan 150/5000)
+                    const students = client.studentCount || 0; 
+                    const price = client.currentPrice || 0;
+                    
+                    totalSantriEstimated += students;
+                    totalRevenueEstimated += (students * price);
+                }
+            });
+
+            document.getElementById('stat-total-users').textContent = totalSantriEstimated.toLocaleString('id-ID');
+            document.getElementById('stat-total-revenue').textContent = `Rp ${totalRevenueEstimated.toLocaleString('id-ID')}`;
+        }
+
+        // ==========================================
+        // CLIENT (TENANT) MANAGEMENT
+        // ==========================================
+        window.openModalClient = function(id = null) {
+            document.getElementById('client-id').value = id || '';
+            if (id) {
+                const c = allClients.find(x => x.id === id);
+                document.getElementById('client-modal-title').textContent = 'Edit Data Tenant';
+                document.getElementById('input-client-name').value = c.name || '';
+                // Fallback Logic: Jika client lama belum punya tenantId, gunakan Document ID-nya.
+                document.getElementById('input-client-tenantId').value = c.tenantId || c.id || '';
+                document.getElementById('input-client-tenantId').disabled = true;
+                document.getElementById('input-client-phone').value = c.phone || '';
+                document.getElementById('select-client-status').value = c.status || 'active';
+            } else {
+                document.getElementById('client-modal-title').textContent = 'Daftarkan Tenant Baru';
+                document.getElementById('input-client-name').value = '';
+                document.getElementById('input-client-tenantId').value = '';
+                document.getElementById('input-client-tenantId').disabled = false;
+                document.getElementById('input-client-phone').value = '';
+                document.getElementById('select-client-status').value = 'active';
+            }
+            window.openModal('modal-client');
+        };
+
+        window.saveClient = async function() {
+            const name = document.getElementById('input-client-name').value.trim();
+            const tenantIdRaw = document.getElementById('input-client-tenantId').value.trim();
+            let phone = document.getElementById('input-client-phone').value.trim();
+            const status = document.getElementById('select-client-status').value;
+            const existingId = document.getElementById('client-id').value;
+
+            if(!name || !tenantIdRaw) return window.showToast("Nama dan Tenant ID wajib diisi!", true);
+            const tenantId = tenantIdRaw.toLowerCase().replace(/[^a-z0-9_]/g, '');
+            if (phone && phone.startsWith('0')) phone = '62' + phone.slice(1);
+
+            const docId = existingId || tenantId;
+
+            if (!existingId) {
+                const exists = allClients.find(c => (c.tenantId === tenantId) || (c.id === tenantId));
+                if (exists) return window.showToast("Tenant ID sudah digunakan klien lain!", true);
+            }
+
+            const payload = {
+                name: name,
+                tenantId: tenantId,
+                phone: phone,
+                status: status,
+                updatedAt: Date.now()
+            };
+
+            try {
+                if (!existingId) {
+                    payload.createdAt = Date.now();
+                    payload.currentPrice = 0; 
+                    payload.studentCount = 0; 
+                }
+                
+                // Gunakan setDoc dengan opsi merge sebagai teknik Upsert Anti-Gagal
+                await setDoc(doc(db, 'saas_master', 'clients', 'list', docId), payload, { merge: true });
+                window.showToast("Data Tenant berhasil disimpan.");
+                window.closeModal('modal-client');
+            } catch(e) { window.showToast("Gagal menyimpan ke server.", true); }
+        };
+
+        function renderClients() {
+            const tbody = document.getElementById('table-clients');
+            if(allClients.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px;" class="text-muted"><i data-lucide="building" style="width:32px; margin-bottom:12px; opacity:0.5;"></i><br>Belum ada klien terdaftar.</td></tr>`; 
+                if(window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            tbody.innerHTML = allClients.map(c => {
+                const isSuspend = c.status === 'suspended';
+                const badgeStatus = isSuspend ? '<span class="badge badge-danger"><i data-lucide="lock" style="width:10px;"></i> Suspended</span>' : '<span class="badge badge-success"><i data-lucide="check-circle" style="width:10px;"></i> Active</span>';
+                
+                // Murni Data Asli
+                const estSantri = (c.studentCount || 0).toLocaleString('id-ID');
+                
+                return `
+                <tr>
+                    <td>
+                        <div class="client-name">${c.name}</div>
+                        <div class="client-meta">App ID: <span style="color:var(--primary);">${c.tenantId || c.id}</span></div>
+                    </td>
+                    <td class="font-mono text-muted">${c.phone || '-'}</td>
+                    <td>${badgeStatus}</td>
+                    <td style="color:var(--text-light); font-weight:600;">${estSantri} Santri</td>
+                    <td>
+                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                            <button class="btn btn-outline" style="padding: 6px 10px;" onclick="window.openModalClient('${c.id}')" title="Edit Klien"><i data-lucide="edit-3" style="width:14px;"></i></button>
+                            <button class="btn btn-outline" style="padding: 6px 10px; color: ${isSuspend ? 'var(--success)' : 'var(--danger)'}; border-color: ${isSuspend ? 'var(--success-bg)' : 'var(--danger-bg)'};" onclick="window.toggleSuspendClient('${c.id}', '${isSuspend ? 'active' : 'suspended'}')" title="${isSuspend ? 'Buka Akses' : 'Blokir Akses'}">
+                                <i data-lucide="${isSuspend ? 'unlock' : 'lock'}" style="width:14px;"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+            if(window.lucide) window.lucide.createIcons();
+        }
+
+        window.toggleSuspendClient = async function(id, newStatus) {
+            try {
+                // Menggunakan setDoc dengan merge true sebagai langkah anti-gagal
+                await setDoc(doc(db, 'saas_master', 'clients', 'list', id), { status: newStatus }, { merge: true });
+                window.showToast(`Status klien diubah menjadi ${newStatus.toUpperCase()}`);
+            } catch(e) { window.showToast("Gagal mengubah status.", true); }
+        };
+
+        // ==========================================
+        // APPROVAL HARGA (INTEGRASI ANTAR APLIKASI)
+        // ==========================================
+        function renderApprovals() {
+            const tbody = document.getElementById('table-approvals');
+            const pendingList = allApprovals.filter(a => a.status === 'pending');
+            
+            const badgeCount = document.getElementById('badge-approval');
+            const titleBadge = document.getElementById('title-badge-approval');
+            
+            if (pendingList.length > 0) {
+                badgeCount.style.display = 'inline-block'; badgeCount.textContent = pendingList.length;
+                titleBadge.style.display = 'inline-block'; titleBadge.textContent = `${pendingList.length} Pending`;
+            } else {
+                badgeCount.style.display = 'none'; titleBadge.style.display = 'none';
+            }
+
+            if(allApprovals.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px;" class="text-muted"><i data-lucide="inbox" style="width:32px; margin-bottom:12px; opacity:0.5;"></i><br>Tidak ada riwayat pengajuan otorisasi.</td></tr>`;
+                if(window.lucide) window.lucide.createIcons(); return;
+            }
+
+            const sorted = [...allApprovals].sort((a,b) => b.requestedAt - a.requestedAt);
+
+            tbody.innerHTML = sorted.map(a => {
+                let statusHtml = '';
+                if(a.status === 'pending') statusHtml = '<span class="badge badge-warning"><i data-lucide="clock" style="width:10px;"></i> Pending Review</span>';
+                else if(a.status === 'approved') statusHtml = '<span class="badge badge-success"><i data-lucide="check" style="width:10px;"></i> Approved</span>';
+                else statusHtml = '<span class="badge badge-danger"><i data-lucide="x" style="width:10px;"></i> Rejected</span>';
+
+                const dateStr = new Date(a.requestedAt).toLocaleString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+                const oldP = (a.oldPrice || 0).toLocaleString('id-ID');
+                const newP = (a.newPrice || 0).toLocaleString('id-ID');
+
+                let actionHtml = '';
+                if(a.status === 'pending') {
+                    actionHtml = `
+                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                            <button class="btn btn-success" style="padding: 6px 12px; font-size: 12px;" onclick="window.processApproval('${a.id}', 'approved', '${a.tenantId}', ${a.newPrice})">Setujui</button>
+                            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; color:var(--danger); border-color:var(--danger-bg);" onclick="window.processApproval('${a.id}', 'rejected', null, null)">Tolak</button>
+                        </div>
+                    `;
+                } else {
+                    actionHtml = `<span class="text-xs text-muted" style="display:block; text-align:right;">Selesai diproses</span>`;
+                }
+
+                return `
+                <tr>
+                    <td><div class="client-name">${a.clientName}</div><div class="client-meta">${a.tenantId}</div></td>
+                    <td class="text-muted text-sm">${dateStr}</td>
+                    <td>
+                        <div class="price-change">
+                            <span class="price-old">Rp ${oldP}</span>
+                            <i data-lucide="arrow-right" style="width:14px; color:var(--text-light);"></i>
+                            <span class="price-new">Rp ${newP}</span>
+                        </div>
+                    </td>
+                    <td>${statusHtml}</td>
+                    <td>${actionHtml}</td>
+                </tr>
+                `;
+            }).join('');
+            if(window.lucide) window.lucide.createIcons();
+        }
+
+        window.processApproval = async function(approvalId, newStatus, tenantId, newPrice) {
+            try {
+                // 1. Update status di tabel Approval (Gunakan setDoc dengan merge: true)
+                await setDoc(doc(db, 'saas_master', 'approvals', 'price_changes', approvalId), { 
+                    status: newStatus,
+                    processedAt: Date.now()
+                }, { merge: true });
+
+                // 2. Jika disetujui, update dokumen klien di master dan tembus database Klien
+                if (newStatus === 'approved' && tenantId && newPrice) {
+                    await setDoc(doc(db, 'saas_master', 'clients', 'list', tenantId), { 
+                        currentPrice: newPrice 
+                    }, { merge: true });
+                    
+                    // EKSEKUSI REAL SAAS: Tembus langsung ke dalam tabel settings global milik Tenant tersebut!
+                    await setDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'), { 
+                        nominalTagihan: newPrice 
+                    }, { merge: true });
+                }
+
+                window.showToast(`Pengajuan harga berhasil di-${newStatus}.`);
+            } catch (e) {
+                console.error("Gagal memproses:", e);
+                window.showToast("Gagal memproses otorisasi.", true);
+            }
+        };
+
+        // ==========================================
+        // DEPLOY & UPDATE AUTOMATION
+        // ==========================================
+        function typeWriterConsole(text, isCommand = false) {
+            const terminal = document.getElementById('terminal-output');
+            const newDiv = document.createElement('div');
+            
+            if(isCommand) {
+                newDiv.className = 'cmd-prompt';
+                newDiv.innerHTML = `Executing deploy command...<span class="cmd-cursor"></span>`;
+            } else {
+                newDiv.innerHTML = text;
+            }
+            
+            const oldCursor = terminal.querySelector('.cmd-cursor');
+            if(oldCursor) oldCursor.remove();
+
+            terminal.appendChild(newDiv);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        window.confirmDeployUpdate = function() {
+            const version = document.getElementById('input-update-version').value.trim();
+            const message = document.getElementById('input-update-message').value.trim();
+
+            if (!version || !message) return window.showToast("Versi dan Pesan wajib diisi!", true);
+
+            document.getElementById('confirm-title').textContent = "Peringatan Eksekusi Global";
+            document.getElementById('confirm-desc').innerHTML = `Anda akan menyiarkan sinyal <strong>FORCE RELOAD</strong> ke seluruh aplikasi yang berjalan.<br><br>Versi Baru: <strong style="color:var(--primary);">${version}</strong><br>Pesan: <em>"${message}"</em>`;
+            
+            const btnExec = document.getElementById('btn-execute-confirm');
+            document.getElementById('input-confirm-verify').value = '';
+            btnExec.disabled = true;
+
+            // Membungkus pemanggilan eksekusi asli dan mengaitkannya secara nyata
+            confirmActionCallback = async () => {
+                return await executeGlobalDeploy(version, message);
+            };
+            
+            btnExec.onclick = confirmActionCallback;
+
+            window.openModal('modal-confirm');
+        };
+
+        window.checkConfirmVerify = function() {
+            const val = document.getElementById('input-confirm-verify').value.trim().toUpperCase();
+            document.getElementById('btn-execute-confirm').disabled = (val !== confirmRequiredText);
+        };
+
+        async function executeGlobalDeploy(version, message) {
+            window.closeModal('modal-confirm');
+            typeWriterConsole("", true);
+            
+            setTimeout(() => typeWriterConsole(`[DEPLOY] Mempersiapkan payload versi <span style="color:var(--warning);">${version}</span>...`), 800);
+            setTimeout(() => typeWriterConsole(`[DEPLOY] Menulis metadata ke global_config...`), 1500);
+
+            try {
+                const ts = Date.now();
+                await setDoc(doc(db, 'saas_master', 'global_config'), {
+                    version: version,
+                    updateMessage: message,
+                    forceUpdateTimestamp: ts
+                }, { merge: true });
+
+                setTimeout(() => {
+                    typeWriterConsole(`[SUCCESS] Sinyal update berhasil dikirim ke seluruh tenant! (Timestamp: ${ts})`, false);
+                    document.getElementById('sys-version-text').textContent = version;
+                    document.getElementById('input-update-version').value = '';
+                    document.getElementById('input-update-message').value = '';
+                    window.showToast("Global Deploy Berhasil Dilakukan!");
+                }, 2500);
+
+                return true;
+            } catch(e) {
+                setTimeout(() => {
+                    typeWriterConsole(`<span style="color:var(--danger);">[ERROR] Kegagalan transmisi data. Koneksi terputus.</span>`);
+                    window.showToast("Gagal melakukan Deploy Update.", true);
+                }, 2000);
+                return false;
+            }
+        }
+
+    </script>
+</body>
+</html>

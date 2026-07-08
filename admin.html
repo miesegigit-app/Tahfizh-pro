@@ -221,6 +221,12 @@
         .billing-student-name { font-size: 14px; font-weight: 600; color: var(--text-main); }
         .billing-student-meta { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
 
+        /* Global System Update Overlay overlay (SaaS Deploy) */
+        .system-update-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 99999; color: white; flex-direction: column; text-align: center; }
+        .system-update-overlay.active { display: flex; }
+        .loader-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         @media (max-width: 1024px) {
             .finance-layout { grid-template-columns: 1fr; }
             .chart-card { max-width: 100%; }
@@ -250,7 +256,7 @@
             @page { size: A4 portrait; margin: 0; } 
             html, body { width: 100%; height: 100%; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: hidden !important; margin: 0; padding: 0; }
             
-            #login-view, #dashboard-view, .toast, .modal-overlay, .sidebar-backdrop, .preview-controls { display: none !important; }
+            #login-view, #dashboard-view, .toast, .modal-overlay, .sidebar-backdrop, .preview-controls, .system-update-overlay { display: none !important; }
             
             #print-area { display: flex !important; background: white; padding: 15mm; align-items: center; justify-content: center; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; box-sizing: border-box; }
             .print-container { box-shadow: none; padding: 0; margin: 0; max-width: 100%; min-height: auto; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-evenly; }
@@ -264,12 +270,19 @@
 </head>
 <body>
 
+    <!-- OVERLAY AUTO UPDATE SAAS -->
+    <div id="system-update-overlay" class="system-update-overlay">
+        <div class="loader-spinner"></div>
+        <h2 style="font-size: 24px; margin-bottom: 8px;">Pembaruan Sistem Global</h2>
+        <p id="system-update-msg" style="color: var(--text-light); font-size: 14px; max-width: 400px; line-height: 1.5;">Menginisialisasi fitur baru dari Pusat Master Developer. Harap tunggu sebentar...</p>
+    </div>
+
     <div id="toast" class="toast"><i data-lucide="info" style="width:18px;"></i> <span id="toast-msg">Memuat...</span></div>
     <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="window.toggleSidebar()"></div>
 
     <!-- VIEW 1: LOGIN SUPER ADMIN -->
     <div id="login-view">
-        <div class="login-card">
+        <div class="login-card" id="normal-login-form">
             <div class="logo-box">
                 <i data-lucide="shield-check" style="width: 32px; height: 32px;"></i>
             </div>
@@ -287,6 +300,24 @@
                 </div>
             </div>
             <button class="btn btn-primary" onclick="window.loginAdmin()" style="width: 100%; padding: 14px; font-size: 15px; margin-top: 12px;">Buka Akses Sistem</button>
+        </div>
+        
+        <!-- Safety Net UI (Muncul jika Tenant ID tidak ditemukan oleh router) -->
+        <div class="login-card" id="safety-net-ui" style="display: none; border-top: 4px solid var(--danger);">
+            <div class="logo-box" style="background: linear-gradient(135deg, var(--danger) 0%, #991B1B 100%); box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);">
+                <i data-lucide="shield-alert" style="width: 32px; height: 32px; color: white;"></i>
+            </div>
+            <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #0F172A; letter-spacing: -0.02em;">Akses Portal Terkunci</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">
+                Sistem tidak dapat mengidentifikasi institusi Anda. Demi keamanan dan privasi data (Silo Database), Anda wajib mengakses portal melalui <strong>Tautan Khusus (Smart Link)</strong> yang diberikan oleh Pusat Master Developer.
+            </p>
+            <div style="background: #F8FAFC; border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 12px; margin-bottom: 24px; text-align: left;">
+                <p style="font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px;">Contoh Tautan yang Benar:</p>
+                <p style="font-size: 13px; color: var(--primary); font-family: monospace; font-weight: 600; word-break: break-all;">tahfizhpro.my.id?sekolah=alqudwah</p>
+            </div>
+            <button class="btn btn-primary" onclick="window.location.reload()" style="width: 100%; padding: 14px; font-size: 14px;">
+                <i data-lucide="refresh-cw" style="width: 16px;"></i> Muat Ulang Halaman
+            </button>
         </div>
     </div>
 
@@ -613,7 +644,6 @@
                 </div>
 
                 <div class="system-ops-grid">
-                    <!-- FITUR BARU: Konfigurasi Kredensial Master PIN dengan Eye Icon -->
                     <div class="ops-card" style="padding: 24px;">
                         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                             <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--danger-bg); color: var(--danger); display: flex; align-items: center; justify-content: center;"><i data-lucide="key" style="width: 24px; height: 24px;"></i></div>
@@ -788,7 +818,6 @@
         </div>
     </div>
 
-    <!-- FITUR BARU: Modal Daftar Tagihan Santri Per Kelas -->
     <div id="modal-class-billing-details" class="modal-overlay">
         <div class="modal-container" style="max-width: 400px; padding: 0;">
             <div class="modal-header">
@@ -817,7 +846,6 @@
         let allDataClasses = [];
         let allDataTeachers = [];
         let allDataStudents = [];
-        // FITUR BARU: Menambahkan 'adminPin' ke state internal (default 'admin123' jika kosong)
         let globalSettings = { periodeTagihan: "Bulan Ini", nominalTagihan: 5000, nominalDenda: 2000, isSholatModuleActive: true, adminPin: "admin123" };
         let confirmActionCallback = null;
         let confirmRequiredText = "1";
@@ -828,27 +856,34 @@
         window.unsubscribeAdminTeachers = null;
         window.unsubscribeAdminStudents = null;
         window.unsubscribeAdminSettings = null;
+        window.unsubscribeSaasMaster = null;
 
         window.addEventListener('DOMContentLoaded', () => {
             window.lucide.createIcons();
+            
+            // =========================================================
+            // EKSEKUSI PENGECEKAN SAFETY NET (SaaS Tenant Router)
+            // =========================================================
+            if (window.SAAS_TENANT_MISSING) {
+                document.getElementById('normal-login-form').style.display = 'none';
+                document.getElementById('safety-net-ui').style.display = 'block';
+                return; // Berhenti di sini, jangan load database atau sesi
+            }
             
             if (localStorage.getItem('tahfizhpro_admin_session') === 'active') {
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('dashboard-view').style.display = 'block';
                 startRealtimeListeners();
             } else {
-                // Diperlukan agar PIN default ter-load sebelum login pertama kali, 
-                // namun karena user belum login, kita tidak listen semua. Cukup load admin config
                 listenSatuKaliUntukAdminPin();
             }
         });
 
         // =====================================
-        // KREDENSIAL SUPER ADMIN & FITUR SHOW/HIDE PIN
+        // KREDENSIAL SUPER ADMIN
         // =====================================
-        
-        // Memastikan PIN admin didapatkan tanpa membocorkan data lain sebelum login
         function listenSatuKaliUntukAdminPin() {
+            if (window.SAAS_TENANT_MISSING) return;
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), (docSnap) => {
                 if (docSnap.exists() && docSnap.data().adminPin) {
                     globalSettings.adminPin = docSnap.data().adminPin;
@@ -883,6 +918,10 @@
         };
 
         window.loginAdmin = function() {
+            if (window.SAAS_TENANT_MISSING) {
+                return window.showToast("Akses dikunci. Gunakan tautan khusus institusi Anda.", true);
+            }
+
             const pin = document.getElementById('admin-pin').value;
             const validPin = globalSettings.adminPin || 'admin123';
 
@@ -908,7 +947,6 @@
                     }, { merge: true });
                     window.showToast("Kredensial Super Admin berhasil diubah!");
                     
-                    // Reset input field dan kembalikan tipe input ke password
                     const pinInput = document.getElementById('input-new-admin-pin');
                     const iconEye = document.getElementById('icon-eye-new-admin');
                     pinInput.value = '';
@@ -925,7 +963,7 @@
         };
 
         // =====================================
-        // MODAL RINCIAN SANTRI DI KELAS KEUANGAN (FITUR BARU)
+        // MODAL RINCIAN SANTRI DI KELAS KEUANGAN
         // =====================================
         window.showClassBillingDetails = function(classId) {
             let students = [];
@@ -955,7 +993,6 @@
             if (students.length === 0) {
                 listContainer.innerHTML = '<li style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 13px;">Tidak ada data santri.</li>';
             } else {
-                // Urutkan: Tunggakan di Atas, kemudian Alfabetis
                 students.sort((a, b) => {
                     if(a.pembayaranLunas === b.pembayaranLunas) return (a.nama || '').localeCompare(b.nama || '');
                     return a.pembayaranLunas ? 1 : -1;
@@ -1113,6 +1150,9 @@
             } catch (error) { window.showToast("Gagal menyimpan pengaturan fitur.", true); element.checked = !isChecked; }
         };
 
+        // =====================================
+        // FITUR BARU SaaS: Integrasi Otorisasi Harga
+        // =====================================
         window.simpanKonfigurasiKeuangan = async function() {
             const periode = document.getElementById('input-periode-tagihan').value.trim();
             const nominal = parseInt(document.getElementById('input-nominal-tagihan').value) || 0;
@@ -1121,12 +1161,47 @@
             if (!periode) return window.showToast("Periode tagihan tidak boleh kosong!", true);
             if (nominal < 0 || denda < 0) return window.showToast("Nominal tarif/denda tidak boleh minus!", true);
 
+            // Dapatkan nominal harga yang lama dari state lokal
+            const oldNominal = globalSettings.nominalTagihan !== undefined ? globalSettings.nominalTagihan : 5000;
+            const isPriceChanged = nominal !== oldNominal;
+
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), { periodeTagihan: periode, nominalTagihan: nominal, nominalDenda: denda }, { merge: true });
-                window.showToast("Konfigurasi sistem berhasil diperbarui.");
+                const payload = { periodeTagihan: periode, nominalDenda: denda };
+                
+                // Jika harga TIDAK berubah, kita bisa langsung menyimpan semuanya dengan normal
+                if (!isPriceChanged) {
+                    payload.nominalTagihan = nominal;
+                }
+
+                // Update settings lokal klien (tanpa merubah harga jika harga berubah)
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), payload, { merge: true });
+                
+                // Jika harga BERUBAH, kirim tiket approval ke Node Developer God Mode
+                if (isPriceChanged) {
+                    const approvalId = `req_${appId}_${Date.now()}`;
+                    await setDoc(doc(db, 'saas_master', 'approvals', 'price_changes', approvalId), {
+                        id: approvalId,
+                        tenantId: appId,
+                        clientName: "Sistem Client (" + appId + ")", // Anda bisa mengubahnya dengan nama institusi yang ditarik dari db
+                        oldPrice: oldNominal,
+                        newPrice: nominal,
+                        status: 'pending',
+                        requestedAt: Date.now()
+                    });
+                    
+                    window.showToast("Perubahan tarif menjadi Rp " + nominal.toLocaleString('id-ID') + " menunggu persetujuan Master Developer.");
+                    // Kembalikan UI ke harga sebelumnya yang sah
+                    document.getElementById('input-nominal-tagihan').value = oldNominal;
+                } else {
+                    window.showToast("Konfigurasi sistem berhasil diperbarui.");
+                }
+
                 document.getElementById('teks-finance-periode').textContent = `Pantau pembayaran mutaba'ah untuk periode: ${periode}`;
                 updateStats(); 
-            } catch (error) { window.showToast("Gagal menyimpan konfigurasi sistem.", true); }
+            } catch (error) { 
+                window.showToast("Gagal menyimpan konfigurasi sistem.", true); 
+                console.error(error);
+            }
         };
 
         window.bukaPreviewA4 = function() {
@@ -1190,6 +1265,8 @@
             if (window.unsubscribeAdminTeachers) { window.unsubscribeAdminTeachers(); window.unsubscribeAdminTeachers = null; }
             if (window.unsubscribeAdminStudents) { window.unsubscribeAdminStudents(); window.unsubscribeAdminStudents = null; }
             if (window.unsubscribeAdminSettings) { window.unsubscribeAdminSettings(); window.unsubscribeAdminSettings = null; }
+            if (window.unsubscribeSaasMaster) { window.unsubscribeSaasMaster(); window.unsubscribeSaasMaster = null; }
+            
             document.getElementById('dashboard-view').style.display = 'none';
             document.getElementById('login-view').style.display = 'flex';
             document.getElementById('admin-pin').value = '';
@@ -1199,6 +1276,8 @@
         // DATABASE LISTENERS
         // =====================================
         function startRealtimeListeners() {
+            if (window.SAAS_TENANT_MISSING) return;
+            
             if(window.unsubscribeAdminSettings) window.unsubscribeAdminSettings();
             window.unsubscribeAdminSettings = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), (docSnap) => {
                 if (docSnap.exists()) {
@@ -1248,6 +1327,37 @@
                 allDataStudents = []; snapshot.forEach(doc => allDataStudents.push({ id: doc.id, ...doc.data() }));
                 renderStudents(); updateStats();
                 if(document.getElementById('tab-finance').classList.contains('active')) window.renderFinanceTable();
+            });
+
+            // =====================================
+            // FITUR BARU SaaS: Listener Global Deployment
+            // =====================================
+            const appLoadTime = Date.now();
+            let isForceUpdateInitialized = false;
+            
+            if(window.unsubscribeSaasMaster) window.unsubscribeSaasMaster();
+            window.unsubscribeSaasMaster = onSnapshot(doc(db, 'saas_master', 'global_config'), (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    // Jika ada Broadcast dari Developer Console dan timestamp deploy-nya lebih baru dari saat kita memuat aplikasi
+                    if (isForceUpdateInitialized && data.forceUpdateTimestamp && data.forceUpdateTimestamp > appLoadTime) {
+                        
+                        // Menampilkan UI pemblokir update cantik agar klien tahu ada pembaruan
+                        const overlay = document.getElementById('system-update-overlay');
+                        const overlayMsg = document.getElementById('system-update-msg');
+                        if (overlay && overlayMsg) {
+                            overlayMsg.innerHTML = `<strong>Versi ${data.version || 'Baru'}:</strong><br/>${data.updateMessage || 'Memuat pembaruan inti...'}`;
+                            overlay.classList.add('active');
+                        }
+
+                        // Menjalankan force reload cache setelah 3.5 detik untuk mengambil file baru
+                        setTimeout(() => {
+                            window.location.reload(true);
+                        }, 3500);
+                    }
+                    isForceUpdateInitialized = true;
+                }
             });
         }
 
@@ -1328,7 +1438,6 @@
             if(window.lucide) window.lucide.createIcons();
         }
 
-        // FITUR BARU: Menambahkan cursor dan onclick di Kartu
         function generateClassFinanceCard(classId, title, total, lunas, tunggak, percent, isDanger = false) {
             const titleColor = isDanger ? 'var(--danger)' : 'var(--text-main)';
             const barColor = percent === 100 ? 'var(--success)' : (percent > 50 ? 'var(--warning)' : 'var(--danger)');
