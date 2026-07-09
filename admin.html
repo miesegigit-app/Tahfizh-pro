@@ -228,11 +228,11 @@
 
         /* Lock Screen Safety Net */
         .lock-screen-wrapper { position: fixed; inset: 0; background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; padding: 20px; text-align: center; }
-        .lock-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: var(--radius-xl); padding: 48px 32px; max-width: 400px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0,0,0,0.05); }
-        .lock-icon { width: 80px; height: 80px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; border: 4px solid #FEF2F2; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1); }
-        .lock-title { font-size: 20px; font-weight: 800; color: #0F172A; margin-bottom: 8px; line-height: 1.2; }
-        .lock-desc { font-size: 14px; color: #475569; margin-bottom: 24px; line-height: 1.5; }
-        .lock-hint { font-size: 12px; padding: 12px; background: #F1F5F9; border-radius: 8px; color: #64748B; border: 1px dashed #CBD5E1; }
+        .lock-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: var(--radius-xl); padding: 32px 24px; max-width: 400px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0,0,0,0.05); }
+        .lock-icon { width: 64px; height: 64px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; border: 4px solid #FEF2F2; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1); }
+        .lock-title { font-size: 18px; font-weight: 800; color: #0F172A; margin-bottom: 8px; line-height: 1.2; }
+        .lock-desc { font-size: 13px; color: #475569; margin-bottom: 20px; line-height: 1.5; }
+        .lock-hint { font-size: 12px; padding: 12px; background: #F1F5F9; border-radius: 8px; color: #64748B; border: 1px dashed #CBD5E1; text-align: left; }
 
         @media (max-width: 1024px) {
             .finance-layout { grid-template-columns: 1fr; }
@@ -286,14 +286,33 @@
 
     <!-- SAFETY NET UI (LOCK SCREEN) -->
     <div id="safety-net-screen" class="lock-screen-wrapper">
-        <div class="lock-card">
-            <div class="lock-icon"><i data-lucide="shield-alert" style="width: 40px; height: 40px;"></i></div>
-            <h2 class="lock-title">Akses Portal Terkunci</h2>
-            <p class="lock-desc">Sistem tidak dapat mengidentifikasi institusi Anda. URL tautan tidak lengkap atau salah.</p>
-            <div class="lock-hint">
-                <i data-lucide="info" style="width: 14px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i>
-                Gunakan tautan resmi yang diberikan oleh Provider TahfizhPro Anda. (Contoh: <strong>admin.html?sekolah=ID</strong>)
+        <div class="lock-card" style="border-top: 4px solid var(--danger);">
+            <div class="lock-icon" style="background: linear-gradient(135deg, var(--danger) 0%, #991B1B 100%); color: white; border: none; box-shadow: 0 8px 15px -3px rgba(239, 68, 68, 0.3);">
+                <i data-lucide="shield-alert" style="width: 32px; height: 32px;"></i>
             </div>
+            <h2 class="lock-title">Akses Portal Terkunci</h2>
+            <p class="lock-desc">Sistem tidak dapat mengidentifikasi institusi Anda. Pastikan Anda masuk melalui tautan resmi yang diberikan oleh sekolah/yayasan terkait.</p>
+            
+            <div class="lock-hint" style="margin-bottom: 24px;">
+                <span style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 4px; text-transform: uppercase;">Contoh Format Tautan:</span>
+                <code style="color: var(--primary); font-size: 13px; font-weight: 600;">tahfizhpro.my.id/admin?sekolah=id</code>
+            </div>
+
+            <!-- CTA UNTUK PENDAFTARAN INSTITUSI BARU -->
+            <div style="border-top: 1px dashed var(--border-color); padding-top: 20px; text-align: center;">
+                <div style="width: 36px; height: 36px; background: var(--success-bg); color: var(--success); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                    <i data-lucide="building-2" style="width: 18px;"></i>
+                </div>
+                <h3 style="font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">Lembaga Anda Belum Bergabung?</h3>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Digitalisasi mutaba'ah hafalan siswa Anda menggunakan sistem Enterprise kami.</p>
+                <a href="#" id="btn-cta-sales" target="_blank" class="btn" style="width: 100%; padding: 10px; font-size: 12px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; border: none; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); border-radius: var(--radius-full); text-decoration: none;">
+                    <i data-lucide="phone-call" style="width: 14px;"></i> Hubungi Tim Pusat
+                </a>
+            </div>
+            
+            <p style="margin-top: 24px; font-size: 11px; font-weight: 500; color: var(--text-muted); opacity: 0.7;">
+                © <span id="dynamic-year-lock">2026</span> TahfizhPro Enterprise
+            </p>
         </div>
     </div>
 
@@ -320,6 +339,10 @@
                 </div>
             </div>
             <button class="btn btn-primary" onclick="window.loginAdmin()" style="width: 100%; padding: 14px; font-size: 15px; margin-top: 12px;">Buka Akses Sistem</button>
+            
+            <p style="margin-top: 32px; font-size: 11px; font-weight: 500; color: var(--text-muted); opacity: 0.7;">
+                © <span id="dynamic-year-login">2026</span> TahfizhPro Enterprise
+            </p>
         </div>
     </div>
 
@@ -862,6 +885,13 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             window.lucide.createIcons();
+            
+            // Set Tahun Dinamis pada Lock Screen dan Login Screen
+            const currentYear = new Date().getFullYear();
+            const yearElLock = document.getElementById('dynamic-year-lock');
+            const yearElLogin = document.getElementById('dynamic-year-login');
+            if (yearElLock) yearElLock.textContent = currentYear;
+            if (yearElLogin) yearElLogin.textContent = currentYear;
 
             // CEK SAFETY NET
             if(window.SAAS_TENANT_MISSING === true) {
@@ -869,6 +899,19 @@
                 if(safetyNet) safetyNet.style.display = 'flex';
                 const loginView = document.getElementById('view-login');
                 if(loginView) loginView.style.display = 'none';
+                
+                // Fetch Kontak Pusat secara real-time untuk Safety Net jika AppID kosong
+                try {
+                    onSnapshot(doc(db, 'saas_master', 'global_config'), (docSnap) => {
+                        if (docSnap.exists() && docSnap.data().salesWaNumber) {
+                            const btnSales = document.getElementById('btn-cta-sales');
+                            if (btnSales) {
+                                btnSales.href = `https://wa.me/${docSnap.data().salesWaNumber}?text=Halo%20Admin%20TahfizhPro,%20saya%20tertarik%20untuk%20mendaftarkan%20yayasan/sekolah%20saya%20ke%20dalam%20sistem.`;
+                            }
+                        }
+                    });
+                } catch(e) {}
+                
                 return;
             }
             

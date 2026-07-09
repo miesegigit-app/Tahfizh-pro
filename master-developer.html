@@ -307,7 +307,7 @@
                         <i data-lucide="globe" class="stat-bg-icon"></i>
                     </div>
                     <div class="stat-card" style="border-top-color: var(--success);">
-                        <h3 style="color: var(--success);"><i data-lucide="users" style="width: 16px;"></i> Total Santri Aktif</h3>
+                        <h3 style="color: var(--success)"><i data-lucide="users" style="width: 16px;"></i> Total Santri Aktif</h3>
                         <div class="value" id="stat-total-users" style="color: var(--success);">0</div>
                         <i data-lucide="users" class="stat-bg-icon" style="color: var(--success);"></i>
                     </div>
@@ -380,7 +380,7 @@
                         <span class="badge badge-neutral"><i data-lucide="calendar" style="width: 12px;"></i> Tahun Ini</span>
                     </div>
                     <div style="padding: 24px;">
-                        <p class="text-muted text-sm">Grafik ini mensimulasikan pertumbuhan pendapatan historis yang dikalibrasi dengan data *Gross Merchandise Value* (GMV) bulan berjalan.</p>
+                        <p class="text-muted text-sm">Grafik ini mensimulasikan pertumbuhan pendapatan historis yang dikalibrasi dengan data Gross Merchandise Value (GMV) bulan berjalan.</p>
                         <div class="chart-container">
                             <canvas id="financeChart"></canvas>
                         </div>
@@ -473,12 +473,12 @@
                         
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding: 16px; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: var(--radius-md);">
                             <div>
-                                <span class="text-sm" style="font-weight: 700; color: var(--warning);">Maintenance Mode (Coming Soon)</span>
+                                <span class="text-sm" style="font-weight: 700; color: var(--warning);">Maintenance Mode</span>
                                 <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Kunci seluruh akses aplikasi klien dan tampilkan halaman perbaikan.</p>
                             </div>
                             <label class="toggle-switch">
-                                <input type="checkbox" disabled title="Fitur akan datang">
-                                <span class="toggle-slider" style="background-color: var(--border-color); cursor: not-allowed;"></span>
+                                <input type="checkbox" id="toggle-maintenance" onchange="window.toggleMaintenanceMode()">
+                                <span class="toggle-slider"></span>
                             </label>
                         </div>
 
@@ -531,6 +531,23 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- PENGATURAN BARU: KONTAK & GLOBAL CTA -->
+                <div class="data-card" style="max-width: 600px; margin-top: 32px;">
+                    <div class="data-header">
+                        <h2 style="font-size: 18px; color: white;"><i data-lucide="phone-call" style="width: 18px; vertical-align: middle; margin-right: 6px; color: var(--success);"></i> Kontak Sales & Registrasi</h2>
+                    </div>
+                    <div style="padding: 32px 24px;">
+                        <div class="input-group">
+                            <label>No. WhatsApp Tim Sales (Ditampilkan ke Umum)</label>
+                            <input type="number" id="setting-sales-wa" class="form-control font-mono" placeholder="Contoh: 081234567890" autocomplete="off" style="letter-spacing: 2px;">
+                            <p class="text-xs text-muted" style="margin-top: 8px;">Nomor ini akan otomatis menjadi tautan pada tombol "Hubungi Kami" di halaman sekolah/yayasan yang belum terdaftar.</p>
+                        </div>
+                        <button class="btn btn-success" onclick="window.saveGlobalContacts()" style="width: 100%; padding: 14px; margin-top: 8px;">
+                            <i data-lucide="save" style="width: 16px;"></i> Simpan Kontak
+                        </button>
+                    </div>
+                </div>
             </div>
 
         </main>
@@ -561,7 +578,6 @@
                 <div class="input-group" style="margin-bottom: 0;">
                     <label>Status Langganan</label>
                     
-                    <!-- PENGGANTI <select> NATIVE DENGAN CUSTOM UI -->
                     <div class="custom-dropdown" id="dropdown-client-status">
                         <div class="dropdown-selected" onclick="window.toggleClientStatusDropdown()">
                             <span id="dropdown-selected-text" style="display:flex; align-items:center; gap:8px;">
@@ -654,15 +670,15 @@
         import { signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { collection, doc, setDoc, getDoc, updateDoc, deleteDoc, onSnapshot, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // DEFAULT BACKBACK PIN (Digunakan jika database credential masih kosong)
+        // DEFAULT BACKBACK PIN
         const DEFAULT_MASTER_PIN = "dev2026"; 
         let ACTIVE_MASTER_PIN = DEFAULT_MASTER_PIN;
 
         // State Global
         let allClients = [];
-        let allRegisteredStats = {}; // Menyimpan data sinkronisasi akurat dari Super Admin Klien
+        let allRegisteredStats = {}; 
         let allApprovals = [];
-        let globalSaaSSettings = { version: "v1.0.0", forceUpdateTimestamp: 0 };
+        let globalSaaSSettings = { version: "v1.0.0", forceUpdateTimestamp: 0, maintenanceMode: false, salesWaNumber: "" };
         let financeChartInstance = null;
         
         let confirmActionCallback = null;
@@ -670,22 +686,19 @@
 
         // Firebase Listeners Unsubscribe
         window.unsubscribeClients = null;
-        window.unsubscribeRegistered = null; // Menambah listener sinkronisasi
+        window.unsubscribeRegistered = null;
         window.unsubscribeApprovals = null;
         window.unsubscribeSettings = null;
 
         window.addEventListener('DOMContentLoaded', () => {
             window.lucide.createIcons();
             
-            // Catatan: Console Master Developer ini tidak dikunci oleh "SAAS_TENANT_MISSING" 
-            // karena portal ini digunakan untuk mengelola SELURUH tenant di tingkat global.
-
             // Cek Sesi
             if (localStorage.getItem('tahfizhpro_dev_session') === 'active') {
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('dashboard-view').style.display = 'block';
                 initFirebaseDev();
-                fetchActivePin(); // Memastikan PIN tersinkron setelah refresh
+                fetchActivePin();
             }
 
             // Menutup custom dropdown jika klik di luar area
@@ -697,9 +710,6 @@
             });
         });
 
-        // ==========================================
-        // CUSTOM DROPDOWN UI LOGIC
-        // ==========================================
         window.toggleClientStatusDropdown = function() {
             const dropdown = document.getElementById('dropdown-client-status');
             dropdown.classList.toggle('open');
@@ -715,9 +725,6 @@
             if(window.lucide) window.lucide.createIcons();
         };
 
-        // ==========================================
-        // FITUR VISIBILITAS PASSWORD (MATA INTI)
-        // ==========================================
         window.togglePinVisibility = function(inputId, iconId) {
             const pinInput = document.getElementById(inputId);
             const iconEye = document.getElementById(iconId);
@@ -731,9 +738,6 @@
             if(window.lucide) window.lucide.createIcons();
         };
 
-        // ==========================================
-        // LOGIN & AUTHENTICATION
-        // ==========================================
         async function fetchActivePin() {
             try {
                 const credRef = doc(db, 'saas_master', 'credentials');
@@ -741,7 +745,6 @@
                 if (credSnap.exists() && credSnap.data().pin) {
                     ACTIVE_MASTER_PIN = credSnap.data().pin;
                 } else {
-                    // Inisialisasi awal ke database jika belum ada
                     await setDoc(credRef, { pin: DEFAULT_MASTER_PIN }, { merge: true });
                     ACTIVE_MASTER_PIN = DEFAULT_MASTER_PIN;
                 }
@@ -759,7 +762,6 @@
 
             if(pinInput === ACTIVE_MASTER_PIN) {
                 window.showToast("Passkey Diterima. Menginisialisasi God Mode...");
-                
                 try {
                     await signInAnonymously(auth);
                     localStorage.setItem('tahfizhpro_dev_session', 'active');
@@ -812,9 +814,8 @@
             try {
                 const credRef = doc(db, 'saas_master', 'credentials');
                 await setDoc(credRef, { pin: newPin, updatedAt: Date.now() }, { merge: true });
-                ACTIVE_MASTER_PIN = newPin; // Update local state
+                ACTIVE_MASTER_PIN = newPin; 
                 
-                // Reset inputs
                 document.getElementById('setting-old-pin').value = '';
                 document.getElementById('setting-new-pin').value = '';
                 document.getElementById('setting-confirm-pin').value = '';
@@ -825,22 +826,49 @@
             }
         };
 
-        // ==========================================
-        // FIREBASE DATA INITIALIZATION
-        // ==========================================
+        // FUNGSI BARU: Simpan Kontak Master
+        window.saveGlobalContacts = async function() {
+            const waInput = document.getElementById('setting-sales-wa').value.trim();
+            if(!waInput) return window.showToast("Nomor WhatsApp wajib diisi!", true);
+
+            let formattedWa = waInput;
+            if(formattedWa.startsWith('0')) formattedWa = '62' + formattedWa.substring(1);
+
+            try {
+                await setDoc(doc(db, 'saas_master', 'global_config'), {
+                    salesWaNumber: formattedWa,
+                    updatedAt: Date.now()
+                }, { merge: true });
+                
+                document.getElementById('setting-sales-wa').value = formattedWa;
+                window.showToast("Kontak Sales berhasil diperbarui!");
+            } catch(e) {
+                window.showToast("Gagal menyimpan kontak.", true);
+            }
+        };
+
         function initFirebaseDev() {
-            // 1. Listen to Master SaaS Settings
             const settingsRef = doc(db, 'saas_master', 'global_config');
             window.unsubscribeSettings = onSnapshot(settingsRef, (docSnap) => {
                 if (docSnap.exists()) {
                     globalSaaSSettings = { ...globalSaaSSettings, ...docSnap.data() };
                     document.getElementById('sys-version-text').textContent = globalSaaSSettings.version || 'v1.0.0';
+                    
+                    const maintenanceToggle = document.getElementById('toggle-maintenance');
+                    if(maintenanceToggle) {
+                        maintenanceToggle.checked = globalSaaSSettings.maintenanceMode === true;
+                    }
+                    
+                    const salesWaInput = document.getElementById('setting-sales-wa');
+                    if(salesWaInput && globalSaaSSettings.salesWaNumber) {
+                        salesWaInput.value = globalSaaSSettings.salesWaNumber;
+                    }
+
                 } else {
-                    setDoc(settingsRef, { version: "v1.0.0", forceUpdateTimestamp: 0 });
+                    setDoc(settingsRef, { version: "v1.0.0", forceUpdateTimestamp: 0, maintenanceMode: false, salesWaNumber: "" });
                 }
             });
 
-            // 2. MENDENGARKAN DATA REALTIME DARI ADMIN KLIEN (Akurasi GMV)
             const registeredRef = collection(db, 'saas_master', 'clients', 'registered');
             window.unsubscribeRegistered = onSnapshot(query(registeredRef), (snapshot) => {
                 allRegisteredStats = {};
@@ -851,7 +879,6 @@
                 calculateDashboardStats();
             });
 
-            // 3. Listen to Clients (Tenants List Base)
             const clientsRef = collection(db, 'saas_master', 'clients', 'list');
             window.unsubscribeClients = onSnapshot(query(clientsRef), (snapshot) => {
                 allClients = [];
@@ -860,7 +887,6 @@
                 calculateDashboardStats();
             });
 
-            // 4. Listen to Price Approvals
             const approvalsRef = collection(db, 'saas_master', 'approvals', 'price_changes');
             window.unsubscribeApprovals = onSnapshot(query(approvalsRef), (snapshot) => {
                 allApprovals = [];
@@ -869,9 +895,6 @@
             });
         }
 
-        // ==========================================
-        // UI INTERACTIONS & TABS
-        // ==========================================
         window.switchTab = function(tabId) {
             document.querySelectorAll('.content-area').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
@@ -879,10 +902,7 @@
             document.getElementById(`tab-${tabId}`).classList.add('active');
             event.currentTarget.classList.add('active');
             
-            if(tabId === 'finance') {
-                renderFinanceTab();
-            }
-
+            if(tabId === 'finance') renderFinanceTab();
             if (window.innerWidth <= 768) { window.toggleSidebar(); }
         };
 
@@ -909,9 +929,6 @@
         window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
         window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
 
-        // ==========================================
-        // DASHBOARD LOGIC (OVERVIEW & FINANCE)
-        // ==========================================
         function calculateDashboardStats() {
             document.getElementById('stat-total-clients').textContent = allClients.length;
             
@@ -920,10 +937,8 @@
 
             allClients.forEach(client => {
                 if (client.status === 'active') {
-                    // PENARIKAN DATA SUPER AKURAT (Dari sinkronisasi Admin)
                     const tenantId = client.tenantId || client.id;
                     const stats = allRegisteredStats[tenantId] || {};
-                    
                     const students = stats.studentCount !== undefined ? stats.studentCount : (client.studentCount || 0);
                     const revenue = stats.estimasiPendapatan !== undefined ? stats.estimasiPendapatan : (students * (client.currentPrice || 0));
                     
@@ -935,7 +950,6 @@
             document.getElementById('stat-total-users').textContent = totalSantriEstimated.toLocaleString('id-ID');
             document.getElementById('stat-total-revenue-overview').textContent = `Rp ${totalRevenueEstimated.toLocaleString('id-ID')}`;
 
-            // Update tab Finance metrics silently
             const BASE_SERVER_COST = 500000;
             const COST_PER_STUDENT = 50; 
             const estServerCost = BASE_SERVER_COST + (totalSantriEstimated * COST_PER_STUDENT);
@@ -957,7 +971,6 @@
                 }
             }
 
-            // Jika tab aktif di 'finance', redraw graph dengan data baru
             const financeTab = document.getElementById('tab-finance');
             if(financeTab && financeTab.classList.contains('active')) {
                 renderFinanceTab();
@@ -969,7 +982,6 @@
             const ctx = document.getElementById('financeChart');
             if(!ctx) return;
 
-            // Kalkulasi ulang spesifik untuk grafik menggunakan data real-time
             let currentMonthlyRevenue = 0;
             allClients.forEach(client => {
                 if (client.status === 'active') {
@@ -980,20 +992,16 @@
                 }
             });
 
-            // Simulasi Tren Tahunan berdasarkan data riil bulan ini 
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
             const dataPoints = [];
             
-            // Asumsi pertumbuhan organik 5% per bulan ke belakang
             let simulatedBase = currentMonthlyRevenue;
             const currentMonthIndex = new Date().getMonth();
 
             for (let i = 0; i <= currentMonthIndex; i++) {
-                // Generate kurva naik mulus ke data asli
                 let monthRev = simulatedBase * Math.pow(0.95, currentMonthIndex - i);
                 dataPoints.push(Math.round(monthRev));
             }
-            // Kosongkan sisa bulan yang belum lewat di tahun ini
             for(let i = currentMonthIndex + 1; i < 12; i++) {
                 dataPoints.push(null); 
             }
@@ -1036,45 +1044,24 @@
                             padding: 12,
                             displayColors: false,
                             callbacks: {
-                                label: function(context) {
-                                    return 'Rp ' + context.raw.toLocaleString('id-ID');
-                                }
+                                label: function(context) { return 'Rp ' + context.raw.toLocaleString('id-ID'); }
                             }
                         }
                     },
                     scales: {
-                        x: {
-                            grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
-                            ticks: { color: '#94A3B8', font: { family: 'Inter', size: 12 } }
-                        },
-                        y: {
-                            grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
-                            ticks: { 
-                                color: '#94A3B8', 
-                                font: { family: 'Inter', size: 12 },
-                                callback: function(value) {
-                                    if(value >= 1000000) return 'Rp ' + (value/1000000) + ' Jt';
-                                    if(value >= 1000) return 'Rp ' + (value/1000) + ' Rb';
-                                    return 'Rp ' + value;
-                                }
-                            },
-                            beginAtZero: true
-                        }
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false }, ticks: { color: '#94A3B8', font: { family: 'Inter', size: 12 } } },
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false }, ticks: { color: '#94A3B8', font: { family: 'Inter', size: 12 }, callback: function(value) { if(value >= 1000000) return 'Rp ' + (value/1000000) + ' Jt'; if(value >= 1000) return 'Rp ' + (value/1000) + ' Rb'; return 'Rp ' + value; } }, beginAtZero: true }
                     }
                 }
             });
         }
 
-        // ==========================================
-        // CLIENT (TENANT) MANAGEMENT
-        // ==========================================
         window.openModalClient = function(id = null) {
             document.getElementById('client-id').value = id || '';
             if (id) {
                 const c = allClients.find(x => x.id === id);
                 document.getElementById('client-modal-title').textContent = 'Edit Data Tenant';
                 document.getElementById('input-client-name').value = c.name || '';
-                // Fallback Logic: Jika client lama belum punya tenantId, gunakan Document ID-nya.
                 document.getElementById('input-client-tenantId').value = c.tenantId || c.id || '';
                 document.getElementById('input-client-tenantId').disabled = true;
                 document.getElementById('input-client-phone').value = c.phone || '';
@@ -1082,11 +1069,8 @@
                 const status = c.status || 'active';
                 document.getElementById('select-client-status').value = status;
                 
-                if(status === 'suspended') {
-                    window.selectClientStatusOption('suspended', 'Suspended (Blokir Akses)', 'lock', 'var(--danger)');
-                } else {
-                    window.selectClientStatusOption('active', 'Active (Akses Terbuka)', 'check-circle', 'var(--success)');
-                }
+                if(status === 'suspended') window.selectClientStatusOption('suspended', 'Suspended (Blokir Akses)', 'lock', 'var(--danger)');
+                else window.selectClientStatusOption('active', 'Active (Akses Terbuka)', 'check-circle', 'var(--success)');
             } else {
                 document.getElementById('client-modal-title').textContent = 'Daftarkan Tenant Baru';
                 document.getElementById('input-client-name').value = '';
@@ -1116,22 +1100,10 @@
                 if (exists) return window.showToast("Tenant ID sudah digunakan klien lain!", true);
             }
 
-            const payload = {
-                name: name,
-                tenantId: tenantId,
-                phone: phone,
-                status: status,
-                updatedAt: Date.now()
-            };
+            const payload = { name: name, tenantId: tenantId, phone: phone, status: status, updatedAt: Date.now() };
 
             try {
-                if (!existingId) {
-                    payload.createdAt = Date.now();
-                    payload.currentPrice = 0; 
-                    payload.studentCount = 0; 
-                }
-                
-                // Gunakan setDoc dengan opsi merge sebagai teknik Upsert Anti-Gagal
+                if (!existingId) { payload.createdAt = Date.now(); payload.currentPrice = 0; payload.studentCount = 0; }
                 await setDoc(doc(db, 'saas_master', 'clients', 'list', docId), payload, { merge: true });
                 window.showToast("Data Tenant berhasil disimpan.");
                 window.closeModal('modal-client');
@@ -1150,7 +1122,6 @@
                 const isSuspend = c.status === 'suspended';
                 const badgeStatus = isSuspend ? '<span class="badge badge-danger"><i data-lucide="lock" style="width:10px;"></i> Suspended</span>' : '<span class="badge badge-success"><i data-lucide="check-circle" style="width:10px;"></i> Active</span>';
                 
-                // Tarik angka aktual santri dari allRegisteredStats jika tersedia
                 const tenantId = c.tenantId || c.id;
                 const stats = allRegisteredStats[tenantId] || {};
                 const estSantri = (stats.studentCount !== undefined ? stats.studentCount : (c.studentCount || 0)).toLocaleString('id-ID');
@@ -1185,15 +1156,11 @@
 
         window.toggleSuspendClient = async function(id, newStatus) {
             try {
-                // Menggunakan setDoc dengan merge true sebagai langkah anti-gagal
                 await setDoc(doc(db, 'saas_master', 'clients', 'list', id), { status: newStatus }, { merge: true });
                 window.showToast(`Status klien diubah menjadi ${newStatus.toUpperCase()}`);
             } catch(e) { window.showToast("Gagal mengubah status.", true); }
         };
 
-        // ==========================================
-        // KREDENSIAL KLIEN (AKSES LINTAS DATABASE SILO)
-        // ==========================================
         window.openTenantCredential = async function(tenantId, clientName) {
             document.getElementById('cred-tenant-name').textContent = clientName;
             document.getElementById('cred-tenant-id').value = tenantId;
@@ -1204,21 +1171,18 @@
             window.openModal('modal-tenant-credential');
 
             try {
-                // Menembus database client untuk mengambil settingan globalnya
                 const docRef = doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global');
                 const docSnap = await getDoc(docRef);
                 
                 if (docSnap.exists() && docSnap.data().adminPin) {
                     inputPin.value = docSnap.data().adminPin;
                 } else {
-                    // Jika klien belum pernah mengatur/membuat, berikan nilai default
                     inputPin.value = 'admin123'; 
                 }
                 
                 inputPin.type = 'password';
                 document.getElementById('icon-eye-tenant').setAttribute('data-lucide', 'eye');
                 if(window.lucide) window.lucide.createIcons();
-
             } catch (error) {
                 console.error("Akses Ditolak/Gagal membaca Silo Klien", error);
                 inputPin.value = 'Gagal memuat!';
@@ -1229,29 +1193,20 @@
             const tenantId = document.getElementById('cred-tenant-id').value;
             const newPin = document.getElementById('input-tenant-pin').value.trim();
 
-            if (!newPin || newPin.length < 6) {
-                return window.showToast("PIN Admin Yayasan harus memiliki minimal 6 karakter!", true);
-            }
+            if (!newPin || newPin.length < 6) return window.showToast("PIN Admin Yayasan harus memiliki minimal 6 karakter!", true);
 
             try {
                 window.showToast("Menimpa kredensial ke server klien...");
-                
-                // Memaksa penulisan (override) pada dokumen spesifik milik klien
                 const docRef = doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global');
                 await setDoc(docRef, { adminPin: newPin }, { merge: true });
-                
                 window.showToast("Berhasil mereset PIN Super Admin Yayasan!");
                 window.closeModal('modal-tenant-credential');
-                
             } catch (error) {
                 console.error("Gagal menimpa Silo Database Klien:", error);
                 window.showToast("Gagal menyimpan PIN baru. Periksa koneksi atau rules database.", true);
             }
         };
 
-        // ==========================================
-        // APPROVAL HARGA (INTEGRASI ANTAR APLIKASI)
-        // ==========================================
         function renderApprovals() {
             const tbody = document.getElementById('table-approvals');
             const pendingList = allApprovals.filter(a => a.status === 'pending');
@@ -1316,24 +1271,15 @@
 
         window.processApproval = async function(approvalId, newStatus, tenantId, newPrice) {
             try {
-                // 1. Update status di tabel Approval (Gunakan setDoc dengan merge: true)
                 await setDoc(doc(db, 'saas_master', 'approvals', 'price_changes', approvalId), { 
                     status: newStatus,
                     processedAt: Date.now()
                 }, { merge: true });
 
-                // 2. Jika disetujui, update dokumen klien di master dan tembus database Klien
                 if (newStatus === 'approved' && tenantId && newPrice) {
-                    await setDoc(doc(db, 'saas_master', 'clients', 'list', tenantId), { 
-                        currentPrice: newPrice 
-                    }, { merge: true });
-                    
-                    // EKSEKUSI REAL SAAS: Tembus langsung ke dalam tabel settings global milik Tenant tersebut!
-                    await setDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'), { 
-                        nominalTagihan: newPrice 
-                    }, { merge: true });
+                    await setDoc(doc(db, 'saas_master', 'clients', 'list', tenantId), { currentPrice: newPrice }, { merge: true });
+                    await setDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'), { nominalTagihan: newPrice }, { merge: true });
                 }
-
                 window.showToast(`Pengajuan harga berhasil di-${newStatus}.`);
             } catch (e) {
                 console.error("Gagal memproses:", e);
@@ -1341,9 +1287,25 @@
             }
         };
 
-        // ==========================================
-        // DEPLOY & UPDATE AUTOMATION
-        // ==========================================
+        window.toggleMaintenanceMode = async function() {
+            const toggleEl = document.getElementById('toggle-maintenance');
+            const isChecked = toggleEl.checked;
+            
+            try {
+                window.showToast(isChecked ? "Mengaktifkan Maintenance Mode..." : "Menonaktifkan Maintenance Mode...");
+                await setDoc(doc(db, 'saas_master', 'global_config'), {
+                    maintenanceMode: isChecked,
+                    maintenanceUpdatedAt: Date.now()
+                }, { merge: true });
+                
+                window.showToast(isChecked ? "Maintenance Mode AKTIF secara global!" : "Maintenance Mode telah DINONAKTIFKAN.");
+            } catch(e) {
+                console.error("Gagal update status maintenance:", e);
+                toggleEl.checked = !isChecked; 
+                window.showToast("Gagal mengubah status Maintenance Mode.", true);
+            }
+        };
+
         function typeWriterConsole(text, isCommand = false) {
             const terminal = document.getElementById('terminal-output');
             const newDiv = document.createElement('div');
@@ -1375,13 +1337,8 @@
             document.getElementById('input-confirm-verify').value = '';
             btnExec.disabled = true;
 
-            // Membungkus pemanggilan eksekusi asli dan mengaitkannya secara nyata
-            confirmActionCallback = async () => {
-                return await executeGlobalDeploy(version, message);
-            };
-            
+            confirmActionCallback = async () => { return await executeGlobalDeploy(version, message); };
             btnExec.onclick = confirmActionCallback;
-
             window.openModal('modal-confirm');
         };
 
@@ -1412,7 +1369,6 @@
                     document.getElementById('input-update-message').value = '';
                     window.showToast("Global Deploy Berhasil Dilakukan!");
                 }, 2500);
-
                 return true;
             } catch(e) {
                 setTimeout(() => {

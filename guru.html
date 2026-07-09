@@ -77,6 +77,7 @@
             --radius-sm: 6px;
             --radius-md: 8px;
             --radius-lg: 12px;
+            --radius-xl: 16px;
             --radius-full: 9999px;
             
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -175,9 +176,10 @@
         .search-sticky-wrapper { position: sticky; top: 56px; z-index: 40; background: var(--bg-body); padding: 12px 20px; margin: 0 -20px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 1px solid transparent; }
         .search-sticky-wrapper.scrolled { padding: 8px 20px; background: rgba(248, 250, 252, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 6px -4px rgba(0,0,0,0.05); }
 
-        .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(180deg, #F8FAFC 0%, #E2E8F0 100%); }
-        .login-card { width: 100%; max-width: 380px; padding: 48px 32px; text-align: center; background: var(--bg-surface); border-radius: 24px; box-shadow: var(--shadow-lg); border: 1px solid rgba(255,255,255,0.8); }
-        .logo-box { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%); border-radius: 16px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 8px 15px -3px rgba(37, 99, 235, 0.3); }
+        .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%); }
+        .login-card { width: 100%; max-width: 380px; padding: 48px 32px; text-align: center; background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid rgba(255,255,255,0.8); }
+        .safety-card { width: 100%; max-width: 380px; padding: 32px 24px; text-align: center; background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid rgba(255,255,255,0.8); border-top: 4px solid var(--danger); margin-bottom: 24px; }
+        .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%); border-radius: 20px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 8px 15px -3px rgba(37, 99, 235, 0.3); }
         
         .section-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 4px; }
         .class-selector-card { background: var(--primary-light); border: 1px solid var(--border-focus); padding: 16px; border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 8px; }
@@ -285,9 +287,52 @@
 
     <div id="toast" class="toast"><i data-lucide="info" style="width: 18px;"></i> <span id="toast-msg">Memuat sistem...</span></div>
 
+    <!-- SAFETY NET UI & CALL TO ACTION SALES -->
+    <div id="safety-net-ui" class="login-wrapper" style="display: none; align-items: center; justify-content: center; padding: 20px;">
+        
+        <div class="safety-card" style="margin-bottom: 0;">
+            <div style="width: 64px; height: 64px; background: var(--danger-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; border: 1px solid #FECACA;">
+                <i data-lucide="shield-alert" style="width: 32px; height: 32px; color: var(--danger);"></i>
+            </div>
+            <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 8px; color: var(--text-main); letter-spacing: -0.01em;">Akses Portal Terkunci</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+                Kami tidak dapat mendeteksi asal sekolah Anda. Anda wajib mengakses aplikasi ini melalui <strong>tautan khusus</strong> yang diberikan oleh institusi Anda.
+            </p>
+            
+            <div style="background: #F8FAFC; border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 16px; text-align: left; margin-bottom: 24px;">
+                <p style="font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="help-circle" style="width: 14px; color: var(--primary);"></i> Apa yang harus saya lakukan?
+                </p>
+                <ol style="font-size: 12px; color: var(--text-muted); padding-left: 20px; line-height: 1.6; margin: 0;">
+                    <li>Hubungi admin/pengelola di sekolah Anda.</li>
+                    <li>Mintalah <strong style="color:var(--text-main);">"Tautan Portal TahfizhPro"</strong>.</li>
+                    <li>Buka tautan tersebut di browser ini.</li>
+                </ol>
+            </div>
+
+            <!-- CTA UNTUK PENDAFTARAN INSTITUSI BARU (Konsisten dengan admin.html) -->
+            <div style="border-top: 1px dashed var(--border-color); padding-top: 20px; text-align: center;">
+                <div style="width: 36px; height: 36px; background: var(--success-bg); color: var(--success); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                    <i data-lucide="building-2" style="width: 18px;"></i>
+                </div>
+                <h3 style="font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">Lembaga Anda Belum Bergabung?</h3>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Digitalisasi mutaba'ah hafalan siswa Anda menggunakan sistem Enterprise kami.</p>
+                <a href="#" id="btn-cta-sales" target="_blank" class="btn" style="width: 100%; padding: 10px; font-size: 12px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; border: none; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); border-radius: var(--radius-full); text-decoration: none;">
+                    <i data-lucide="phone-call" style="width: 14px;"></i> Hubungi Tim Pusat
+                </a>
+            </div>
+            
+            <!-- Footer menyatu dengan blok CTA -->
+            <p style="margin-top: 24px; font-size: 11px; font-weight: 500; color: var(--text-muted); opacity: 0.7;">
+                © <span id="dynamic-year-lock">2026</span> TahfizhPro Enterprise
+            </p>
+        </div>
+        
+    </div>
+
     <div id="view-login" class="view-section active">
         <div class="login-wrapper">
-            <div class="login-card">
+            <div class="login-card" id="normal-login-form">
                 <div class="logo-box">
                     <i data-lucide="briefcase" style="width: 32px; height: 32px;"></i>
                 </div>
@@ -323,27 +368,9 @@
                     </p>
                 </div>
             </div>
-            
-            <!-- Safety Net UI -->
-            <div class="login-card" id="safety-net-ui" style="display: none; border-top: 4px solid var(--danger);">
-                <div class="logo-box" style="background: linear-gradient(135deg, var(--danger) 0%, #991B1B 100%); box-shadow: 0 8px 15px -3px rgba(239, 68, 68, 0.3);">
-                    <i data-lucide="shield-alert" style="width: 32px; height: 32px; color: white;"></i>
-                </div>
-                <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #0F172A; letter-spacing: -0.02em;">Akses Portal Terkunci</h2>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">
-                    Sistem tidak dapat mengidentifikasi institusi Anda. Demi keamanan dan privasi data (Silo Database), Anda wajib mengakses portal melalui <strong>Tautan Khusus (Smart Link)</strong> yang diberikan oleh admin sekolah/instansi Anda.
-                </p>
-                <div style="background: #F8FAFC; border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 12px; margin-bottom: 24px; text-align: left;">
-                    <p style="font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px;">Contoh Tautan yang Benar:</p>
-                    <p style="font-size: 13px; color: var(--primary); font-family: monospace; font-weight: 600; word-break: break-all;">tahfizhpro.my.id?sekolah=alqudwah</p>
-                </div>
-                <button class="btn btn-primary" onclick="window.location.reload()" style="width: 100%; padding: 12px; font-size: 14px;">
-                    <i data-lucide="refresh-cw" style="width: 16px;"></i> Muat Ulang Halaman
-                </button>
-            </div>
 
             <p style="margin-top: 32px; font-size: 12px; font-weight: 500; color: var(--text-muted); text-align: center; opacity: 0.8;">
-                © 2026 TahfizhPro Enterprise
+                © <span id="dynamic-year">2026</span> TahfizhPro Enterprise
             </p>
         </div>
     </div>
@@ -983,6 +1010,22 @@
             if (window.lucide) window.lucide.createIcons();
             pasangListenerSwipeGuru();
             initTwibbonListenersGuru(); 
+            
+            // Set Copyright Year
+            const currentYear = new Date().getFullYear();
+            const yearSpan = document.getElementById('dynamic-year');
+            const yearSpanLock = document.getElementById('dynamic-year-lock');
+            if (yearSpan) yearSpan.textContent = currentYear;
+            if (yearSpanLock) yearSpanLock.textContent = currentYear;
+
+            // CEK KONDISI SAFETY NET SAAT LOAD
+            if (window.SAAS_TENANT_MISSING === true) {
+                const safetyNet = document.getElementById('safety-net-ui');
+                if(safetyNet) safetyNet.style.display = 'flex';
+                // PERBAIKAN BUG: Sembunyikan seluruh container view-login, bukan hanya form inputnya
+                const loginView = document.getElementById('view-login');
+                if(loginView) loginView.style.display = 'none';
+            }
         });
 
         window.addEventListener('scroll', () => {
