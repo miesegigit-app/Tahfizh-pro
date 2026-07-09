@@ -278,6 +278,15 @@
 </head>
 <body>
 
+    <!-- OVERLAY MAINTENANCE MODE -->
+    <div id="maintenance-overlay" class="system-update-overlay" style="z-index: 100000; background: #0F172A;">
+        <i data-lucide="wrench" style="width: 64px; height: 64px; color: var(--warning); margin-bottom: 24px;"></i>
+        <h2 style="font-size: 28px; margin-bottom: 12px; font-weight: 800;">Peningkatan Sistem</h2>
+        <p style="color: var(--text-light); font-size: 15px; max-width: 450px; line-height: 1.6;">
+            TahfizhPro sedang dalam mode pemeliharaan (Maintenance) oleh Tim Pusat untuk peningkatan kualitas. Sistem akan segera kembali normal.
+        </p>
+    </div>
+
     <!-- OVERLAY AUTO UPDATE SAAS -->
     <div id="system-update-overlay" class="system-update-overlay">
         <div class="loader-spinner"></div>
@@ -310,7 +319,7 @@
                 </ol>
             </div>
 
-            <!-- CTA UNTUK PENDAFTARAN INSTITUSI BARU (Konsisten dengan admin.html) -->
+            <!-- CTA UNTUK PENDAFTARAN INSTITUSI BARU -->
             <div style="border-top: 1px dashed var(--border-color); padding-top: 20px; text-align: center;">
                 <div style="width: 36px; height: 36px; background: var(--success-bg); color: var(--success); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
                     <i data-lucide="building-2" style="width: 18px;"></i>
@@ -322,7 +331,6 @@
                 </a>
             </div>
             
-            <!-- Footer menyatu dengan blok CTA -->
             <p style="margin-top: 24px; font-size: 11px; font-weight: 500; color: var(--text-muted); opacity: 0.7;">
                 © <span id="dynamic-year-lock">2026</span> TahfizhPro Enterprise
             </p>
@@ -1623,7 +1631,7 @@
                 }
             });
 
-            // 2. Listen Global Config SaaS (God Mode Developer Update)
+            // 2. Listen Global Config SaaS (God Mode Developer Update & Maintenance Mode)
             const appLoadTime = Date.now();
             let isForceUpdateInitialized = false;
             
@@ -1631,8 +1639,16 @@
             window.unsubscribeSaasMaster = onSnapshot(doc(db, 'saas_master', 'global_config'), (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
+
+                    // HANDLE MAINTENANCE MODE
+                    const maintenanceOverlay = document.getElementById('maintenance-overlay');
+                    if (data.maintenanceMode === true) {
+                        if (maintenanceOverlay) maintenanceOverlay.classList.add('active');
+                    } else {
+                        if (maintenanceOverlay) maintenanceOverlay.classList.remove('active');
+                    }
                     
-                    // Trigger pembaruan jika timestamp dari server God Mode lebih baru dari waktu kita memuat aplikasi ini
+                    // HANDLE FORCE UPDATE
                     if (isForceUpdateInitialized && data.forceUpdateTimestamp && data.forceUpdateTimestamp > appLoadTime) {
                         
                         const overlay = document.getElementById('system-update-overlay');
@@ -1642,7 +1658,6 @@
                             overlay.classList.add('active');
                         }
 
-                        // Hard reload otomatis setelah 3.5 detik untuk mengambil UI/UX/Logika JavaScript yang baru dari server
                         setTimeout(() => {
                             window.location.reload(true);
                         }, 3500);

@@ -478,12 +478,25 @@
         .loader-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* Overlay Maintenance Mode */
+        #maintenance-overlay { z-index: 100000; background: #0F172A; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: white; padding: 20px; }
+        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
     </style>
 </head>
 <body>
+    
+    <!-- OVERLAY MAINTENANCE MODE -->
+    <div id="maintenance-overlay" class="system-update-overlay">
+        <i data-lucide="wrench" style="width: 64px; height: 64px; color: var(--warning); margin-bottom: 24px;"></i>
+        <h2 style="font-size: 28px; margin-bottom: 12px; font-weight: 800;">Peningkatan Sistem</h2>
+        <p style="color: var(--text-light); font-size: 15px; max-width: 450px; line-height: 1.6;">
+            TahfizhPro sedang dalam mode pemeliharaan (Maintenance) oleh Tim Pusat untuk peningkatan kualitas. Sistem akan segera kembali normal.
+        </p>
+    </div>
+
     <!-- OVERLAY AUTO UPDATE SAAS -->
     <div id="system-update-overlay" class="system-update-overlay">
         <div class="loader-spinner"></div>
@@ -516,7 +529,7 @@
                 </ol>
             </div>
 
-            <!-- CTA UNTUK PENDAFTARAN INSTITUSI BARU (Konsisten dengan admin & guru) -->
+            <!-- CTA UNTUK PENDAFTARAN INSTITUSI BARU -->
             <div style="border-top: 1px dashed var(--border-color); padding-top: 20px; text-align: center;">
                 <div style="width: 36px; height: 36px; background: var(--success-bg); color: var(--success); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
                     <i data-lucide="building-2" style="width: 18px;"></i>
@@ -528,7 +541,6 @@
                 </a>
             </div>
             
-            <!-- Footer menyatu dengan blok CTA -->
             <p style="margin-top: 24px; font-size: 11px; font-weight: 500; color: var(--text-muted); opacity: 0.7;">
                 © <span id="dynamic-year-lock">2026</span> TahfizhPro Enterprise
             </p>
@@ -564,7 +576,7 @@
 
                 <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color);">
                     <p style="font-size: 13px; color: var(--text-muted);">
-                        Anda Pengajar? <a href="guru" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Masuk Sistem Akademi</a>
+                        Anda Pengajar? <a href="guru.html" style="color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s;">Masuk Sistem Akademi</a>
                     </p>
                 </div>
             </div>
@@ -1019,6 +1031,14 @@
                 window.unsubscribeSaasMaster = onSnapshot(doc(db, 'saas_master', 'global_config'), (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
+
+                        // HANDLER MAINTENANCE MODE
+                        const maintenanceOverlay = document.getElementById('maintenance-overlay');
+                        if (data.maintenanceMode === true) {
+                            if (maintenanceOverlay) maintenanceOverlay.classList.add('active');
+                        } else {
+                            if (maintenanceOverlay) maintenanceOverlay.classList.remove('active');
+                        }
                         
                         // Menangani tautan WhatsApp CTA Sales Dinamis
                         if (data.salesWaNumber) {
