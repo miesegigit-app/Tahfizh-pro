@@ -47,6 +47,11 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Midtrans Snap JS (Sandbox) - Ganti src ke production jika sudah siap rilis dan ubah Client Key -->
+    <script type="text/javascript"
+            src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key="SB-Mid-client-YOUR_CLIENT_KEY_HERE"></script>
+
     <style>
         :root {
             --bg-body: #F8FAFC; 
@@ -148,7 +153,6 @@
         
         .sholat-btn:hover:not(.locked) { border-color: var(--border-focus); transform: translateY(-2px); }
         
-        /* State Status Sholat Terintegrasi */
         .sholat-btn.status-berjamaah { background: var(--success-bg); border-color: #A7F3D0; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.15); }
         .sholat-btn.status-berjamaah span { color: var(--success-text); }
         .sholat-btn.status-berjamaah .sholat-icon { background: var(--success); color: white; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); border-color: var(--success); }
@@ -165,7 +169,6 @@
         .sholat-btn.status-tidak span { color: var(--danger-text); }
         .sholat-btn.status-tidak .sholat-icon { background: var(--danger); color: white; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3); border-color: var(--danger); }
 
-        /* Locked State (Future Prayers) */
         .sholat-btn.locked { opacity: 0.55; cursor: not-allowed; background: #F1F5F9; border-style: dashed; }
         .sholat-btn.locked .sholat-icon { background: #E2E8F0; border-color: #CBD5E1; color: #94A3B8; }
 
@@ -197,7 +200,6 @@
         .swot-title { font-size: 15px; font-weight: 800; color: var(--text-main); line-height: 1.2; }
         .swot-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
-        /* AI Forecast Enterprise Design Enhancement */
         .ai-forecast-card { 
             margin-top: 20px; 
             padding: 20px; 
@@ -369,7 +371,6 @@
         .nav-item.active i { transform: scale(1.15); stroke-width: 2.5; }
         .nav-item i { width: 22px; height: 22px; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-        /* PENYESUAIAN LOGIN WRAPPER & SAFETY NET */
         .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%); }
         .login-card { width: 100%; max-width: 380px; padding: 48px 32px; text-align: center; background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid rgba(255,255,255,0.8); }
         
@@ -387,6 +388,7 @@
             padding: 16px; 
             display: none; 
             align-items: flex-start; 
+            flex-direction: column; /* Modified to allow button below */
             gap: 12px; 
             box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.1), 0 4px 6px -4px rgba(239, 68, 68, 0.05);
             animation: slideDownGlass 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -396,7 +398,8 @@
         }
         .billing-banner::before { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(239, 68, 68, 0.1); filter: blur(15px); border-radius: 50%; z-index: 0; }
         .billing-banner.show { display: flex; }
-        .billing-content { position: relative; z-index: 1; flex: 1;}
+        .billing-content-wrapper { display: flex; align-items: flex-start; gap: 12px; width: 100%; position: relative; z-index: 1;}
+        .billing-content { flex: 1;}
         .billing-content h4 { font-size: 14px; color: var(--danger-text); margin-bottom: 4px; font-weight: 700; display: flex; align-items: center; gap: 6px;}
         .billing-content p { font-size: 12px; color: var(--danger-text); opacity: 0.95; line-height: 1.5; font-weight: 500;}
         .billing-amount { font-size: 18px; font-weight: 800; color: #991B1B; margin-top: 8px; display: block; }
@@ -431,7 +434,6 @@
         
         .trophy-title { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; line-height: 1.3; }
         
-        /* CSS YANG DIPERBAIKI: FLEXBOX UNTUK PRESISI TROPHY DATE & LOCK ICON */
         .trophy-date { font-size: 11px; color: var(--text-muted); font-weight: 600; padding: 4px 10px; background: #F1F5F9; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 4px; }
         
         .btn-twibbon-mini { margin-top: 16px; background: var(--bg-surface); border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; width: 100%; justify-content: center; box-shadow: var(--shadow-sm); }
@@ -451,7 +453,6 @@
         .zoom-slider-container { display: none; margin-bottom: 20px; background: var(--bg-surface); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
         .zoom-slider { width: 100%; accent-color: var(--primary); }
         
-        /* Opsi Pemilihan Sholat (Desain Baru) */
         .sholat-option-btn { width: 100%; display: flex; align-items: center; gap: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-surface); cursor: pointer; transition: all 0.2s; text-align: left; }
         .sholat-option-btn:hover { background: #F8FAFC; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
         .sholat-option-btn .icon-wrap { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -472,13 +473,11 @@
         .opt-tidak .icon-wrap { background: var(--danger-bg); color: var(--danger); border: 1px solid #FECACA; }
         .opt-tidak.active { box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2); transform: scale(1.02); background: var(--danger-bg); border-width: 2px;}
 
-        /* Global System Update Overlay */
         .system-update-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 99999; color: white; flex-direction: column; text-align: center; }
         .system-update-overlay.active { display: flex; }
         .loader-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Overlay Maintenance Mode */
         #maintenance-overlay { z-index: 100000; background: #0F172A; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: white; padding: 20px; }
         
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -508,7 +507,6 @@
 
     <!-- SAFETY NET UI & CALL TO ACTION SALES -->
     <div id="safety-net-ui" class="login-wrapper" style="display: none; align-items: center; justify-content: center; padding: 20px;">
-        
         <div class="safety-card" style="margin-bottom: 0;">
             <div style="width: 64px; height: 64px; background: var(--danger-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; border: 1px solid #FECACA;">
                 <i data-lucide="shield-alert" style="width: 32px; height: 32px; color: var(--danger);"></i>
@@ -545,7 +543,6 @@
                 © <span id="dynamic-year-lock">2026</span> TahfizhPro Enterprise
             </p>
         </div>
-        
     </div>
 
     <div id="view-login" class="view-section active">
@@ -614,16 +611,23 @@
                 </div>
             </div>
 
+            <!-- MODIFIED: Menambahkan Tombol Pembayaran Midtrans ke dalam Banner Tagihan -->
             <div id="parent-billing-banner" class="billing-banner">
-                <div style="background: rgba(239, 68, 68, 0.15); padding: 8px; border-radius: 50%; color: var(--danger); position: relative; z-index: 1;">
-                    <i data-lucide="wallet" style="width: 20px; height: 20px;"></i>
+                <div class="billing-content-wrapper">
+                    <div style="background: rgba(239, 68, 68, 0.15); padding: 8px; border-radius: 50%; color: var(--danger); position: relative; z-index: 1;">
+                        <i data-lucide="wallet" style="width: 20px; height: 20px;"></i>
+                    </div>
+                    <div class="billing-content">
+                        <h4>Pemberitahuan Tagihan <i data-lucide="alert-circle" style="width: 14px;"></i></h4>
+                        <p id="teks-periode-tagihan">Memuat rincian...</p>
+                        <span class="billing-amount" id="nominal-tunggakan-teks">Rp 0</span>
+                        <div class="billing-denda" id="denda-keterlambatan-teks" style="display: none;"></div>
+                    </div>
                 </div>
-                <div class="billing-content">
-                    <h4>Pemberitahuan Tagihan <i data-lucide="alert-circle" style="width: 14px;"></i></h4>
-                    <p id="teks-periode-tagihan">Memuat rincian...</p>
-                    <span class="billing-amount" id="nominal-tunggakan-teks">Rp 0</span>
-                    <div class="billing-denda" id="denda-keterlambatan-teks" style="display: none;"></div>
-                </div>
+                <!-- Tombol Trigger Midtrans -->
+                <button id="btn-bayar-midtrans" class="btn btn-primary" style="margin-top: 8px; width: 100%; font-size: 13px; font-weight: 700; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);" onclick="window.inisiasiPembayaranMidtrans()">
+                    <i data-lucide="credit-card" style="width: 16px;"></i> Bayar Tagihan Sekarang
+                </button>
             </div>
 
             <!-- TAB BERANDA -->
@@ -844,7 +848,7 @@
         </div>
     </div>
 
-    <!-- MODAL OPSI SHOLAT (BARU) -->
+    <!-- MODAL OPSI SHOLAT -->
     <div id="modal-opsi-sholat" class="modal-overlay">
         <div class="modal-container" style="background: var(--bg-surface); padding: 0; max-width: 320px;">
             <div class="modal-header">
@@ -916,6 +920,19 @@
         </div>
     </div>
 
+    <!-- MODIFIED: Menambahkan Custom Modal untuk Status Pembayaran Midtrans -->
+    <div id="modal-status-pembayaran" class="modal-overlay">
+        <div class="modal-container" style="background: var(--bg-surface); padding: 0; max-width: 320px; text-align: center;">
+            <div class="modal-header">
+                <h3 style="font-size: 16px; margin: 0; color: var(--text-main);">Status Pembayaran</h3>
+                <button class="btn-ghost" onclick="window.tutupModalPembayaran(true)" style="padding: 4px; border:none; background:transparent;"><i data-lucide="x" style="width: 18px;"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 32px 20px;" id="konten-status-pembayaran">
+                <!-- Konten dinamis akan diisi oleh JS -->
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { auth, db, appId } from "./firebase-config.js";
         import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -934,13 +951,12 @@
         // EKSEKUSI PENGECEKAN SAFETY NET (SaaS Tenant Router)
         // =========================================================
         if (window.SAAS_TENANT_MISSING) {
-            // PERBAIKAN: Menyembunyikan seluruh wrapper view-login, bukan cuma formnya
             document.getElementById('view-login').style.display = 'none';
             document.getElementById('safety-net-ui').style.display = 'flex';
         }
 
-        // Variabel Settings Global
-        window.appSettings = { isTagihanAktif: true, periodeTagihan: "Bulan Ini", nominalTagihan: 5000, isSholatModuleActive: true };
+        // Variabel Settings Global (Dengan Default State)
+        window.appSettings = { isTagihanAktif: true, periodeTagihan: "Bulan Ini", nominalTagihan: 5000, nominalDenda: 2000, isSholatModuleActive: true };
         window.unsubscribeSettings = null;
 
         // Jadwal Sholat Statis Realtime (Estimasi WIB / Bandung)
@@ -1063,6 +1079,136 @@
             }, 2000); 
         });
 
+        // =========================================================
+        // LOGIKA INTEGRASI PEMBAYARAN MIDTRANS (CUSTOM UI & FETCH)
+        // =========================================================
+        
+        window.bukaModalPembayaran = function(status, data = null) {
+            const modal = document.getElementById('modal-status-pembayaran');
+            const konten = document.getElementById('konten-status-pembayaran');
+            
+            modal.classList.add('active');
+            
+            if (status === 'loading') {
+                konten.innerHTML = `
+                    <div class="loader-spinner" style="margin: 0 auto 20px; width: 40px; height: 40px; border-left-color: var(--primary); border-color: rgba(37, 99, 235, 0.2); border-left-color: var(--primary);"></div>
+                    <h3 style="font-size: 16px; color: var(--text-main); margin-bottom: 8px;">Memproses Data...</h3>
+                    <p style="font-size: 12px; color: var(--text-muted);">Menghubungkan ke server pembayaran aman Midtrans.</p>
+                `;
+            } else if (status === 'success') {
+                konten.innerHTML = `
+                    <div style="width: 60px; height: 60px; background: var(--success-bg); color: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <i data-lucide="check-circle" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <h3 style="font-size: 18px; color: var(--success-text); margin-bottom: 8px; font-weight: 800;">Alhamdulillah, Berhasil!</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Pembayaran tagihan Anda telah kami terima dengan baik. Terima kasih atas dukungan Anda.</p>
+                    <button class="btn btn-primary" onclick="window.tutupModalPembayaran(true)" style="width: 100%;">Tutup</button>
+                `;
+            } else if (status === 'pending') {
+                konten.innerHTML = `
+                    <div style="width: 60px; height: 60px; background: var(--warning-bg); color: var(--warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <i data-lucide="clock" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <h3 style="font-size: 18px; color: var(--warning-text); margin-bottom: 8px; font-weight: 800;">Menunggu Pembayaran</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Silakan selesaikan instruksi pembayaran yang telah diberikan. Transaksi akan terverifikasi otomatis.</p>
+                    <button class="btn btn-primary" onclick="window.tutupModalPembayaran(false)" style="width: 100%;">Mengerti</button>
+                `;
+            } else if (status === 'error') {
+                const errorMsg = data && data.status_message ? data.status_message : "Gagal menginisiasi jalur pembayaran.";
+                konten.innerHTML = `
+                    <div style="width: 60px; height: 60px; background: var(--danger-bg); color: var(--danger); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <i data-lucide="x-circle" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <h3 style="font-size: 18px; color: var(--danger-text); margin-bottom: 8px; font-weight: 800;">Pemberitahuan Sistem</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.6;">
+                        ${errorMsg}
+                    </p>
+                    <div style="background: #F8FAFC; border: 1px dashed var(--border-color); padding: 12px; border-radius: var(--radius-md); text-align: left; margin-bottom: 24px;">
+                        <span style="font-size: 11px; font-weight: 700; color: var(--primary);"><i data-lucide="info" style="width:12px;"></i> Informasi Admin:</span><br>
+                        <span style="font-size: 11px; color: var(--text-muted);">Sistem membutuhkan <strong>Backend Endpoint</strong> untuk keamanan Token Midtrans. Hubungi admin sekolah untuk mengaktifkan fitur ini di Cloud Server.</span>
+                    </div>
+                    <button class="btn btn-ghost" onclick="window.tutupModalPembayaran(false)" style="width: 100%; border: 1px solid var(--border-color);">Tutup Kembali</button>
+                `;
+            }
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        window.tutupModalPembayaran = function(reloadUi = false) {
+            document.getElementById('modal-status-pembayaran').classList.remove('active');
+            if(reloadUi && window.activeSiswaDocId) {
+                // Refresh data if success
+                const siswaAktif = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
+                if(siswaAktif) renderDasborOrangTua(siswaAktif);
+            }
+        };
+
+        window.inisiasiPembayaranMidtrans = async function() {
+            if (!window.activeSiswaDocId) return;
+
+            const siswa = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
+            const infoTagihan = kalkulasiTagihanDinamis(siswa);
+
+            if (infoTagihan.totalTagihan <= 0) {
+                window.tampilkanToast("Tidak ada tagihan yang perlu dibayar.", false);
+                return;
+            }
+
+            // Tampilkan UI Loading yang indah dan menenangkan
+            window.bukaModalPembayaran('loading');
+
+            try {
+                // [PENTING] Mengambil Snap Token dari Backend Server Anda (Firebase Cloud Functions / Node.js dll)
+                // Menggantikan pemanggilan langsung ke API Midtrans untuk menjaga kerahasiaan Server Key.
+                const backendEndpointUrl = 'https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/createMidtransTransaction';
+                
+                const payload = {
+                    siswaId: siswa.docId,
+                    nama: siswa.nama,
+                    email: "wali.murid@example.com", // Opsional
+                    jumlahTagihan: infoTagihan.totalTagihan,
+                    periode: infoTagihan.periode
+                };
+
+                const response = await fetch(backendEndpointUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Sistem belum siap menerima pembayaran.");
+                }
+
+                const data = await response.json();
+                const snapToken = data.token; // Token didapat dari Backend Anda
+
+                // Sembunyikan loading, lalu eksekusi Snap Midtrans
+                document.getElementById('modal-status-pembayaran').classList.remove('active');
+
+                window.snap.pay(snapToken, {
+                    onSuccess: function(result){
+                        window.bukaModalPembayaran('success', result);
+                        // Catatan: Lakukan update status pembayaran via Webhook di Backend, bukan disini.
+                    },
+                    onPending: function(result){
+                        window.bukaModalPembayaran('pending', result);
+                    },
+                    onError: function(result){
+                        window.bukaModalPembayaran('error', result);
+                    },
+                    onClose: function(){
+                        window.tampilkanToast("Jendela pembayaran ditutup tanpa menyelesaikan transaksi.", true);
+                    }
+                });
+
+            } catch (error) {
+                // Menangani error jika Backend belum di-deploy atau error koneksi
+                window.bukaModalPembayaran('error', { 
+                    status_message: error.message + " Pastikan Endpoint Cloud Function telah di-deploy dengan Server Key Midtrans." 
+                });
+            }
+        };
+
         window.lihatLencanaBaru = function() {
             const navItem = document.querySelector('.nav-item:nth-child(2)');
             window.switchTabParent('tab-analisis', navItem);
@@ -1110,12 +1256,12 @@
             if(!areaGeser) return;
 
             areaGeser.addEventListener('touchstart', (e) => {
-                if (e.target.closest('canvas') || e.target.closest('.chat-history') || e.target.closest('textarea') || e.target.closest('.time-lapse-container') || e.target.closest('.zoom-slider') || e.target.closest('#sibling-chips-container') || e.target.closest('.sholat-btn')) return;
+                if (e.target.closest('canvas') || e.target.closest('.chat-history') || e.target.closest('textarea') || e.target.closest('.time-lapse-container') || e.target.closest('.zoom-slider') || e.target.closest('#sibling-chips-container') || e.target.closest('.sholat-btn') || e.target.closest('#btn-bayar-midtrans')) return;
                 sentuhanMulaiX = e.changedTouches[0].screenX;
             }, { passive: true });
 
             areaGeser.addEventListener('touchend', (e) => {
-                if (e.target.closest('canvas') || e.target.closest('.chat-history') || e.target.closest('textarea') || e.target.closest('.time-lapse-container') || e.target.closest('.zoom-slider') || e.target.closest('#sibling-chips-container') || e.target.closest('.sholat-btn')) return;
+                if (e.target.closest('canvas') || e.target.closest('.chat-history') || e.target.closest('textarea') || e.target.closest('.time-lapse-container') || e.target.closest('.zoom-slider') || e.target.closest('#sibling-chips-container') || e.target.closest('.sholat-btn') || e.target.closest('#btn-bayar-midtrans')) return;
                 sentuhanSelesaiX = e.changedTouches[0].screenX;
                 kalkulasiSwipe();
             }, { passive: true });
@@ -1218,6 +1364,29 @@
         });
 
         function mulaiListenData() {
+            // MENDENGARKAN PENGATURAN GLOBAL SECARA REAL-TIME
+            const dbSettings = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
+            if (window.unsubscribeSettings) window.unsubscribeSettings();
+            window.unsubscribeSettings = onSnapshot(dbSettings, (docSnap) => {
+                if (docSnap.exists()) {
+                    window.appSettings = { ...window.appSettings, ...docSnap.data() };
+                    
+                    // Trigger UI Update jika siswa sedang aktif
+                    if (window.activeSiswaDocId) {
+                        const siswaAktif = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
+                        if (siswaAktif) renderDasborOrangTua(siswaAktif);
+                    }
+                    
+                    const sholatContainer = document.getElementById('sholat-module-container');
+                    if (sholatContainer) {
+                        sholatContainer.style.display = window.appSettings.isSholatModuleActive !== false ? 'block' : 'none';
+                    }
+                }
+            }, (error) => {
+                console.error("Gagal memuat pengaturan: ", error);
+            });
+
+            // MENDENGARKAN DATA SISWA
             const dbStudents = collection(db, 'artifacts', appId, 'public', 'data', 'students');
             if (window.unsubscribeSiswa) window.unsubscribeSiswa();
             window.unsubscribeSiswa = onSnapshot(dbStudents, (snapshot) => {
@@ -1233,6 +1402,7 @@
                 console.error("Gagal memuat data santri: ", error);
             });
 
+            // MENDENGARKAN DATA KELAS
             const dbClasses = collection(db, 'artifacts', appId, 'public', 'data', 'classes');
             if (window.unsubscribeKelas) window.unsubscribeKelas();
             window.unsubscribeKelas = onSnapshot(dbClasses, (snapshot) => {
@@ -1297,9 +1467,14 @@
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById('view-login').classList.add('active');
             document.getElementById('login-kode-siswa').value = '';
+            
             if(window.unsubscribeSholat) {
                 window.unsubscribeSholat();
                 window.unsubscribeSholat = null;
+            }
+            if(window.unsubscribeSettings) {
+                window.unsubscribeSettings();
+                window.unsubscribeSettings = null;
             }
         };
 
@@ -1411,7 +1586,6 @@
                 if (docSnap.exists()) {
                     window.currentSholatData = docSnap.data();
                     
-                    // Migrasi Data Lama on-the-fly untuk UI
                     ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'].forEach(w => {
                         let val = window.currentSholatData[w];
                         if (val === true || val === 'sudah') window.currentSholatData[w] = 'berjamaah';
@@ -2151,7 +2325,6 @@
             if(window.lucide) window.lucide.createIcons();
         }
 
-        // Peningkatan Desain dan Logika AI Forecast
         function generateAIForecast(siswa, timeframe) {
             const cont = document.getElementById('ai-forecast-container');
             if(!cont) return;
@@ -2411,7 +2584,7 @@
 
                 if(pPeriode) {
                     if(infoTagihan.jumlahBulan > 1) pPeriode.innerHTML = `Administrasi mutaba'ah tertunggak selama <strong>${infoTagihan.jumlahBulan} Bulan</strong> (Hingga ${infoTagihan.periode}). Mohon segera diselesaikan.`;
-                    else pPeriode.innerHTML = `Administrasi mutaba'ah periode <strong>${infoTagihan.periode}</strong> belum diselesaikan. Mohon hubungi admin.`;
+                    else pPeriode.innerHTML = `Administrasi mutaba'ah periode <strong>${infoTagihan.periode}</strong> belum diselesaikan.`;
                 }
                 
                 if(pNominal) pNominal.textContent = `Rp ${infoTagihan.totalTagihan.toLocaleString('id-ID')}`;
