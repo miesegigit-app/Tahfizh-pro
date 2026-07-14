@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
+    <!-- Content Security Policy (CSP) - Diperbarui untuk mengizinkan Midtrans & Inline Scripts -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; script-src 'self' https: 'unsafe-inline' 'unsafe-eval'; style-src 'self' https: 'unsafe-inline'; font-src 'self' https: data:; connect-src 'self' https: wss:; frame-src 'self' https://app.sandbox.midtrans.com https://app.midtrans.com https://snap-assets.sandbox.midtrans.com https://snap-assets.midtrans.com;">
+    
     <!-- Primary Meta Tags -->
     <title>TahfizhPro - Portal Wali Murid</title>
     <meta name="title" content="TahfizhPro - Portal Wali Murid">
@@ -956,7 +959,14 @@
         }
 
         // Variabel Settings Global (Dengan Default State)
-        window.appSettings = { isTagihanAktif: true, periodeTagihan: "Bulan Ini", nominalTagihan: 5000, nominalDenda: 2000, isSholatModuleActive: true };
+        window.appSettings = { 
+            isTagihanAktif: true, 
+            periodeTagihan: "Bulan Ini", 
+            nominalTagihan: 5000, 
+            nominalDenda: 2000, 
+            isSholatModuleActive: true,
+            twibbonFrameUrl: null // Disiapkan untuk data dinamis dari developer/yayasan
+        };
         window.unsubscribeSettings = null;
 
         // Jadwal Sholat Statis Realtime (Estimasi WIB / Bandung)
@@ -1834,7 +1844,12 @@
                     ctx.font = 'bold 80px Montserrat, sans-serif';
                     ctx.fillText('TAHFIZHPRO', 540, 500);
 
+                    // ==========================================
+                    // PERUBAHAN: PENGAMBILAN FRAME DINAMIS DENGAN CORS
+                    // ==========================================
                     const frame = new Image();
+                    frame.crossOrigin = "anonymous"; // WAJIB untuk Cloudinary / Domain Eksternal
+                    
                     frame.onload = () => {
                         ctx.drawImage(frame, 0, 0, 1080, 1080);
 
@@ -1892,8 +1907,11 @@
                         
                         window.tampilkanToast("E-Poster berhasil diunduh ke perangkat Anda!");
                     };
-                    frame.onerror = () => { window.tampilkanToast("Gagal memuat frame gambar.", true); };
-                    frame.src = 'frame.png';
+                    frame.onerror = () => { window.tampilkanToast("Gagal memuat frame gambar dari server.", true); };
+                    
+                    // Gunakan URL dari Database (Settings Global) atau fallback lokal
+                    frame.src = window.appSettings.twibbonFrameUrl || 'frame.png';
+                    
                 } catch (err) {
                     window.tampilkanToast("Gagal memproses poster.", true);
                 }
@@ -1922,9 +1940,17 @@
             twibbonState.imgUser = null;
             document.getElementById('modal-studio-twibbon').classList.add('active');
             
-            if(!twibbonState.imgFrame) {
+            // ==========================================
+            // PERUBAHAN: PENGAMBILAN FRAME DINAMIS DENGAN CORS (STUDIO)
+            // ==========================================
+            const urlFrameTerbaru = window.appSettings.twibbonFrameUrl || 'frame.png';
+            
+            // Re-inisialisasi gambar jika URL berubah (Cegah stale cache jika Dev mengganti URL)
+            if(!twibbonState.imgFrame || twibbonState.imgFrame.dataset.source !== urlFrameTerbaru) {
                 twibbonState.imgFrame = new Image();
-                twibbonState.imgFrame.src = 'frame.png';
+                twibbonState.imgFrame.crossOrigin = "anonymous"; // WAJIB untuk Cloudinary
+                twibbonState.imgFrame.dataset.source = urlFrameTerbaru;
+                twibbonState.imgFrame.src = urlFrameTerbaru;
             }
         };
 

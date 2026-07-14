@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <title>TahfizhPro - Mini Studio (ID Card Builder)</title>
+    <meta name="description" content="Standalone ID Card Designer for TahfizhPro Enterprise">
+    <meta name="theme-color" content="#0F172A">
+
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;600;800&family=Montserrat:wght@400;600;700;800&family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Fabric.js Core Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+
+    <style>
+        :root {
+            --bg-body: #0F172A;
+            --bg-surface: #1E293B;
+            --bg-surface-hover: #334155;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --primary: #3B82F6;
+            --primary-hover: #2563EB;
+            --success: #10B981;
+            --danger: #EF4444;
+            --accent: #8B5CF6;
+            --border-color: #334155;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+        }
+
+        /* RESET & ANTI-DELAY TOUCH */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        button, a, .btn, .tool-btn, .side-btn, .d-pad-btn { 
+            touch-action: manipulation; /* Mematikan jeda 300ms double tap di Android Lama */
+            cursor: pointer;
+            user-select: none; -webkit-user-select: none;
+        }
+
+        /* Layout absolut memutar bug 100vh di mobile browser */
+        body { background-color: var(--bg-body); color: var(--text-main); display: flex; flex-direction: column; position: fixed; inset: 0; overflow: hidden; }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; font-size: 13px; font-weight: 600; border-radius: var(--radius-md); transition: all 0.2s; border: 1px solid transparent; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background-color: var(--primary); color: white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+        .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover); transform: translateY(-1px); }
+        .btn-success { background-color: var(--success); color: white; }
+        .btn-danger { background-color: rgba(239, 68, 68, 0.1); border-color: var(--danger); color: var(--danger); }
+        .btn-outline { background-color: transparent; border-color: var(--border-color); color: var(--text-main); }
+        .btn-outline:hover:not(:disabled) { background-color: var(--bg-surface-hover); border-color: var(--text-muted); }
+        .btn-ghost { background: transparent; color: var(--text-muted); border: none; padding: 6px; border-radius: var(--radius-md); cursor: pointer; }
+        .btn-ghost:hover:not(:disabled) { color: white; background: rgba(255,255,255,0.1); }
+
+        /* HEADER */
+        .topbar { height: 70px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; z-index: 100; user-select: none; -webkit-user-select: none; }
+        .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 18px; }
+        .brand-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), var(--primary)); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        
+        .side-tabs { display: flex; background: rgba(0,0,0,0.4); border-radius: var(--radius-full); padding: 4px; border: 1px solid rgba(255,255,255,0.05); }
+        .side-btn { background: transparent; color: var(--text-muted); border: none; padding: 8px 24px; font-size: 13px; font-weight: 700; border-radius: var(--radius-full); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+        .side-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4); }
+
+        /* STUDIO LAYOUT */
+        .studio-body { display: flex; flex: 1; overflow: hidden; position: relative; }
+        
+        /* TOOLBAR */
+        .toolbar { width: 90px; background: rgba(15, 23, 42, 0.95); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding: 16px 0; gap: 12px; overflow-y: auto; z-index: 50; user-select: none; -webkit-user-select: none; }
+        .tool-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 72px; height: 68px; border-radius: var(--radius-md); color: var(--text-muted); cursor: pointer; transition: all 0.2s; background: transparent; border: 1px solid transparent; gap: 6px; flex-shrink: 0; }
+        .tool-btn:hover { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-color: rgba(59, 130, 246, 0.3); }
+        .tool-btn span { font-size: 10px; font-weight: 700; text-align: center; line-height: 1.2; text-transform: uppercase; }
+        .divider { width: 50px; height: 1px; background: var(--border-color); margin: 4px 0; flex-shrink: 0; }
+        
+        /* KANVAS */
+        .canvas-area { flex: 1; background: repeating-conic-gradient(#1E293B 0% 25%, #0F172A 0% 50%) 50% / 20px 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; box-shadow: inset 0 0 50px rgba(0,0,0,0.8); touch-action: none; }
+        
+        .canvas-wrapper { 
+            position: absolute; top: 50%; left: 50%;
+            width: 540px; height: 860px; 
+            border-radius: 24px; overflow: hidden; 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.1); 
+            background: #ffffff;
+            transform-origin: center center;
+            transform: translate(-50%, -50%) scale(1);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* PROPERTIES PANEL */
+        .properties-panel { width: 320px; background: rgba(15, 23, 42, 0.98); border-left: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; z-index: 50; user-select: none; -webkit-user-select: none; }
+        
+        .prop-group { display: flex; flex-direction: column; gap: 8px; }
+        .prop-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .input-control { background: #0F172A; border: 1px solid var(--border-color); color: white; padding: 10px; border-radius: var(--radius-md); font-size: 13px; width: 100%; transition: 0.2s; user-select: text; -webkit-user-select: text; }
+        .input-control:focus { border-color: var(--primary); outline: none; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* Custom Select (No Native) */
+        .custom-select { position: relative; width: 100%; user-select: none; }
+        .select-selected { background: #0F172A; border: 1px solid var(--border-color); color: white; padding: 10px 14px; border-radius: var(--radius-md); font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .select-items { position: absolute; background-color: #1E293B; border: 1px solid var(--border-color); top: calc(100% + 4px); left: 0; right: 0; z-index: 100; border-radius: var(--radius-md); overflow: hidden; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.2s; max-height: 200px; overflow-y: auto; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+        .custom-select.active .select-items { opacity: 1; visibility: visible; transform: translateY(0); }
+        .select-items div { padding: 10px 14px; cursor: pointer; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .select-items div:hover { background-color: rgba(59, 130, 246, 0.15); color: var(--primary); }
+
+        /* D-Pad */
+        .d-pad-container { display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); gap: 6px; justify-content: center; margin: 5px 0; }
+        .d-pad-btn { background: #0F172A; border: 1px solid var(--border-color); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .d-pad-btn:active { transform: translateY(2px) scale(0.95); background: var(--bg-surface-hover); }
+        .d-pad-btn.up { grid-column: 2; grid-row: 1; }
+        .d-pad-btn.left { grid-column: 1; grid-row: 2; }
+        .d-pad-btn.center { grid-column: 2; grid-row: 2; background: transparent; border: none; box-shadow: none; pointer-events: none; }
+        .d-pad-btn.right { grid-column: 3; grid-row: 2; }
+        .d-pad-btn.down { grid-column: 2; grid-row: 3; }
+
+        /* Modal Projects */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.9); backdrop-filter: blur(8px); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 20px; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-xl); width: 100%; max-width: 480px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); }
+        .project-list { max-height: 300px; overflow-y: auto; margin-top: 16px; display: flex; flex-direction: column; gap: 8px; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+        .project-item { background: #0F172A; padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+
+        #mobile-fab { display: none; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 100; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5); border-radius: 99px; padding: 12px 24px; white-space: nowrap; }
+        .mobile-header { display: none; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 12px; position: sticky; top: -24px; background: rgba(15, 23, 42, 0.98); z-index: 10; padding-top: 24px; }
+
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--bg-surface); color: white; padding: 16px 24px; border-radius: var(--radius-lg); font-size: 14px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--border-color); transform: translateY(100px); opacity: 0; transition: all 0.4s; z-index: 9999; display: flex; align-items: center; gap: 12px; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.error { border-color: var(--danger); background: #450A0A; }
+
+        @media (max-width: 768px) {
+            .topbar { padding: 0 12px; flex-wrap: wrap; height: auto; padding: 12px 0; gap: 8px; justify-content: center; }
+            .brand { display: none; }
+            
+            .studio-body { flex-direction: column; }
+            
+            /* FIX PANEL SCROLL DI BAWAH */
+            .toolbar { 
+                width: 100%; height: 85px; flex-direction: row; border-right: none; border-top: 1px solid var(--border-color); 
+                overflow-x: auto; padding: 8px 12px; justify-content: flex-start; order: 3; 
+                -webkit-overflow-scrolling: touch; touch-action: pan-x; /* Explicit pan untuk XZ1 */
+            }
+            .tool-btn { width: 65px; height: 100%; margin-right: 8px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); }
+            .divider, .section-label { display: none; }
+            
+            .canvas-area { order: 1; }
+            
+            /* FIX PROPERTIES PANEL SCROLL */
+            .properties-panel { 
+                position: absolute; bottom: 0; left: 0; width: 100%; 
+                border-left: none; border-top: 1px solid var(--primary); 
+                max-height: 45vh; /* Dibatasi kurang dari setengah layar */
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
+                transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+                border-radius: 24px 24px 0 0; z-index: 200; order: 2; padding-bottom: 24px;
+                overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; /* Smooth Scroll Mobile */
+            }
+            .properties-panel.open { transform: translateY(0); }
+            .mobile-header { display: flex; }
+            #mobile-fab { display: flex; }
+            
+            .toast { left: 16px; right: 16px; bottom: 100px; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast" class="toast"><i data-lucide="info" style="width:20px;"></i> <span id="toast-msg">Memuat...</span></div>
+    
+    <!-- Modal Proyek Saya (Save Slots) -->
+    <div id="modal-projects" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 18px; font-weight: 700;">Proyek Desain</h3>
+                <button class="btn-ghost" onclick="StudioApp.closeProjectsModal()"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                <input type="text" id="new-project-name" class="input-control" placeholder="Nama Proyek Baru...">
+                <button class="btn btn-primary" onclick="StudioApp.saveNewProject()">Simpan Baru</button>
+            </div>
+            
+            <div class="divider" style="width: 100%; margin: 16px 0;"></div>
+            <p style="font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Riwayat Proyek Tersimpan (Lokal)</p>
+            
+            <div class="project-list" id="project-list-container">
+                <!-- List will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- GLOBAL LOADER -->
+    <div id="global-loader" class="modal-overlay">
+        <div style="text-align: center;">
+            <i data-lucide="loader-2" class="loader-spinner" style="width: 48px; height: 48px; color: var(--primary); animation: spin 1s linear infinite; margin: 0 auto 16px;"></i>
+            <h3 style="color: white; font-weight: 700;">Memproses Aset</h3>
+            <p id="loader-text" style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Mohon tunggu sebentar...</p>
+        </div>
+    </div>
+
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-icon"><i data-lucide="palette" style="width: 20px; color: white;"></i></div>
+            Mini Studio
+        </div>
+        
+        <div class="side-tabs">
+            <button class="side-btn active" id="tab-front" onclick="StudioApp.switchSide('front')"><i data-lucide="credit-card" style="width:16px;"></i> Depan</button>
+            <button class="side-btn" id="tab-back" onclick="StudioApp.switchSide('back')"><i data-lucide="scan-face" style="width:16px;"></i> Belakang</button>
+        </div>
+
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <div style="display: flex; background: rgba(0,0,0,0.3); border-radius: var(--radius-md); padding: 2px; margin-right: 4px;">
+                <button class="btn-ghost" id="btn-undo" onclick="StudioApp.undo()" disabled><i data-lucide="undo-2" style="width:16px;"></i></button>
+                <button class="btn-ghost" id="btn-redo" onclick="StudioApp.redo()" disabled><i data-lucide="redo-2" style="width:16px;"></i></button>
+            </div>
+            <button class="btn btn-outline" onclick="StudioApp.openProjectsModal()">
+                <i data-lucide="folder-open" style="width: 16px;"></i> <span style="display:none; sm:inline;">Proyek</span>
+            </button>
+            <button class="btn btn-primary" onclick="StudioApp.exportConfig()">
+                <i data-lucide="download" style="width: 16px;"></i> Ekspor
+            </button>
+        </div>
+    </header>
+
+    <div class="studio-body">
+        <aside class="toolbar">
+            <input type="file" id="upload-bg" accept="image/*" style="display:none;" onchange="StudioApp.handleUpload(event, 'background')">
+            <button class="tool-btn" onclick="document.getElementById('upload-bg').click()">
+                <i data-lucide="image" style="width: 24px;"></i> <span>Upload<br>Background</span>
+            </button>
+            
+            <input type="file" id="upload-logo" accept="image/*" style="display:none;" onchange="StudioApp.handleUpload(event, 'logo')">
+            <button class="tool-btn" onclick="document.getElementById('upload-logo').click()">
+                <i data-lucide="image-plus" style="width: 24px;"></i> <span>Upload<br>Logo</span>
+            </button>
+
+            <!-- UPDATE: Opsi Auto-Detect Master System -->
+            <div class="divider"></div>
+            
+            <button class="tool-btn" style="color: var(--success);" onclick="StudioApp.addPlaceholder('NAMA')">
+                <i data-lucide="user" style="width: 24px;"></i> <span>[NAMA]</span>
+            </button>
+            <button class="tool-btn" style="color: var(--success);" onclick="StudioApp.addPlaceholder('ID')">
+                <i data-lucide="hash" style="width: 24px;"></i> <span>[ID]</span>
+            </button>
+            <button class="tool-btn" style="color: var(--success);" onclick="StudioApp.addPlaceholder('KELAS')">
+                <i data-lucide="book-open" style="width: 24px;"></i> <span>[KELAS]</span>
+            </button>
+            
+            <div class="divider"></div>
+
+            <button class="tool-btn" style="color: var(--success);" onclick="StudioApp.addPlaceholder('FOTO')">
+                <i data-lucide="camera" style="width: 24px;"></i> <span>[FOTO]</span>
+            </button>
+            <button class="tool-btn" style="color: var(--success);" onclick="StudioApp.addPlaceholder('QR')">
+                <i data-lucide="qr-code" style="width: 24px;"></i> <span>[QR]</span>
+            </button>
+            
+            <!-- UPDATE KONTEN DINAMIS -->
+            <div class="divider"></div>
+            <button class="tool-btn" style="color: var(--accent);" onclick="StudioApp.addPlaceholder('INFO')">
+                <i data-lucide="info" style="width: 24px;"></i> <span>[INFO]</span>
+            </button>
+            <button class="tool-btn" style="color: var(--accent);" onclick="StudioApp.addPlaceholder('KONTAK')">
+                <i data-lucide="phone" style="width: 24px;"></i> <span>[KONTAK]</span>
+            </button>
+            
+            <div class="divider"></div>
+            <button class="tool-btn" onclick="StudioApp.addStaticText()">
+                <i data-lucide="type" style="width: 24px;"></i> <span>Teks<br>Bebas</span>
+            </button>
+        </aside>
+
+        <main class="canvas-area" id="canvas-area-wrapper">
+            <div class="canvas-wrapper" id="canvas-container">
+                <canvas id="studio-canvas" width="540" height="860"></canvas>
+            </div>
+            
+            <button id="mobile-fab" class="btn btn-primary" onclick="StudioApp.openPanel()">
+                <i data-lucide="sliders" style="width: 16px;"></i> Atur Elemen
+            </button>
+        </main>
+
+        <aside class="properties-panel" id="prop-panel">
+            <div class="mobile-header">
+                <span style="font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;"><i data-lucide="sliders" style="width: 14px; color: var(--primary);"></i> Pengaturan Elemen</span>
+                <button class="btn-ghost" onclick="StudioApp.closePanel()"><i data-lucide="chevron-down" style="width: 18px;"></i></button>
+            </div>
+
+            <div id="prop-empty" style="text-align: center; color: var(--text-muted);">
+                <i data-lucide="mouse-pointer-click" style="width: 32px; height: 32px; margin: 20px auto 12px; opacity: 0.5;"></i>
+                <div style="font-size: 13px; font-weight: 600; margin-bottom: 24px;">Pilih elemen di kanvas<br>untuk mengatur.</div>
+                
+                <div style="text-align: left; background: rgba(0,0,0,0.2); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <div class="prop-group">
+                        <label class="prop-label">Warna Dasar Kartu</label>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <input type="color" id="val-bg-color" class="input-control" style="padding: 2px; height: 36px; width: 60px;" value="#ffffff" oninput="StudioApp.updateCanvasBg()">
+                            <span class="text-xs font-mono" id="val-bg-hex">#ffffff</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="prop-text" style="display: none; flex-direction: column; gap: 16px;">
+                <div class="prop-group">
+                    <label class="prop-label">Isi Teks</label>
+                    <textarea id="val-text" class="input-control" rows="2" oninput="StudioApp.updateText()"></textarea>
+                </div>
+                <div class="grid-2">
+                    <div class="prop-group">
+                        <label class="prop-label">Warna Teks</label>
+                        <input type="color" id="val-color" class="input-control" style="padding: 2px; height: 40px;" oninput="StudioApp.updateColor()">
+                    </div>
+                    <div class="prop-group">
+                        <label class="prop-label">Ukuran</label>
+                        <input type="number" id="val-size" class="input-control" oninput="StudioApp.updateSize()">
+                    </div>
+                </div>
+                
+                <div class="prop-group">
+                    <label class="prop-label">Font Family</label>
+                    <div class="custom-select" id="custom-font-select">
+                        <div class="select-selected" onclick="StudioApp.toggleCustomSelect('custom-font-select')">
+                            <span id="selected-font-text">Inter (Clean)</span>
+                            <i data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="select-items">
+                            <div onclick="StudioApp.selectCustomOption('font', 'Inter', 'Inter (Clean)')">Inter (Clean)</div>
+                            <div onclick="StudioApp.selectCustomOption('font', 'Poppins', 'Poppins (Friendly)')">Poppins (Friendly)</div>
+                            <div onclick="StudioApp.selectCustomOption('font', 'Montserrat', 'Montserrat (Geometric)')">Montserrat (Geometric)</div>
+                            <div onclick="StudioApp.selectCustomOption('font', 'Plus Jakarta Sans', 'Plus Jakarta (Corporate)')">Plus Jakarta (Corporate)</div>
+                            <div onclick="StudioApp.selectCustomOption('font', 'Playfair Display', 'Playfair (Serif)')">Playfair (Serif)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <button class="btn btn-outline" onclick="StudioApp.toggleBold()"><i data-lucide="bold" style="width:14px;"></i> Bold</button>
+                    <button class="btn btn-outline" onclick="StudioApp.toggleItalic()"><i data-lucide="italic" style="width:14px;"></i> Italic</button>
+                </div>
+                <div class="prop-group">
+                    <label class="prop-label">Perataan Teks</label>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline" style="flex:1; padding: 8px;" onclick="StudioApp.updateTextAlign('left')"><i data-lucide="align-left" style="width:16px;"></i></button>
+                        <button class="btn btn-outline" style="flex:1; padding: 8px;" onclick="StudioApp.updateTextAlign('center')"><i data-lucide="align-center" style="width:16px;"></i></button>
+                        <button class="btn btn-outline" style="flex:1; padding: 8px;" onclick="StudioApp.updateTextAlign('right')"><i data-lucide="align-right" style="width:16px;"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="prop-image" style="display: none; flex-direction: column; gap: 16px;">
+                <div class="prop-group">
+                    <label class="prop-label">Fitur AI Gambar</label>
+                    <button class="btn btn-accent" style="width: 100%;" onclick="StudioApp.applyMagicEraser()">
+                        <i data-lucide="wand-2" style="width: 16px;"></i> Hapus Background Putih
+                    </button>
+                </div>
+            </div>
+
+            <div id="prop-shape" style="display: none; flex-direction: column; gap: 16px;">
+                <div class="prop-group">
+                    <label class="prop-label">Bentuk Frame Foto</label>
+                    <div class="custom-select" id="custom-shape-select">
+                        <div class="select-selected" onclick="StudioApp.toggleCustomSelect('custom-shape-select')">
+                            <span id="selected-shape-text">Kotak Sudut Melengkung</span>
+                            <i data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="select-items">
+                            <div onclick="StudioApp.selectCustomOption('shape', 'rounded', 'Kotak Sudut Melengkung')">Kotak Sudut Melengkung</div>
+                            <div onclick="StudioApp.selectCustomOption('shape', 'circle', 'Bulat Sempurna')">Bulat Sempurna</div>
+                            <div onclick="StudioApp.selectCustomOption('shape', 'square', 'Kotak Tajam (Klasik)')">Kotak Tajam (Klasik)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="prop-common" style="display: none; flex-direction: column; gap: 16px; border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: auto;">
+                <div class="prop-group">
+                    <label class="prop-label" style="text-align: center;">Geser Presisi</label>
+                    <div class="d-pad-container">
+                        <button class="d-pad-btn up" onclick="StudioApp.nudge(0, -1)"><i data-lucide="arrow-up"></i></button>
+                        <button class="d-pad-btn left" onclick="StudioApp.nudge(-1, 0)"><i data-lucide="arrow-left"></i></button>
+                        <div class="d-pad-btn center"><i data-lucide="move" style="color:var(--text-muted); opacity:0.3;"></i></div>
+                        <button class="d-pad-btn right" onclick="StudioApp.nudge(1, 0)"><i data-lucide="arrow-right"></i></button>
+                        <button class="d-pad-btn down" onclick="StudioApp.nudge(0, 1)"><i data-lucide="arrow-down"></i></button>
+                    </div>
+                    <p style="font-size: 10px; color: var(--success); text-align: center; margin-top:4px;">💡 Tips: Seret area kosong (hitam/putih) untuk geser objek instan.</p>
+                </div>
+
+                <div class="grid-2">
+                    <button class="btn btn-outline" style="font-size: 12px;" onclick="StudioApp.bringForward()"><i data-lucide="bring-to-front" style="width:14px;"></i> Maju</button>
+                    <button class="btn btn-outline" style="font-size: 12px;" onclick="StudioApp.sendBackward()"><i data-lucide="send-to-back" style="width:14px;"></i> Mundur</button>
+                </div>
+                <button class="btn btn-danger" style="width: 100%;" onclick="StudioApp.deleteSelected()">
+                    <i data-lucide="trash-2" style="width: 16px;"></i> Hapus Elemen
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <a id="download-anchor" style="display:none;"></a>
+
+    <script>
+        lucide.createIcons();
+
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            t.className = `toast show ${isError ? 'error' : ''}`;
+            t.innerHTML = `<i data-lucide="${isError ? 'alert-circle' : 'check-circle'}" style="width:18px;"></i> <span>${msg}</span>`;
+            lucide.createIcons();
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        const StudioApp = {
+            canvas: null,
+            activeObject: null,
+            currentSide: 'front',
+            frontJson: null,
+            backJson: null,
+            
+            lineV: null, lineH: null,
+            cloudName: 'dpbo6ogyp', uploadPreset: 'TahfizhPro',
+
+            history: { front: [], back: [] }, historyIndex: { front: -1, back: -1 },
+            isHistoryAction: false, isInitPhase: true,
+
+            // Remote Drag State
+            isRemoteDragging: false,
+            dragStartPointer: null,
+            objStartPos: null,
+
+            init() {
+                this.canvas = new fabric.Canvas('studio-canvas', { 
+                    preserveObjectStacking: true, backgroundColor: '#ffffff',
+                    selectionBorderColor: '#3B82F6', selectionColor: 'rgba(59, 130, 246, 0.1)'
+                });
+                
+                fabric.Object.prototype.set({ transparentCorners: false, cornerColor: '#3B82F6', borderColor: '#3B82F6', cornerSize: 14, padding: 10, cornerStyle: 'circle', borderDashArray: [4, 4] });
+
+                this.canvas.on('object:modified', () => this.saveHistoryAndState());
+                this.canvas.on('object:added', (e) => { if(!this.isHistoryAction && !this.isInitPhase && e.target.type !== 'line') this.saveHistoryAndState(); });
+                this.canvas.on('object:removed', (e) => { if(!this.isHistoryAction && !this.isInitPhase && e.target.type !== 'line') this.saveHistoryAndState(); });
+                this.canvas.on('selection:created', (e) => this.handleSelection(e.selected[0]));
+                this.canvas.on('selection:updated', (e) => this.handleSelection(e.selected[0]));
+                this.canvas.on('selection:cleared', () => { if (!this.isRemoteDragging) this.hideProperties(); });
+                
+                // Smart Guides
+                this.lineV = new fabric.Line([270, -1000, 270, 2000], { stroke: '#EF4444', strokeWidth: 2, strokeDashArray: [5, 5], selectable: false, evented: false, opacity: 0 });
+                this.lineH = new fabric.Line([-1000, 430, 2000, 430], { stroke: '#EF4444', strokeWidth: 2, strokeDashArray: [5, 5], selectable: false, evented: false, opacity: 0 });
+                this.canvas.add(this.lineV, this.lineH);
+                this.canvas.on('object:moving', (e) => this.handleSnapping(e.target));
+
+                // -------------------------------------------------------------
+                // PERBAIKAN FINAL: SMART POINTER (DELAYED DESELECT & REMOTE DRAG)
+                // -------------------------------------------------------------
+                const workArea = document.getElementById('canvas-area-wrapper');
+                let pointerState = { isDown: false, isDragging: false, startX: 0, startY: 0, objLeft: 0, objTop: 0 };
+                
+                // Blokir fungsi deselect bawaan Fabric JIKA jari sedang menahan layar 
+                const origDiscard = this.canvas.discardActiveObject.bind(this.canvas);
+                this.canvas.discardActiveObject = function(e) {
+                    if (pointerState.isDown) return this; 
+                    return origDiscard(e);
+                }.bind(this);
+
+                const getPtr = (e) => (e.touches && e.touches.length > 0) ? e.touches[0] : (e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : e);
+
+                const onPointerDown = (e) => {
+                    // Abaikan sentuhan pada antarmuka UI (Panel, Toolbar, Tombol)
+                    if (e.target.closest('.properties-panel') || e.target.closest('.toolbar') || 
+                        e.target.closest('.topbar') || e.target.closest('#mobile-fab') || 
+                        e.target.closest('.modal-overlay') || e.target.closest('.custom-select')) {
+                        return;
+                    }
+
+                    if (this.activeObject) {
+                        // Cek apakah sentuhan tepat di atas SEBUAH objek kanvas
+                        let onAnyObject = false;
+                        if (e.target.classList.contains('upper-canvas')) {
+                            const target = this.canvas.findTarget(e, false);
+                            if (target) onAnyObject = true;
+                        }
+
+                        // Jika sentuhan di area kosong kanvas ATAU di area hitam (luar kanvas)
+                        if (!onAnyObject) {
+                            pointerState.isDown = true;
+                            pointerState.isDragging = false;
+                            const pt = getPtr(e);
+                            pointerState.startX = pt.clientX;
+                            pointerState.startY = pt.clientY;
+                            pointerState.objLeft = this.activeObject.left;
+                            pointerState.objTop = this.activeObject.top;
+                        }
+                    }
+                };
+
+                const onPointerMove = (e) => {
+                    if (!pointerState.isDown || !this.activeObject) return;
+
+                    const pt = getPtr(e);
+                    const dx = pt.clientX - pointerState.startX;
+                    const dy = pt.clientY - pointerState.startY;
+
+                    // Deteksi pergerakan minimal 4px (anti getar)
+                    if (!pointerState.isDragging && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
+                        pointerState.isDragging = true;
+                    }
+
+                    if (pointerState.isDragging) {
+                        // Hitung skala untuk responsivitas pergerakan
+                        const container = document.getElementById('canvas-container');
+                        let scale = 1;
+                        const match = container.style.transform.match(/scale\(([^)]+)\)/);
+                        if (match) scale = parseFloat(match[1]);
+
+                        this.activeObject.set({
+                            left: pointerState.objLeft + (dx / scale),
+                            top: pointerState.objTop + (dy / scale)
+                        });
+                        this.activeObject.setCoords();
+                        this.canvas.renderAll();
+                        this.handleSnapping(this.activeObject);
+                        
+                        if (e.cancelable) e.preventDefault(); 
+                    }
+                };
+
+                const onPointerUp = (e) => {
+                    if (!pointerState.isDown) return;
+                    pointerState.isDown = false;
+                    
+                    if (pointerState.isDragging) {
+                        // Jika selesai geser (Remote Drag selesai)
+                        pointerState.isDragging = false;
+                        this.saveHistoryAndState();
+                        setTimeout(() => { this.lineV.set({opacity:0}); this.lineH.set({opacity:0}); this.canvas.renderAll(); }, 50);
+                    } else {
+                        // Jika dilepas TANPA geser (Tap biasa) = DESELECT OBJEK
+                        if (this.activeObject) {
+                            origDiscard(); 
+                            this.canvas.renderAll();
+                            this.hideProperties();
+                        }
+                    }
+                };
+
+                // Pasang Event Listeners
+                workArea.addEventListener('mousedown', onPointerDown);
+                workArea.addEventListener('touchstart', onPointerDown, { passive: false });
+                
+                window.addEventListener('mousemove', onPointerMove, { passive: false });
+                window.addEventListener('touchmove', onPointerMove, { passive: false });
+                
+                window.addEventListener('mouseup', onPointerUp);
+                window.addEventListener('touchend', onPointerUp);
+                // -------------------------------------------------------------
+
+                // Keyboard Delete & Undo Redo
+                window.addEventListener('keydown', (e) => {
+                    if ((e.key === 'Delete' || e.key === 'Backspace') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { this.deleteSelected(); }
+                    if (e.ctrlKey && e.key === 'z') { e.preventDefault(); this.undo(); }
+                    if (e.ctrlKey && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) { e.preventDefault(); this.redo(); }
+                });
+
+                window.addEventListener('resize', () => this.resizeCanvas());
+                
+                // Auto Load Save
+                const savedFront = localStorage.getItem('tahfizh_studio_front');
+                const savedBack = localStorage.getItem('tahfizh_studio_back');
+                if(savedFront || savedBack) { this.frontJson = savedFront; this.backJson = savedBack; showToast("Sesi terakhir berhasil dipulihkan."); }
+                
+                setTimeout(() => { 
+                    this.resizeCanvas(); this.loadSideData('front'); this.hideProperties();
+                    setTimeout(() => { this.isInitPhase = false; this.saveHistoryAndState(true); }, 500);
+                }, 100);
+            },
+
+            resizeCanvas() {
+                const wrapper = document.getElementById('canvas-area-wrapper');
+                const container = document.getElementById('canvas-container');
+                if(!wrapper || !container) return;
+                
+                const rect = wrapper.getBoundingClientRect();
+                const isMobile = window.innerWidth <= 768;
+                const paddingW = isMobile ? 32 : 80; 
+                const paddingH = isMobile ? 32 : 80; 
+                
+                const availW = rect.width - paddingW;
+                const availH = rect.height - paddingH;
+                const scale = Math.min(availW / 540, availH / 860);
+                container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            },
+
+            saveHistoryAndState(isInitial = false) {
+                if(this.isHistoryAction) return; 
+                const currentState = JSON.stringify(this.canvas.toJSON(['placeholderType', 'selectable', 'isAppBackground']));
+                
+                if(this.currentSide === 'front') this.frontJson = currentState; else this.backJson = currentState;
+                localStorage.setItem('tahfizh_studio_front', this.frontJson || '');
+                localStorage.setItem('tahfizh_studio_back', this.backJson || '');
+
+                const stack = this.history[this.currentSide];
+                let idx = this.historyIndex[this.currentSide];
+
+                if(!isInitial && idx < stack.length - 1) { stack.splice(idx + 1); }
+                stack.push(currentState);
+                if(stack.length > 20) stack.shift(); else this.historyIndex[this.currentSide]++;
+                this.updateHistoryButtons();
+            },
+
+            updateHistoryButtons() {
+                const idx = this.historyIndex[this.currentSide];
+                const stack = this.history[this.currentSide];
+                document.getElementById('btn-undo').disabled = idx <= 0;
+                document.getElementById('btn-redo').disabled = idx >= stack.length - 1;
+            },
+
+            undo() { if(this.historyIndex[this.currentSide] > 0) { this.historyIndex[this.currentSide]--; this.loadStateFromHistory(); } },
+            redo() { if(this.historyIndex[this.currentSide] < this.history[this.currentSide].length - 1) { this.historyIndex[this.currentSide]++; this.loadStateFromHistory(); } },
+
+            loadStateFromHistory() {
+                this.isHistoryAction = true;
+                const jsonToLoad = this.history[this.currentSide][this.historyIndex[this.currentSide]];
+                this.canvas.clear(); this.canvas.add(this.lineV, this.lineH);
+                
+                this.canvas.loadFromJSON(JSON.parse(jsonToLoad), () => {
+                    this.canvas.renderAll();
+                    const bg = this.canvas.backgroundColor || '#ffffff';
+                    document.getElementById('val-bg-color').value = bg; document.getElementById('val-bg-hex').textContent = bg;
+                    if(this.currentSide === 'front') this.frontJson = jsonToLoad; else this.backJson = jsonToLoad;
+                    localStorage.setItem('tahfizh_studio_' + this.currentSide, jsonToLoad);
+                    this.isHistoryAction = false;
+                    this.updateHistoryButtons();
+                });
+            },
+
+            handleSnapping(obj) {
+                const snapZone = 12; const centerX = 270; const centerY = 430;
+                let objCenterX = obj.left + (obj.originX === 'center' ? 0 : (obj.width * obj.scaleX)/2);
+                let objCenterY = obj.top + (obj.originY === 'center' ? 0 : (obj.height * obj.scaleY)/2);
+                if (Math.abs(objCenterX - centerX) < snapZone) { obj.set({ left: obj.originX === 'center' ? centerX : centerX - (obj.width * obj.scaleX)/2 }); this.lineV.set({opacity: 1}); this.lineV.bringToFront(); } else { this.lineV.set({opacity: 0}); }
+                if (Math.abs(objCenterY - centerY) < snapZone) { obj.set({ top: obj.originY === 'center' ? centerY : centerY - (obj.height * obj.scaleY)/2 }); this.lineH.set({opacity: 1}); this.lineH.bringToFront(); } else { this.lineH.set({opacity: 0}); }
+            },
+
+            nudge(dx, dy) {
+                if (!this.activeObject) return;
+                this.activeObject.set({ left: this.activeObject.left + (dx * 5), top: this.activeObject.top + (dy * 5) });
+                this.activeObject.setCoords(); this.canvas.renderAll(); this.handleSnapping(this.activeObject);
+                setTimeout(() => { this.lineV.set({opacity:0}); this.lineH.set({opacity:0}); this.canvas.renderAll(); this.saveHistoryAndState(); }, 500);
+            },
+
+            switchSide(side) {
+                if(this.currentSide === side) return;
+                if(!this.isInitPhase) {
+                    const currentState = JSON.stringify(this.canvas.toJSON(['placeholderType', 'selectable', 'isAppBackground']));
+                    if(this.currentSide === 'front') this.frontJson = currentState; else this.backJson = currentState;
+                }
+                this.currentSide = side;
+                document.getElementById('tab-front').classList.toggle('active', side === 'front');
+                document.getElementById('tab-back').classList.toggle('active', side === 'back');
+                this.loadSideData(side);
+            },
+
+            loadSideData(side) {
+                this.isHistoryAction = true;
+                this.canvas.clear(); this.canvas.add(this.lineV, this.lineH);
+                const jsonToLoad = side === 'front' ? this.frontJson : this.backJson;
+                
+                if(jsonToLoad) {
+                    this.canvas.loadFromJSON(JSON.parse(jsonToLoad), () => {
+                        this.canvas.renderAll();
+                        const bg = this.canvas.backgroundColor || '#ffffff';
+                        document.getElementById('val-bg-color').value = bg; document.getElementById('val-bg-hex').textContent = bg;
+                        this.isHistoryAction = false;
+                        if(this.history[side].length === 0) { this.history[side].push(jsonToLoad); this.historyIndex[side] = 0; }
+                        this.updateHistoryButtons();
+                    });
+                } else {
+                    this.canvas.backgroundColor = '#ffffff';
+                    document.getElementById('val-bg-color').value = '#ffffff'; document.getElementById('val-bg-hex').textContent = '#ffffff';
+                    this.canvas.renderAll(); this.isHistoryAction = false;
+                    if(this.history[side].length === 0) {
+                        const initJson = JSON.stringify(this.canvas.toJSON(['placeholderType', 'selectable', 'isAppBackground']));
+                        this.history[side].push(initJson); this.historyIndex[side] = 0;
+                    }
+                    this.updateHistoryButtons();
+                }
+                this.hideProperties();
+            },
+
+            addStaticText() {
+                const text = new fabric.IText('Teks Bebas', { left: 270, top: 430, fontFamily: 'Inter', fill: '#1E293B', fontSize: 24, fontWeight: 600, originX: 'center', originY: 'center' });
+                this.canvas.add(text); this.canvas.setActiveObject(text); this.saveHistoryAndState();
+            },
+
+            addPlaceholder(type) {
+                // UPDATE: Selaraskan dengan system auto-detect di admin.html
+                if (type === 'NAMA' || type === 'ID' || type === 'KELAS') {
+                    const txt = `[${type}]`;
+                    const topPos = type === 'NAMA' ? 480 : (type === 'ID' ? 520 : 560);
+                    const ph = new fabric.IText(txt, { left: 270, top: topPos, fontFamily: 'Inter', fill: '#3B82F6', fontSize: 28, fontWeight: 800, originX: 'center', originY: 'center', placeholderType: type });
+                    this.canvas.add(ph); this.canvas.setActiveObject(ph);
+                } 
+                else if (type === 'INFO') {
+                    const txt = '[INFO]';
+                    const ph = new fabric.IText(txt, { left: 270, top: 300, fontFamily: 'Inter', fill: '#1E293B', fontSize: 16, fontWeight: 500, originX: 'center', originY: 'center', textAlign: 'center', placeholderType: type });
+                    this.canvas.add(ph); this.canvas.setActiveObject(ph);
+                }
+                else if (type === 'KONTAK') {
+                    const txt = '[KONTAK]';
+                    const ph = new fabric.IText(txt, { left: 270, top: 700, fontFamily: 'Inter', fill: '#3B82F6', fontSize: 18, fontWeight: 700, originX: 'center', originY: 'center', textAlign: 'center', placeholderType: type });
+                    this.canvas.add(ph); this.canvas.setActiveObject(ph);
+                }
+                else if (type === 'FOTO') {
+                    // UPDATE: Default sebagai bulatan mengikuti style yang diminta (opsional bisa diubah di properties panel)
+                    const circle = new fabric.Circle({ left: 270, top: 250, radius: 100, fill: '#E2E8F0', originX: 'center', originY: 'center', stroke: '#3B82F6', strokeWidth: 4, strokeDashArray: [10, 5], placeholderType: type });
+                    this.canvas.add(circle); this.canvas.setActiveObject(circle);
+                } 
+                else if (type === 'QR') {
+                    const size = 150;
+                    const bgRect = new fabric.Rect({ left: 0, top: 0, width: size, height: size, fill: '#ffffff', rx: 16, ry: 16, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 15, offsetX: 0, offsetY: 5 }) });
+                    const b1 = new fabric.Rect({ left: 15, top: 15, width: 35, height: 35, fill: 'transparent', stroke: '#0F172A', strokeWidth: 8, rx: 6, ry: 6 });
+                    const b2 = new fabric.Rect({ left: size - 50, top: 15, width: 35, height: 35, fill: 'transparent', stroke: '#0F172A', strokeWidth: 8, rx: 6, ry: 6 });
+                    const b3 = new fabric.Rect({ left: 15, top: size - 50, width: 35, height: 35, fill: 'transparent', stroke: '#0F172A', strokeWidth: 8, rx: 6, ry: 6 });
+                    const qrText = new fabric.IText('[QR]', { left: size/2, top: size/2, originX: 'center', originY: 'center', fontFamily: 'Inter', fontSize: 24, fontWeight: 800, fill: '#0F172A' });
+
+                    const group = new fabric.Group([bgRect, b1, b2, b3, qrText], { left: 270, top: 700, originX: 'center', originY: 'center', placeholderType: type });
+                    
+                    this.canvas.add(group); this.canvas.setActiveObject(group);
+                    this.saveHistoryAndState();
+                }
+            },
+
+            handleUpload(e, type) {
+                const file = e.target.files[0]; if(!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const base64Data = event.target.result;
+                    fabric.Image.fromURL(base64Data, (img) => {
+                        if(type === 'background') {
+                            const scale = Math.max(540 / img.width, 860 / img.height);
+                            img.set({ originX: 'center', originY: 'center', left: 270, top: 430, scaleX: scale, scaleY: scale, isAppBackground: true });
+                            this.canvas.add(img); img.sendToBack(); this.canvas.setActiveObject(img);
+                        } else {
+                            img.scaleToWidth(150); img.set({ left: 270, top: 100, originX: 'center', originY: 'center' });
+                            this.canvas.add(img); this.canvas.setActiveObject(img);
+                        }
+                        this.saveHistoryAndState();
+                        showToast("Gambar masuk ke memori lokal.");
+                    });
+                };
+                reader.readAsDataURL(file); e.target.value = '';
+            },
+
+            applyMagicEraser() {
+                if (!this.activeObject || this.activeObject.type !== 'image') return;
+                showToast("Membersihkan background...");
+                setTimeout(() => {
+                    const filter = new fabric.Image.filters.RemoveColor({ distance: 0.1, color: "#FFFFFF" });
+                    this.activeObject.filters = [filter]; this.activeObject.applyFilters(); this.canvas.renderAll();
+                    this.saveHistoryAndState(); showToast("Selesai.");
+                }, 100);
+            },
+
+            toggleCustomSelect(id) {
+                const selectElement = document.getElementById(id);
+                document.querySelectorAll('.custom-select').forEach(el => { if(el.id !== id) el.classList.remove('active'); });
+                selectElement.classList.toggle('active');
+            },
+
+            selectCustomOption(type, value, label) {
+                if (type === 'font') { document.getElementById('selected-font-text').innerText = label; if (this.activeObject) { this.activeObject.set('fontFamily', value); this.canvas.renderAll(); this.saveHistoryAndState(); } } 
+                else if (type === 'shape') { document.getElementById('selected-shape-text').innerText = label; this.updateShape(value); }
+            },
+
+            handleSelection(obj) {
+                if(!obj) return;
+                this.activeObject = obj;
+                document.getElementById('prop-empty').style.display = 'none'; document.getElementById('prop-common').style.display = 'flex';
+                document.getElementById('prop-text').style.display = 'none'; document.getElementById('prop-image').style.display = 'none'; document.getElementById('prop-shape').style.display = 'none';
+
+                if (obj.type === 'i-text' || obj.type === 'text') {
+                    document.getElementById('prop-text').style.display = 'flex';
+                    // UPDATE: Izinkan ganti teks meski placeholder. Tapi berikan note.
+                    document.getElementById('val-text').value = obj.text; document.getElementById('val-text').disabled = false;
+                    document.getElementById('val-color').value = obj.fill; document.getElementById('val-size').value = obj.fontSize;
+                    const fonts = { 'Inter': 'Inter (Clean)', 'Poppins': 'Poppins (Friendly)', 'Montserrat': 'Montserrat (Geometric)', 'Plus Jakarta Sans': 'Plus Jakarta (Corporate)', 'Playfair Display': 'Playfair (Serif)' };
+                    document.getElementById('selected-font-text').innerText = fonts[obj.fontFamily] || obj.fontFamily || 'Inter (Clean)';
+                } else if (obj.type === 'image' && !obj.placeholderType && !obj.isAppBackground) {
+                    document.getElementById('prop-image').style.display = 'flex';
+                } else if ((obj.type === 'rect' || obj.type === 'circle') && obj.placeholderType === 'FOTO') {
+                    document.getElementById('prop-shape').style.display = 'flex';
+                    let shapeLabel = 'Bulat Sempurna';
+                    if (obj.type === 'rect') {
+                         shapeLabel = obj.rx > 0 ? 'Kotak Sudut Melengkung' : 'Kotak Tajam (Klasik)';
+                    }
+                    document.getElementById('selected-shape-text').innerText = shapeLabel;
+                }
+                
+                if(window.innerWidth <= 768) {
+                    document.getElementById('mobile-fab').style.display = 'flex';
+                    document.getElementById('canvas-container').style.transform = document.getElementById('canvas-container').style.transform.replace(/scale\([0-9.]+\)/, `scale(${Math.min(0.55, parseFloat(document.getElementById('canvas-container').style.transform.split('scale(')[1]))})`); 
+                }
+            },
+
+            hideProperties() {
+                this.activeObject = null;
+                document.getElementById('prop-empty').style.display = 'block'; document.getElementById('prop-common').style.display = 'none'; document.getElementById('prop-text').style.display = 'none'; document.getElementById('prop-image').style.display = 'none'; document.getElementById('prop-shape').style.display = 'none';
+                if(window.innerWidth <= 768) { 
+                    document.getElementById('mobile-fab').style.display = 'none'; 
+                    document.getElementById('prop-panel').classList.remove('open'); 
+                    this.resizeCanvas(); 
+                }
+            },
+
+            openPanel() { document.getElementById('prop-panel').classList.add('open'); document.getElementById('mobile-fab').style.display = 'none'; },
+            closePanel() { document.getElementById('prop-panel').classList.remove('open'); if(this.activeObject) document.getElementById('mobile-fab').style.display = 'flex'; this.resizeCanvas(); },
+
+            updateCanvasBg() { const c = document.getElementById('val-bg-color').value; this.canvas.backgroundColor = c; document.getElementById('val-bg-hex').textContent = c; this.canvas.renderAll(); this.saveHistoryAndState(); },
+            updateText() { if(this.activeObject) { this.activeObject.set('text', document.getElementById('val-text').value); this.canvas.renderAll(); this.saveHistoryAndState(); } },
+            updateColor() { if(this.activeObject) { this.activeObject.set('fill', document.getElementById('val-color').value); this.canvas.renderAll(); this.saveHistoryAndState(); } },
+            updateSize() { if(this.activeObject) { const s = parseInt(document.getElementById('val-size').value); if(s>0) { this.activeObject.set('fontSize', s); this.canvas.renderAll(); this.saveHistoryAndState(); } } },
+            toggleBold() { if(this.activeObject) { const b = this.activeObject.fontWeight === 'bold' || this.activeObject.fontWeight >= 700; this.activeObject.set('fontWeight', b ? 'normal' : 'bold'); this.canvas.renderAll(); this.saveHistoryAndState(); } },
+            toggleItalic() { if(this.activeObject) { const i = this.activeObject.fontStyle === 'italic'; this.activeObject.set('fontStyle', i ? 'normal' : 'italic'); this.canvas.renderAll(); this.saveHistoryAndState(); } },
+            updateTextAlign(a) { if(this.activeObject) { this.activeObject.set('textAlign', a); this.canvas.renderAll(); this.saveHistoryAndState(); } },
+            
+            updateShape(value) { 
+                if(this.activeObject && this.activeObject.placeholderType === 'FOTO') { 
+                    const left = this.activeObject.left;
+                    const top = this.activeObject.top;
+                    
+                    let newShape;
+                    // RECREATE THE SHAPE TO ENSURE FABRIC JS TYPE CORRECTNESS
+                    if(value === 'circle') { 
+                        newShape = new fabric.Circle({ left: left, top: top, radius: 100, fill: '#E2E8F0', originX: 'center', originY: 'center', stroke: '#3B82F6', strokeWidth: 4, strokeDashArray: [10, 5], placeholderType: 'FOTO' });
+                    } else if (value === 'rounded') { 
+                        newShape = new fabric.Rect({ left: left, top: top, width: 200, height: 260, fill: '#E2E8F0', originX: 'center', originY: 'center', rx: 16, ry: 16, stroke: '#3B82F6', strokeWidth: 4, strokeDashArray: [10, 5], placeholderType: 'FOTO' });
+                    } else { 
+                        newShape = new fabric.Rect({ left: left, top: top, width: 200, height: 260, fill: '#E2E8F0', originX: 'center', originY: 'center', rx: 0, ry: 0, stroke: '#3B82F6', strokeWidth: 4, strokeDashArray: [10, 5], placeholderType: 'FOTO' });
+                    } 
+                    
+                    this.canvas.remove(this.activeObject);
+                    this.canvas.add(newShape);
+                    this.canvas.setActiveObject(newShape);
+                    this.canvas.renderAll(); this.saveHistoryAndState(); 
+                } 
+            },
+
+            bringForward() { if(this.activeObject) { this.canvas.bringForward(this.activeObject); this.canvas.renderAll(); this.saveHistoryAndState(); } },
+            sendBackward() { if(this.activeObject) { this.canvas.sendBackwards(this.activeObject); this.canvas.renderAll(); this.saveHistoryAndState(); } },
+            deleteSelected() { if(this.activeObject) { this.canvas.remove(this.activeObject); this.hideProperties(); this.saveHistoryAndState(); } },
+
+            openProjectsModal() { this.renderProjectList(); document.getElementById('modal-projects').classList.add('active'); },
+            closeProjectsModal() { document.getElementById('modal-projects').classList.remove('active'); },
+            getProjects() { return JSON.parse(localStorage.getItem('tahfizh_projects') || '[]'); },
+            
+            saveNewProject() {
+                const nameInput = document.getElementById('new-project-name'); const name = nameInput.value.trim();
+                if(!name) return showToast("Nama proyek tidak boleh kosong!", true);
+                const currentState = JSON.stringify(this.canvas.toJSON(['placeholderType', 'selectable', 'isAppBackground']));
+                if(this.currentSide === 'front') this.frontJson = currentState; else this.backJson = currentState;
+                const projects = this.getProjects();
+                projects.unshift({ id: Date.now().toString(), name: name, date: new Date().toLocaleString('id-ID'), front: this.frontJson, back: this.backJson });
+                localStorage.setItem('tahfizh_projects', JSON.stringify(projects));
+                nameInput.value = ''; this.renderProjectList(); showToast("Proyek berhasil disimpan.");
+            },
+            
+            loadProject(id) {
+                const projects = this.getProjects(); const proj = projects.find(p => p.id === id);
+                if(proj) {
+                    this.frontJson = proj.front; this.backJson = proj.back;
+                    this.history = { front: [], back: [] }; this.historyIndex = { front: -1, back: -1 };
+                    this.saveHistoryAndState(); this.loadSideData(this.currentSide); this.closeProjectsModal(); showToast(`Proyek "${proj.name}" dimuat.`);
+                }
+            },
+            
+            deleteProject(id) { let projects = this.getProjects(); projects = projects.filter(p => p.id !== id); localStorage.setItem('tahfizh_projects', JSON.stringify(projects)); this.renderProjectList(); },
+
+            async exportConfig() {
+                const loader = document.getElementById('global-loader'); const loaderText = document.getElementById('loader-text');
+                try {
+                    loader.classList.add('active'); loaderText.innerText = "Menganalisis file lokal di Sisi Depan & Belakang...";
+                    const currentState = JSON.stringify(this.canvas.toJSON(['placeholderType', 'selectable', 'isAppBackground']));
+                    if(this.currentSide === 'front') this.frontJson = currentState; else this.backJson = currentState;
+                    let frontData = JSON.parse(this.frontJson || '{}'); let backData = JSON.parse(this.backJson || '{}');
+
+                    frontData = await this.uploadBase64InJSON(frontData, loaderText); backData = await this.uploadBase64InJSON(backData, loaderText);
+                    loaderText.innerText = "Mengemas file JSON..."; this.frontJson = JSON.stringify(frontData); this.backJson = JSON.stringify(backData);
+                    this.saveHistoryAndState(); if(this.currentSide === 'front') this.loadSideData('front'); else this.loadSideData('back');
+
+                    const payload = { version: "1.0", type: "TahfizhPro_IDCard_Config", front: this.frontJson, back: this.backJson };
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload));
+                    const dlAnchor = document.getElementById('download-anchor'); dlAnchor.setAttribute("href", dataStr); dlAnchor.setAttribute("download", `Template_ID_Card_${Date.now()}.json`); dlAnchor.click();
+                    setTimeout(() => { loader.classList.remove('active'); showToast("Konfigurasi diekspor!"); }, 1000);
+                } catch (err) { loader.classList.remove('active'); showToast("Gagal Ekspor: " + err.message, true); }
+            },
+
+            async uploadBase64InJSON(jsonObj, textElement) {
+                if(!jsonObj || !jsonObj.objects) return jsonObj;
+                for (let i = 0; i < jsonObj.objects.length; i++) {
+                    let obj = jsonObj.objects[i];
+                    if (obj.type === 'image' && obj.src && obj.src.startsWith('data:image/') && !obj.placeholderType) {
+                        textElement.innerText = `Mengunggah Gambar ke Cloud (${i+1}/${jsonObj.objects.length})...`; obj.src = await this.uploadToCloud(obj.src);
+                    } else if (obj.type === 'group' && obj.objects) {
+                        for(let j=0; j < obj.objects.length; j++) {
+                            let sub = obj.objects[j];
+                            if(sub.type === 'image' && sub.src && sub.src.startsWith('data:image/') && !obj.placeholderType) { textElement.innerText = `Mengunggah Elemen Grup...`; sub.src = await this.uploadToCloud(sub.src); }
+                        }
+                    }
+                } return jsonObj;
+            },
+
+            async uploadToCloud(base64Data) {
+                const formData = new FormData(); formData.append('file', base64Data); formData.append('upload_preset', this.uploadPreset);
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`, { method: 'POST', body: formData });
+                if(!res.ok) throw new Error("Gagal mengunggah ke Cloudinary."); const data = await res.json(); return data.secure_url;
+            }
+        };
+
+        window.onload = () => StudioApp.init();
+        
+        // Tutup dropdown jika klik diluar
+        document.addEventListener('click', function(e) { if (!e.target.closest('.custom-select')) document.querySelectorAll('.custom-select').forEach(el => el.classList.remove('active')); });
+
+    </script>
+</body>
+</html>

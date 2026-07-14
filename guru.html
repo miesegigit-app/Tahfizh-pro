@@ -37,11 +37,12 @@
     <link rel="apple-touch-icon" href="./logo.png">
     <link rel="manifest" href="manifest.json">
 
-    <!-- Google Fonts & Icons -->
+    <!-- Google Fonts, Icons, & QR Scanner -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800&family=Playfair+Display:ital,wght@0,700;1,700&family=Cinzel:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
         :root {
@@ -254,7 +255,7 @@
         .time-col button:hover { background: var(--border-color); color: var(--text-main); }
         .time-val { font-size: 18px; font-weight: 700; width: 40px; text-align: center; margin: 4px 0; }
 
-        .toast { position: fixed; top: 24px; right: 24px; left: 24px; margin: 0 auto; max-width: 340px; padding: 14px 20px; background: #1E293B; color: #FFFFFF; font-size: 13px; font-weight: 500; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 12px; transform: translateY(-150%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 3000; }
+        .toast { position: fixed; top: 24px; right: 24px; left: 24px; margin: 0 auto; max-width: 340px; padding: 14px 20px; background: #1E293B; color: #FFFFFF; font-size: 13px; font-weight: 500; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 12px; transform: translateY(-150%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 4000; }
         @media (min-width: 640px) { .toast { left: auto; top: 24px; right: 24px; transform: translateY(-150%); } }
         .toast.error { background: var(--danger); }
         .toast.show { transform: translateY(0); }
@@ -264,6 +265,18 @@
         .file-upload-btn { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); color: white; padding: 8px 16px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); z-index: 10; }
         .zoom-slider-container { display: none; margin-bottom: 20px; background: var(--bg-surface); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
         .zoom-slider { width: 100%; accent-color: var(--primary); }
+
+        /* QR Scanner Custom Styling */
+        .scanner-wrapper { position: relative; width: 100%; border-radius: var(--radius-lg); overflow: hidden; background: #000; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); height: 320px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+        #reader-canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; border: none !important; }
+        #reader-canvas video { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: var(--radius-lg); }
+        #reader-canvas > div:not(:first-child), #reader-canvas img, #reader-canvas span, #reader-canvas a { display: none !important; opacity: 0 !important; visibility: hidden !important; }
+        
+        .scan-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.65); z-index: 5; pointer-events: none; clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, calc(50% - 100px) calc(50% - 100px), calc(50% + 100px) calc(50% - 100px), calc(50% + 100px) calc(50% + 100px), calc(50% - 100px) calc(50% + 100px), calc(50% - 100px) calc(50% - 100px)); }
+        .scan-frame { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border: 3px solid var(--primary); border-radius: 16px; z-index: 10; overflow: hidden; box-shadow: 0 0 0 4000px rgba(15,23,42,0.65); /* Fallback for browsers without clip-path */ }
+        @supports (clip-path: polygon(0% 0%)) { .scan-frame { box-shadow: none; } }
+        .scan-laser { position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--primary); box-shadow: 0 0 12px var(--primary); animation: scanLaser 2s infinite ease-in-out; }
+        @keyframes scanLaser { 0% { top: -5%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 105%; opacity: 0; } }
 
         /* Global System Update Overlay */
         .system-update-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 99999; color: white; flex-direction: column; text-align: center; }
@@ -437,6 +450,13 @@
                         </button>
                     </div>
                 </div>
+                
+                <!-- TOMBOL SCAN QR ABSENSI (Dikendalikan oleh AppSettings) -->
+                <div id="container-absensi-qr" style="display: none; margin-bottom: 16px;">
+                    <button class="btn btn-primary" onclick="window.bukaModalScanner()" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); font-weight: 700;">
+                        <i data-lucide="scan" style="width: 18px;"></i> Scan QR Presensi Kehadiran
+                    </button>
+                </div>
 
                 <div style="background: #FFFBEB; border: 1px solid #FDE68A; padding: 12px 16px; border-radius: var(--radius-md); display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px;">
                     <i data-lucide="info" style="width: 16px; color: #D97706; flex-shrink: 0; margin-top: 2px;"></i>
@@ -552,6 +572,27 @@
                 <span>Delegasi</span>
             </div>
         </nav>
+    </div>
+
+    <!-- MODAL SCANNER QR -->
+    <div id="modal-scanner" class="modal-overlay" style="z-index: 3000;">
+        <div class="card modal-container" style="text-align: center; padding: 0;">
+            <div class="modal-header">
+                <h3 style="font-size: 16px; margin: 0; color: var(--text-main); display: flex; align-items: center; gap: 8px;"><i data-lucide="scan" style="width: 18px; color: var(--primary);"></i> Scan QR Kehadiran</h3>
+                <button class="btn-ghost" onclick="window.tutupModalScanner()" style="padding: 4px; border:none; background:transparent;"><i data-lucide="x" style="width: 18px;"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 24px;">
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-weight: 500;">Arahkan kamera ke QR Code pada ID Card santri untuk merekam kehadiran hari ini.</p>
+                <div class="scanner-wrapper">
+                    <div id="reader-canvas"></div>
+                    <div class="scan-overlay"></div>
+                    <div class="scan-frame"><div class="scan-laser"></div></div>
+                </div>
+                <button class="btn btn-danger" onclick="window.tutupModalScanner()" style="width: 100%; padding: 12px; font-weight: 600;">
+                    <i data-lucide="x-circle" style="width: 16px;"></i> Tutup Kamera
+                </button>
+            </div>
+        </div>
     </div>
 
     <div id="modal-diskusi-guru" class="modal-overlay">
@@ -906,7 +947,12 @@
         import { collection, doc, setDoc, updateDoc, deleteDoc, getDoc, onSnapshot, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Variabel Pengaturan Global
-        window.appSettings = { isSholatModuleActive: true };
+        window.appSettings = { 
+            isSholatModuleActive: true,
+            isAbsensiQrActive: false, // Default mati, bisa dinyalakan dari Developer Console
+            isTagihanAktif: true,
+            twibbonFrameUrl: null 
+        };
         window.unsubscribeSettings = null;
         window.unsubscribeSaasMaster = null;
 
@@ -1075,9 +1121,13 @@
             twibbonState.imgUser = null;
             window.bukaModal('modal-studio-twibbon');
 
-            if(!twibbonState.imgFrame) {
+            const dynamicUrl = window.appSettings.twibbonFrameUrl || 'frame.png';
+
+            if(!twibbonState.imgFrame || twibbonState.imgFrame.dataset.source !== dynamicUrl) {
                 twibbonState.imgFrame = new Image();
-                twibbonState.imgFrame.src = 'frame.png'; 
+                twibbonState.imgFrame.crossOrigin = "anonymous";
+                twibbonState.imgFrame.dataset.source = dynamicUrl;
+                twibbonState.imgFrame.src = dynamicUrl;
             }
         };
 
@@ -1206,7 +1256,6 @@
                 ctx.fillText(text, x, y, maxWidth);
             }
             
-            // Render Nama
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
             ctx.shadowBlur = 12;
             ctx.shadowOffsetX = 0;
@@ -1214,7 +1263,6 @@
             ctx.fillStyle = '#FFFFFF';
             fillTextToFit(ctx, window.tempTwibbonData.nama.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
             
-            // Render Kelas
             if (window.tempTwibbonData.kelasNama) {
                 ctx.shadowColor = 'rgba(0,0,0,0.8)';
                 ctx.shadowBlur = 8;
@@ -1222,7 +1270,6 @@
                 fillTextToFit(ctx, window.tempTwibbonData.kelasNama.toUpperCase(), 540, 805, 24, 400, '"Inter", sans-serif');
             }
 
-            // Render Capaian
             let teksMisiBersih = window.tempTwibbonData.pencapaian || 'Pencapaian';
             teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
             teksMisiBersih = `Lulus: ${teksMisiBersih}`;
@@ -1250,16 +1297,20 @@
             window.open(waUrl, '_blank');
 
             const canvas = document.getElementById('twibbon-canvas');
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
-            const link = document.createElement('a');
-            const fileName = `Apresiasi-${window.tempTwibbonData.nama.replace(/\s+/g, '-')}.jpg`;
-            link.download = fileName;
-            link.href = dataUrl;
-            link.click();
             
-            window.tampilkanToast("Gambar diunduh & WA dibuka. Silakan lampirkan foto di WA!");
-            
-            setTimeout(() => { window.tutupModalTwibbon(); }, 500);
+            try {
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                const link = document.createElement('a');
+                const fileName = `Apresiasi-${window.tempTwibbonData.nama.replace(/\s+/g, '-')}.jpg`;
+                link.download = fileName;
+                link.href = dataUrl;
+                link.click();
+                
+                window.tampilkanToast("Gambar diunduh & WA dibuka. Silakan lampirkan foto di WA!");
+                setTimeout(() => { window.tutupModalTwibbon(); }, 500);
+            } catch (err) {
+                window.tampilkanToast("Terjadi kesalahan sistem saat mengekspor gambar.", true);
+            }
         };
         
         window.bukaDaftarApresiasi = function() {
@@ -1309,6 +1360,60 @@
             };
             setTimeout(() => { window.bukaStudioTwibbon(); }, 300);
         };
+
+        // SCANNER QR ABSENSI
+        let html5QrCode = null;
+        window.bukaModalScanner = function() {
+            window.bukaModal('modal-scanner');
+            if(!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader-canvas");
+                html5QrCode.start( 
+                    { facingMode: "environment" }, 
+                    { fps: 10 }, 
+                    window.onScanSuccess, 
+                    window.onScanFailure 
+                ).catch(err => { 
+                    window.tampilkanToast("Kamera tidak tersedia atau ditolak.", true); 
+                });
+            }
+        }
+        
+        window.tutupModalScanner = function() {
+            if(html5QrCode) { 
+                html5QrCode.stop().then(() => { 
+                    html5QrCode.clear(); 
+                    html5QrCode = null; 
+                }).catch(err => console.error(err)); 
+            }
+            window.tutupModal('modal-scanner');
+        }
+
+        window.onScanSuccess = async function(decodedText, decodedResult) {
+            const siswaScanned = semuaSiswa.find(s => s.kodeSiswa === decodedText);
+            if(siswaScanned) {
+                window.tutupModalScanner(); 
+                await window.catatAbsensiScan(siswaScanned, 'Hadir');
+                window.tampilkanToast(`Berhasil! ${siswaScanned.nama} hadir.`);
+            } else { 
+                window.tampilkanToast("Kode QR tidak dikenali pada kelas ini!", true); 
+            }
+        }
+        
+        window.onScanFailure = function(error) {}
+
+        window.catatAbsensiScan = async function(siswa, status) {
+            if(!currentUser) return;
+            const dataAbsen = { idAbsen: `absen_${Date.now()}`, timestamp: Date.now(), status: status };
+            
+            // SAFETY NET: Jika database sebelumnya kosong, "siswa.kehadiran" akan otomatis dibuat sebagai Array []
+            const kehadiranBaru = [...(siswa.kehadiran || []), dataAbsen];
+            
+            try { 
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', siswa.docId), { kehadiran: kehadiranBaru }); 
+            } catch (err) { 
+                window.tampilkanToast("Gagal menyimpan data absensi.", true);
+            }
+        }
 
         function pasangListenerSwipeGuru() {
             const areaGeser = document.getElementById('swipeable-dashboard-guru');
@@ -1379,7 +1484,6 @@
             if (!siswa) return;
             if (!siswa.waOrtu || siswa.waOrtu === '') return window.tampilkanToast("No WA belum tersimpan. Edit profil santri terlebih dahulu.", true);
             
-            // SOLUSI BUG LINK: Menggunakan origin (root domain) dan menyisipkan parameter tenant
             const baseUrl = window.location.origin + '/?sekolah=' + appId;
             
             let wa = siswa.waOrtu;
@@ -1520,7 +1624,7 @@
                     }
                     if(select.id === 'cs-surah-akhir') selectedSurahAkhir = value;
                     if(select.id === 'cs-guru-delegasi') selectedGuruDelegasi = value;
-                    if(select.id === 'cs-login-guru') selectedLoginGuruId = value; // Untuk login form
+                    if(select.id === 'cs-login-guru') selectedLoginGuruId = value; 
                     if(select.id === 'cs-pilih-kelas') {
                         activeClassId = value;
                         window.clearSearchInput(); 
@@ -1555,7 +1659,6 @@
         }
 
         const initAuth = async () => { 
-            // Cek kondisi Tenant seperti di index.html
             if (window.SAAS_TENANT_MISSING) return;
             try { await signInAnonymously(auth); } 
             catch (error) { window.tampilkanToast("Koneksi database terputus.", true); } 
@@ -1619,13 +1722,30 @@
         };
 
         function mulaiListenData() {
-            // 1. Listen Global Config App (Settings Sekolah)
+            // 1. Listen Global Config App (Settings Sekolah) DENGAN FALLBACK FAIL-SAFE
             const qSettings = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
             if (window.unsubscribeSettings) window.unsubscribeSettings();
             window.unsubscribeSettings = onSnapshot(qSettings, (docSnap) => {
+                
                 if(docSnap.exists()) {
                     window.appSettings = { ...window.appSettings, ...docSnap.data() };
+                } else {
+                    // SAFETY NET (ANTI-ERROR): Jika yayasan ini sama sekali belum pernah berlangganan 
+                    // dan document "settings" belum ada di database, terapkan default state yang aman.
+                    window.appSettings = {
+                        isSholatModuleActive: true,
+                        isAbsensiQrActive: false,
+                        isTagihanAktif: true,
+                        twibbonFrameUrl: null
+                    };
                 }
+
+                // KENDALI TAMPILAN TOMBOL SCAN QR ABSENSI
+                const qrContainer = document.getElementById('container-absensi-qr');
+                if (qrContainer) {
+                    qrContainer.style.display = window.appSettings.isAbsensiQrActive === true ? 'block' : 'none';
+                }
+                
                 if(loggedInTeacher && document.getElementById('tab-rekap').classList.contains('active')) {
                     window.renderTabelRekap(rekapSortMode);
                 }

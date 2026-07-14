@@ -15,7 +15,7 @@
     <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;600;800&family=Montserrat:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -73,7 +73,6 @@
         .text-muted { color: var(--text-muted); }
         .font-mono { font-family: 'Fira Code', monospace; }
 
-        /* Buttons */
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; font-size: 13px; font-weight: 600; border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-primary { background-color: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
@@ -91,7 +90,6 @@
         .btn-ghost { background: transparent; color: var(--text-muted); border: none; padding: 6px; border-radius: var(--radius-md); transition: all 0.2s; cursor: pointer; }
         .btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: white; }
 
-        /* Inputs & Form Controls */
         .input-group { margin-bottom: 20px; position: relative; }
         .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
         .form-control { width: 100%; padding: 12px 16px; font-size: 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #0F172A; color: var(--text-main); transition: all 0.2s; }
@@ -102,7 +100,6 @@
         .pwd-toggle-btn { position: absolute; right: 16px; top: 40px; background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer; transition: color 0.2s; display: flex; align-items: center; justify-content: center; }
         .pwd-toggle-btn:hover { color: white; }
 
-        /* Custom Dropdown UI (Menghindari elemen native browser yang kaku) */
         .custom-dropdown { position: relative; width: 100%; user-select: none; }
         .dropdown-selected { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; font-size: 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #0F172A; color: var(--text-main); cursor: pointer; transition: all 0.2s; }
         .dropdown-selected:hover { border-color: var(--text-muted); }
@@ -114,7 +111,6 @@
         .dropdown-option:hover { background: var(--bg-surface-hover); }
         .dropdown-arrow { width: 16px; color: var(--text-muted); transition: transform 0.2s; }
 
-        /* Badges & Toggles */
         .badge { display: inline-flex; align-items: center; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: var(--radius-full); text-transform: uppercase; letter-spacing: 0.05em; gap: 4px; }
         .badge-success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
         .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
@@ -129,14 +125,12 @@
         .toggle-switch input:checked + .toggle-slider { background-color: var(--primary); }
         .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
 
-        /* Layout Views */
         #login-view { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at center, #1E293B 0%, #0F172A 100%); position: fixed; top: 0; left: 0; z-index: 100; padding: 20px; }
         .login-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); padding: 48px 40px; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; max-width: 420px; text-align: center; }
         .dev-logo { width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%); border-radius: 20px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4); }
 
         #dashboard-view { display: none; width: 100%; }
         
-        /* Sidebar & Navigation */
         .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 30; opacity: 0; transition: opacity 0.3s ease; }
         .sidebar-backdrop.active { display: block; opacity: 1; }
         .sidebar { width: var(--sidebar-width); background: var(--bg-surface); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; height: 100vh; position: fixed; left: 0; top: 0; z-index: 40; transition: transform 0.3s ease; }
@@ -150,14 +144,12 @@
         .menu-item.deploy-btn { border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); margin-top: auto; }
         .menu-item.deploy-btn:hover { background: var(--danger-bg); box-shadow: 0 0 15px var(--danger-glow); }
 
-        /* Main Content Structure */
         .main-content { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; background: var(--bg-body); transition: margin-left 0.3s; width: calc(100% - var(--sidebar-width)); display: flex; flex-direction: column; position: relative; z-index: 10; }
         .topbar { height: 76px; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; position: sticky; top: 0; z-index: 20; }
         .content-area { padding: 32px; max-width: 1400px; margin: 0 auto; width: 100%; display: none; animation: fadeIn 0.4s ease; flex-grow: 1; }
         .content-area.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Cards & Statistical Grids */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 32px; }
         .stat-card { background: var(--bg-surface); padding: 28px; border-radius: var(--radius-xl); border: 1px solid var(--border-color); position: relative; overflow: hidden; box-shadow: var(--shadow-sm); transition: transform 0.2s; }
         .stat-card:hover { transform: translateY(-2px); }
@@ -169,7 +161,6 @@
         .data-card { background: var(--bg-surface); border-radius: var(--radius-xl); border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 24px; box-shadow: var(--shadow-md); }
         .data-header { padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; background: rgba(255, 255, 255, 0.02); }
         
-        /* Advanced Tables */
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
         th, td { padding: 16px 24px; text-align: left; font-size: 14px; border-bottom: 1px solid var(--border-color); }
@@ -180,12 +171,10 @@
         .client-name { font-weight: 700; color: white; font-size: 15px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
         .client-meta { font-size: 12px; color: var(--text-muted); font-family: 'Fira Code', monospace; }
         
-        /* Price Change Custom Styling (Pixel Perfect Alignment) */
         .price-change { display: flex; align-items: center; gap: 8px; font-weight: 500; }
         .price-old { color: var(--text-muted); text-decoration: line-through; font-size: 13px; }
         .price-new { color: white; font-weight: 700; font-size: 14px; }
 
-        /* Finance Analytics Grid (Bulan Lalu, Ini, Depan) */
         .trend-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-left: 8px; }
         .trend-up { background: var(--success-bg); color: var(--success); }
         .trend-down { background: var(--danger-bg); color: var(--danger); }
@@ -198,7 +187,6 @@
         .finance-analytic-card .amount { font-size: 24px; font-weight: 800; color: white; font-family: 'Fira Code', monospace; }
         .finance-analytic-card .sub-text { font-size: 12px; color: var(--text-light); margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-        /* Terminal UI untuk Deploy */
         .terminal-container { background: #000; border-radius: var(--radius-lg); border: 1px solid #334155; padding: 24px; font-family: 'Fira Code', monospace; position: relative; overflow: hidden; margin-bottom: 24px; }
         .terminal-header { display: flex; gap: 8px; margin-bottom: 20px; }
         .mac-btn { width: 12px; height: 12px; border-radius: 50%; }
@@ -208,7 +196,6 @@
         .cmd-cursor { display: inline-block; width: 8px; height: 16px; background: var(--text-main); animation: blink 1s step-end infinite; vertical-align: middle; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* Modals & Overlays */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.active { display: flex; opacity: 1; }
         .modal-container { background: var(--bg-surface); width: 100%; max-width: 500px; border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); border: 1px solid var(--border-color); overflow: hidden; transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; flex-direction: column; max-height: 90vh; }
@@ -217,15 +204,17 @@
         .modal-body { padding: 32px 24px; overflow-y: auto; flex: 1; }
         .modal-footer { padding: 20px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background: rgba(0,0,0,0.2); flex-shrink: 0; }
         
-        /* Custom Toasts (Menggantikan Alert Browser) */
+        .file-drop-zone { width: 100%; border: 2px dashed var(--accent); border-radius: var(--radius-md); padding: 32px 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(139, 92, 246, 0.05); }
+        .file-drop-zone:hover { background: rgba(139, 92, 246, 0.1); border-color: #A78BFA; }
+        .file-drop-zone.dragover { background: rgba(139, 92, 246, 0.2); border-color: #C4B5FD; transform: scale(1.02); }
+
         .toast { position: fixed; bottom: 30px; right: 30px; background: var(--bg-surface); color: white; padding: 16px 24px; border-radius: var(--radius-lg); font-size: 14px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--border-color); transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 2000; display: flex; align-items: center; gap: 12px; }
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.error { border-color: var(--danger); background: #450A0A; }
         
         .menu-toggle-btn { display: none; background: transparent; border: none; color: white; cursor: pointer; padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
         .chart-container { width: 100%; height: 360px; position: relative; margin-top: 24px; padding-top: 24px; border-top: 1px dashed var(--border-color); }
-        
-        /* Loaders & Spinners */
+
         .spinner { border: 3px solid rgba(255,255,255,0.1); width: 24px; height: 24px; border-radius: 50%; border-left-color: var(--primary); animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -233,10 +222,8 @@
         .system-update-overlay.active { display: flex; }
         .loader-spinner-large { width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--success); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
 
-        @keyframes copyPop { 0% { transform: scale(1); } 50% { transform: scale(1.2); color: var(--success); } 100% { transform: scale(1); } }
-        .copy-anim { animation: copyPop 0.3s ease; color: var(--success) !important; }
-
         @media (max-width: 1024px) { .stats-grid, .finance-analytic-grid { grid-template-columns: repeat(2, 1fr); } }
+        
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
@@ -384,7 +371,6 @@
                     <p class="text-muted">Analisis performa pendapatan bulanan secara historis, proyeksi, dan pelacakan hak dana yang masih tertahan di Yayasan (Piutang).</p>
                 </div>
 
-                <!-- Macro Stats Row -->
                 <div class="stats-grid">
                     <div class="stat-card" style="border-top-color: var(--primary);">
                         <h3 style="color: var(--primary);"><i data-lucide="bar-chart-2" style="width: 16px;"></i> Total GMV (Bulan Ini)</h3>
@@ -399,7 +385,6 @@
                         <i data-lucide="inbox" class="stat-bg-icon" style="color: var(--accent);"></i>
                     </div>
                     <div class="stat-card" style="border-top-color: var(--danger);" id="card-server-cost">
-                        <!-- PERBAIKAN: Penyelarasan pixel-perfect ikon Beban Server menggunakan Flexbox yang benar -->
                         <h3 style="color: var(--danger); display: flex; justify-content: space-between; align-items: center;">
                             <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="server" style="width: 16px;"></i> Beban Server</span>
                             <span class="badge badge-danger" id="badge-cost-type" style="font-size: 9px;">Estimasi</span>
@@ -416,7 +401,6 @@
                     </div>
                 </div>
 
-                <!-- Financial Performance Analysis Grid -->
                 <div class="data-card" style="border-color: rgba(59, 130, 246, 0.3);">
                     <div class="data-header" style="background: rgba(59, 130, 246, 0.05);">
                         <h2 style="font-size: 18px; color: white; display: flex; align-items: center; gap: 8px;">
@@ -426,13 +410,11 @@
                     </div>
                     <div style="padding: 24px;">
                         <div class="finance-analytic-grid">
-                            <!-- Bulan Lalu -->
                             <div class="finance-analytic-card">
                                 <h4>Bulan Lalu (Aktual)</h4>
                                 <div class="amount" id="fin-analitik-lalu">Rp 0</div>
                                 <div class="sub-text">Berdasarkan data historis sinkronisasi.</div>
                             </div>
-                            <!-- Bulan Ini -->
                             <div class="finance-analytic-card" style="border-color: var(--primary); background: rgba(59, 130, 246, 0.05); box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);">
                                 <h4>Bulan Ini (Berjalan)</h4>
                                 <div class="amount" id="fin-analitik-ini" style="color: var(--primary);">Rp 0</div>
@@ -440,7 +422,6 @@
                                     <span class="trend-badge trend-neutral">---</span> vs bulan lalu
                                 </div>
                             </div>
-                            <!-- Bulan Depan -->
                             <div class="finance-analytic-card" style="border-color: var(--warning);">
                                 <h4 style="color: var(--warning);">Estimasi Bulan Depan</h4>
                                 <div class="amount" id="fin-analitik-depan" style="color: var(--warning);">Rp 0</div>
@@ -450,14 +431,12 @@
                             </div>
                         </div>
                         
-                        <!-- Grafik Lanjutan -->
                         <div class="chart-container">
                             <canvas id="financeChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tabel Piutang & Hak Tertahan -->
                 <div class="data-card" style="border-color: rgba(139, 92, 246, 0.4);">
                     <div class="data-header" style="background: rgba(139, 92, 246, 0.05);">
                         <div>
@@ -480,7 +459,6 @@
                     </div>
                 </div>
 
-                <!-- Panel Auto-Billing Engine -->
                 <div class="data-card" style="margin-top: 24px; border-color: rgba(245, 158, 11, 0.4);">
                     <div class="data-header" style="background: rgba(245, 158, 11, 0.1); border-bottom: 1px solid rgba(245, 158, 11, 0.2);">
                         <h2 style="font-size: 18px; color: var(--warning); display: flex; align-items: center; gap: 8px;">
@@ -605,12 +583,32 @@
             <div id="tab-settings" class="content-area">
                 <div style="margin-bottom: 32px; max-width: 600px;">
                     <h1 style="font-size: 24px; color: white; margin-bottom: 8px;">Konfigurasi Sistem Induk</h1>
-                    <p class="text-muted">Atur kredensial, kontak global, dan biaya infrastruktur real SaaS Anda.</p>
+                    <p class="text-muted">Atur kredensial, Cloudinary, kontak global, dan biaya infrastruktur real SaaS Anda.</p>
                 </div>
                 
                 <div class="data-card" style="max-width: 600px;">
                     <div class="data-header">
-                        <!-- PERBAIKAN: Penyelarasan pixel-perfect ikon di judul menggunakan Flexbox, membuang vertical-align usang -->
+                        <h2 style="font-size: 18px; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="cloud" style="color: var(--primary);"></i> API Cloudinary (Image Storage)</h2>
+                    </div>
+                    <div style="padding: 32px 24px;">
+                        <div class="input-group">
+                            <label>Cloud Name</label>
+                            <input type="text" id="setting-cloudinary-cloudname" class="form-control font-mono" placeholder="Contoh: dpbo6ogyp" autocomplete="off" value="dpbo6ogyp">
+                            <p class="text-xs text-muted" style="margin-top: 6px;">ID penyimpanan cloud utama Anda.</p>
+                        </div>
+                        <div class="input-group">
+                            <label>Upload Preset (Unsigned API)</label>
+                            <input type="text" id="setting-cloudinary-preset" class="form-control font-mono" placeholder="Contoh: TahfizhPro" autocomplete="off" value="TahfizhPro">
+                            <p class="text-xs text-muted" style="margin-top: 6px;">Nama preset upload untuk mengizinkan upload tanpa otentikasi server.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="window.saveCloudinaryConfigs()" style="width: 100%; padding: 14px; margin-top: 8px;">
+                            <i data-lucide="save" style="width: 16px;"></i> Simpan Kredensial Cloudinary
+                        </button>
+                    </div>
+                </div>
+
+                <div class="data-card" style="max-width: 600px; margin-top: 32px;">
+                    <div class="data-header">
                         <h2 style="font-size: 18px; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="server" style="color: var(--danger);"></i> Konfigurasi Beban Server Aktual</h2>
                     </div>
                     <div style="padding: 32px 24px;">
@@ -627,7 +625,6 @@
 
                 <div class="data-card" style="max-width: 600px; margin-top: 32px;">
                     <div class="data-header">
-                        <!-- PERBAIKAN: Flexbox icon title -->
                         <h2 style="font-size: 18px; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="shield" style="color: var(--primary);"></i> Ganti Passkey Master</h2>
                     </div>
                     <div style="padding: 32px 24px;">
@@ -660,7 +657,6 @@
 
                 <div class="data-card" style="max-width: 600px; margin-top: 32px;">
                     <div class="data-header">
-                        <!-- PERBAIKAN: Flexbox icon title -->
                         <h2 style="font-size: 18px; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="phone-call" style="color: var(--success);"></i> Kontak Sales & Registrasi</h2>
                     </div>
                     <div style="padding: 32px 24px;">
@@ -677,6 +673,70 @@
             </div>
 
         </main>
+    </div>
+
+    <!-- MODAL BARU: MANAJEMEN MODUL & FITUR YAYASAN -->
+    <div id="modal-tenant-features" class="modal-overlay">
+        <div class="modal-container" style="max-width: 500px; border: 1px solid var(--primary); box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);">
+            <div class="modal-header" style="background: rgba(59, 130, 246, 0.05); border-bottom: 1px solid rgba(59, 130, 246, 0.2);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i data-lucide="sliders" style="color: var(--primary);"></i>
+                    <h3 style="font-size: 16px; color: white;">Manajemen Modul Yayasan</h3>
+                </div>
+                <button class="btn-ghost" onclick="window.closeModal('modal-tenant-features')" style="color: var(--primary);"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-sm text-muted" style="margin-bottom: 24px; line-height: 1.5;">Aktifkan atau nonaktifkan fitur spesifik untuk <strong><span id="features-tenant-name" style="color:white;"></span></strong>. Perubahan akan langsung diterapkan ke aplikasi mereka.</p>
+                <input type="hidden" id="features-tenant-id">
+                
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <div>
+                            <span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="scan" style="width:16px; color: var(--success);"></i> Presensi QR Scanner</span>
+                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Fitur absensi harian menggunakan scan kartu QR di Dasbor Pengajar.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-feature-qr">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <div>
+                            <span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="moon" style="width:16px; color: var(--accent);"></i> Mutaba'ah Sholat Wajib</span>
+                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Modul pelaporan sholat 5 waktu oleh wali murid di Portal Ortu.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-feature-sholat">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <div>
+                            <span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="receipt" style="width:16px; color: var(--warning);"></i> Sistem Penagihan SPP</span>
+                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Menampilkan banner tagihan dan tombol bayar di Portal Ortu.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-feature-tagihan">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <div>
+                            <span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="printer" style="width:16px; color: var(--primary);"></i> Fitur Cetak ID Card PDF</span>
+                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Beri izin bagi Super Admin yayasan untuk mencetak dan mengunduh ID Card Santri (Massal & Satuan).</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-feature-cetak">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="background: rgba(59, 130, 246, 0.02); border-top: 1px solid rgba(59, 130, 246, 0.2);">
+                <button class="btn btn-outline" onclick="window.closeModal('modal-tenant-features')">Batal</button>
+                <button class="btn btn-primary" onclick="window.saveTenantFeatures()" id="btn-save-features"><i data-lucide="save" style="width:16px;"></i> Terapkan Fitur</button>
+            </div>
+        </div>
     </div>
 
     <!-- MODAL: DAFTAR / EDIT CLIENT -->
@@ -701,20 +761,16 @@
                     <label>No. WhatsApp Pengelola (Opsional)</label>
                     <input type="number" id="input-client-phone" class="form-control" placeholder="0812xxxxxx">
                 </div>
-                
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
                     <div class="input-group" style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); padding: 16px; border-radius: var(--radius-md); margin-bottom: 0;">
-                        <!-- PERBAIKAN: Flexbox icon label (Menghilangkan vertical-align) -->
                         <label style="color: var(--accent); display: flex; align-items: center; gap: 6px;"><i data-lucide="pie-chart" style="width: 14px;"></i> Porsi Dev (%)</label>
                         <input type="number" id="input-client-share" class="form-control" placeholder="20" min="0" max="100" autocomplete="off" style="font-weight: 700;">
                     </div>
                     <div class="input-group" style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); padding: 16px; border-radius: var(--radius-md); margin-bottom: 0;">
-                        <!-- PERBAIKAN: Flexbox icon label (Menghilangkan vertical-align) -->
                         <label style="color: var(--warning); display: flex; align-items: center; gap: 6px;"><i data-lucide="calendar" style="width: 14px;"></i> Jatuh Tempo</label>
                         <input type="number" id="input-client-jatuhtempo" class="form-control" placeholder="10" min="1" max="31" autocomplete="off" style="font-weight: 700;">
                     </div>
                 </div>
-
                 <div class="input-group" style="margin-bottom: 0;">
                     <label>Status Langganan</label>
                     <div class="custom-dropdown" id="dropdown-client-status">
@@ -739,6 +795,117 @@
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="window.closeModal('modal-client')">Batal</button>
                 <button class="btn btn-primary" onclick="window.saveClient()">Simpan Registrasi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL BARU: IMPOR TEMPLATE ID CARD DENGAN AUTO-COMPRESS -->
+    <div id="modal-tenant-idcard" class="modal-overlay">
+        <div class="modal-container" style="border: 1px solid var(--primary); box-shadow: 0 0 50px rgba(59, 130, 246, 0.2);">
+            
+            <div class="modal-header" style="background: rgba(59, 130, 246, 0.05); border-bottom: 1px solid rgba(59, 130, 246, 0.2);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+                        <i data-lucide="upload-cloud" style="width: 20px;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 16px; color: white; margin: 0; display: flex; align-items: center; gap: 8px;">
+                            Impor Template ID Card
+                        </h3>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                            Distribusi untuk Klien: <strong id="idcard-tenant-name" style="color:white;"></strong>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-ghost" onclick="window.closeModal('modal-tenant-idcard')" style="color: var(--text-muted);"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="modal-body">
+                <p class="text-sm text-muted" style="margin-bottom: 24px; line-height: 1.5;">
+                    Unggah file konfigurasi (<code>.json</code>) dari <strong>Mini Studio</strong>. Sistem otomatis mendeteksi dan mengunggah gambar resolusi tinggi (Base64) di dalamnya ke Cloudinary untuk menghemat memori Firestore.
+                </p>
+
+                <input type="hidden" id="idcard-tenant-id">
+                <input type="hidden" id="imported-front-json">
+                <input type="hidden" id="imported-back-json">
+
+                <div class="input-group">
+                    <input type="file" id="upload-json-template" accept=".json" style="display: none;" onchange="window.handleJsonImport(event)">
+                    <label for="upload-json-template" class="file-drop-zone" id="drop-zone-json" style="border-color: var(--primary); background: rgba(59, 130, 246, 0.05);">
+                        <i data-lucide="file-json-2" style="width: 40px; height: 40px; color: var(--primary); margin-bottom: 16px; display: inline-block;"></i>
+                        <div id="json-upload-text" style="font-size: 14px; font-weight: 700; color: white;">Klik untuk Pilih File JSON</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Sistem sanggup memproses file > 1MB.</div>
+                    </label>
+                </div>
+
+                <div id="import-status-area" style="display: none; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 16px; border-radius: var(--radius-md); align-items: center; gap: 12px; margin-top: 16px;">
+                    <div style="width: 36px; height: 36px; background: var(--success-bg); color: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i data-lucide="check" style="width: 20px;"></i>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--success); font-size: 14px; margin-bottom: 2px;">File Berhasil Terbaca!</h4>
+                        <p style="font-size: 11px; color: var(--text-muted); margin: 0;">Data siap dikompres dan didistribusikan ke database klien.</p>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="modal-footer" style="background: rgba(59, 130, 246, 0.05); border-top: 1px solid rgba(59, 130, 246, 0.2);">
+                <button class="btn btn-outline" onclick="window.closeModal('modal-tenant-idcard')">Batal</button>
+                <button class="btn btn-primary" onclick="window.saveTenantIdCardConfig()" id="btn-save-idcard" disabled>
+                    <i data-lucide="send" style="width: 16px;"></i> Simpan & Distribusikan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LAMA: KONFIGURASI TWIBBON TENANT DINAMIS -->
+    <div id="modal-tenant-twibbon" class="modal-overlay">
+        <div class="modal-container" style="max-width: 760px; border: 1px solid var(--accent); box-shadow: 0 0 30px rgba(139, 92, 246, 0.15);">
+            <div class="modal-header" style="background: rgba(139, 92, 246, 0.05); border-bottom: 1px solid rgba(139, 92, 246, 0.2);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i data-lucide="image" style="color: var(--accent);"></i>
+                    <h3 style="font-size: 16px; color: white;">Setup Dinamis Twibbon Yayasan</h3>
+                </div>
+                <button class="btn-ghost" onclick="window.closeModal('modal-tenant-twibbon')" style="color: var(--accent);"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-sm text-muted" style="margin-bottom: 24px; line-height: 1.5;">Atur bingkai (frame) Twibbon khusus untuk Yayasan <strong><span id="twibbon-tenant-name" style="color:white;"></span></strong>. Gambar akan langsung diunggah ke *Cloudinary Storage* Anda.</p>
+                <input type="hidden" id="twibbon-tenant-id">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;" id="twibbon-grid-layout">
+                    <div>
+                        <div class="input-group">
+                            <label style="color: var(--accent); display: flex; align-items: center; gap: 6px;"><i data-lucide="upload-cloud" style="width:14px;"></i> Upload Desain Frame (PNG)</label>
+                            <input type="file" id="input-twibbon-file" accept="image/png" style="display: none;" onchange="window.handleTwibbonUpload(event)">
+                            <label for="input-twibbon-file" class="file-drop-zone">
+                                <i data-lucide="image-plus" style="width: 32px; height: 32px; color: var(--accent); margin-bottom: 12px; display: inline-block;"></i>
+                                <div id="twibbon-upload-text" style="font-size: 13px; font-weight: 600; color: white;">Klik untuk Pilih File Gambar</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Maksimal 2MB. Resolusi disarankan 1:1.</div>
+                            </label>
+                        </div>
+                        <div class="input-group" style="margin-top: 16px;">
+                            <label>URL Cloudinary (Dihasilkan Otomatis)</label>
+                            <input type="url" id="input-twibbon-url" class="form-control" readonly placeholder="Akan terisi setelah berhasil upload" style="background: rgba(0,0,0,0.3); color: var(--text-muted); cursor: not-allowed; border-style: dashed; font-size: 12px;">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+                            <i data-lucide="monitor" style="width:14px;"></i> Live Preview
+                        </label>
+                        <div style="width: 100%; aspect-ratio: 1/1; background: repeating-conic-gradient(#1E293B 0% 25%, #0F172A 0% 50%) 50% / 20px 20px; border: 2px dashed var(--border-color); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                            <div id="twibbon-empty-state" style="position: absolute; text-align: center; color: var(--text-muted); z-index: 1;">
+                                <i data-lucide="image-off" style="width: 32px; height: 32px; margin-bottom: 8px; opacity: 0.5;"></i>
+                                <div style="font-size: 12px; font-weight: 600;">Belum Ada Frame Terdeteksi</div>
+                            </div>
+                            <img id="preview-tenant-twibbon" src="" style="width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 2; display: none;">
+                        </div>
+                    </div>
+                </div>
+                <style>@media (max-width: 768px) { #twibbon-grid-layout { grid-template-columns: 1fr !important; } }</style>
+            </div>
+            <div class="modal-footer" style="background: rgba(139, 92, 246, 0.02); border-top: 1px solid rgba(139, 92, 246, 0.2);">
+                <button class="btn btn-outline" onclick="window.closeModal('modal-tenant-twibbon')">Batal</button>
+                <button class="btn btn-accent" onclick="window.saveTenantTwibbonConfig()" id="btn-save-twibbon"><i data-lucide="save" style="width:16px;"></i> Terapkan ke Yayasan</button>
             </div>
         </div>
     </div>
@@ -796,7 +963,6 @@
                 <p class="text-sm text-muted" style="margin-bottom: 24px; line-height: 1.5;" id="wd-description">
                     Generate kode One-Time Token untuk diberikan kepada pihak sekolah. Saat sekolah memasukkan kode ini, maka kewajiban setor tunai mereka kepada Anda dinyatakan LUNAS di dalam sistem.
                 </p>
-                
                 <input type="hidden" id="wd-tenant-id">
                 <input type="hidden" id="wd-max-amount">
                 
@@ -880,6 +1046,7 @@
         </div>
     </div>
 
+    <!-- SCRIPT INJECTIONS & FIREBASE -->
     <script type="module">
         import { db, auth } from './firebase-config.js';
         import { signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -888,11 +1055,14 @@
         const DEFAULT_MASTER_PIN = "dev2026"; 
         let ACTIVE_MASTER_PIN = DEFAULT_MASTER_PIN;
 
-        // State Global & Advanced Financial State
         let allClients = [];
         let allRegisteredStats = {}; 
         let allApprovals = [];
-        let globalSaaSSettings = { version: "v1.0.0", forceUpdateTimestamp: 0, maintenanceMode: false, salesWaNumber: "", lastBillingResetMonth: "", actualServerCost: 0 };
+        let globalSaaSSettings = { 
+            version: "v1.0.0", forceUpdateTimestamp: 0, maintenanceMode: false, salesWaNumber: "", 
+            lastBillingResetMonth: "", actualServerCost: 0,
+            cloudinaryCloudName: "dpbo6ogyp", cloudinaryUploadPreset: "TahfizhPro" 
+        };
         let financeChartInstance = null;
         let globalFinancials = { totalGMV: 0, totalHakDev: 0, totalPiutang: 0, estServerCost: 0, isRealCost: false };
         
@@ -900,7 +1070,6 @@
         let confirmRequiredText = "DEPLOY";
         window.hasCheckedAutoBilling = false;
 
-        // Listeners Unsubscribe
         window.unsubscribeClients = null; window.unsubscribeRegistered = null;
         window.unsubscribeApprovals = null; window.unsubscribeSettings = null;
 
@@ -915,7 +1084,23 @@
                 const dropdown = document.getElementById('dropdown-client-status');
                 if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove('open');
             });
+            setupImageErrorListeners();
         });
+
+        function setupImageErrorListeners() {
+            const twibbonImg = document.getElementById('preview-tenant-twibbon');
+            if(twibbonImg) {
+                twibbonImg.addEventListener('error', function() {
+                    if(this.src && this.src !== window.location.href && this.src !== '') {
+                        const emptyState = document.getElementById('twibbon-empty-state');
+                        this.style.display = 'none';
+                        emptyState.style.display = 'block';
+                        emptyState.innerHTML = '<i data-lucide="alert-triangle" style="width: 32px; height: 32px; margin-bottom: 8px; color: var(--danger);"></i><div style="font-size: 12px; font-weight: 600; color: var(--danger);">Gagal memuat gambar (Link Rusak)</div>';
+                        if(window.lucide) window.lucide.createIcons();
+                    }
+                });
+            }
+        }
 
         async function checkAndRunAutoBilling(forceRun = false) {
             const now = new Date();
@@ -1123,8 +1308,25 @@
                 
                 document.getElementById('setting-sales-wa').value = formattedWa;
                 window.showToast("Konfigurasi Sistem Global berhasil disimpan!");
-                calculateDashboardStats(); // Recalculate profit based on new server cost
+                calculateDashboardStats(); 
             } catch(e) { window.showToast("Gagal menyimpan konfigurasi.", true); }
+        };
+
+        window.saveCloudinaryConfigs = async function() {
+            const cloudName = document.getElementById('setting-cloudinary-cloudname').value.trim();
+            const preset = document.getElementById('setting-cloudinary-preset').value.trim();
+
+            if(!cloudName || !preset) return window.showToast("Cloud Name dan Upload Preset wajib diisi!", true);
+
+            try {
+                await setDoc(doc(db, 'saas_master', 'global_config'), {
+                    cloudinaryCloudName: cloudName,
+                    cloudinaryUploadPreset: preset,
+                    updatedAt: Date.now()
+                }, { merge: true });
+                
+                window.showToast("Kredensial Cloudinary (Storage) berhasil disimpan!");
+            } catch(e) { window.showToast("Gagal menyimpan konfigurasi Cloudinary.", true); }
         };
 
         function initFirebaseDev() {
@@ -1139,9 +1341,18 @@
                     if(document.getElementById('setting-sales-wa') && globalSaaSSettings.salesWaNumber) document.getElementById('setting-sales-wa').value = globalSaaSSettings.salesWaNumber;
                     if(document.getElementById('setting-actual-server-cost')) document.getElementById('setting-actual-server-cost').value = globalSaaSSettings.actualServerCost || 0;
                     if(document.getElementById('text-last-reset')) document.getElementById('text-last-reset').textContent = globalSaaSSettings.lastBillingResetMonth || "Belum Ada Histori";
+                    
+                    // Cloudinary Fill
+                    if(document.getElementById('setting-cloudinary-cloudname')) document.getElementById('setting-cloudinary-cloudname').value = globalSaaSSettings.cloudinaryCloudName || 'dpbo6ogyp';
+                    if(document.getElementById('setting-cloudinary-preset')) document.getElementById('setting-cloudinary-preset').value = globalSaaSSettings.cloudinaryUploadPreset || 'TahfizhPro';
+
                     calculateDashboardStats();
                 } else {
-                    setDoc(settingsRef, { version: "v1.0.0", forceUpdateTimestamp: 0, maintenanceMode: false, salesWaNumber: "", actualServerCost: 0, lastBillingResetMonth: "" });
+                    setDoc(settingsRef, { 
+                        version: "v1.0.0", forceUpdateTimestamp: 0, maintenanceMode: false, 
+                        salesWaNumber: "", actualServerCost: 0, lastBillingResetMonth: "",
+                        cloudinaryCloudName: "dpbo6ogyp", cloudinaryUploadPreset: "TahfizhPro"
+                    });
                 }
             });
 
@@ -1194,7 +1405,20 @@
         };
 
         window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
-        window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
+        window.closeModal = function(id) {
+            document.getElementById(id).classList.remove('active');
+            // Jika yang ditutup adalah modal id card, bersihkan input file agar bisa import lagi
+            if(id === 'modal-tenant-idcard') {
+                const fileInput = document.getElementById('upload-json-template');
+                if(fileInput) fileInput.value = '';
+                document.getElementById('import-status-area').style.display = 'none';
+                document.getElementById('btn-save-idcard').disabled = true;
+                const labelText = document.getElementById('json-upload-text');
+                if(labelText) labelText.textContent = "Klik untuk Pilih File JSON";
+                const dropzone = document.getElementById('drop-zone-json');
+                if(dropzone) dropzone.style.borderColor = 'var(--primary)';
+            }
+        };
 
         function calculateDashboardStats() {
             document.getElementById('stat-total-clients').textContent = allClients.length;
@@ -1241,7 +1465,7 @@
             document.getElementById('stat-total-users').textContent = totalSantriEstimated.toLocaleString('id-ID');
             document.getElementById('stat-total-revenue-overview').textContent = `Rp ${totalRevenueEstimated.toLocaleString('id-ID')}`;
 
-            // Server Cost Logic (Real vs Estimasi)
+            // Server Cost Logic
             let finalServerCost = 0;
             const badgeCostType = document.getElementById('badge-cost-type');
             const txtCostDesc = document.getElementById('text-cost-desc');
@@ -1261,13 +1485,11 @@
 
             const netProfit = totalDevRevenue - finalServerCost;
             
-            // Save to global context for charts
             globalFinancials.totalGMV = totalRevenueEstimated;
             globalFinancials.totalHakDev = totalDevRevenue;
             globalFinancials.totalPiutang = totalPiutangGlobal;
             globalFinancials.estServerCost = finalServerCost;
 
-            // DOM Updates for Tab Finance
             const elGmv = document.getElementById('fin-gmv');
             const elCost = document.getElementById('fin-server-cost');
             const elProfit = document.getElementById('fin-net-profit');
@@ -1284,7 +1506,6 @@
                 }
             }
 
-            // Update Analytics Cards
             calculateAdvancedAnalytics();
 
             const financeTab = document.getElementById('tab-finance');
@@ -1295,14 +1516,9 @@
         }
 
         function calculateAdvancedAnalytics() {
-            // Simulasi pertumbuhan untuk trend (Mengingat struktur DB saat ini mengandalkan kalkulasi real-time)
             const currentDevRev = globalFinancials.totalHakDev;
-            
-            // Asumsikan bulan lalu ada pertumbuhan konstan 5% (simulasi dari data real)
             const lastMonthDevRev = currentDevRev * 0.95; 
             const growthPercentage = currentDevRev > 0 ? ((currentDevRev - lastMonthDevRev) / lastMonthDevRev) * 100 : 0;
-            
-            // Proyeksi bulan depan naik 8% karena promosi / efektivitas auto-billing
             const nextMonthDevRev = currentDevRev * 1.08;
             const nextGrowthPercentage = ((nextMonthDevRev - currentDevRev) / currentDevRev) * 100;
 
@@ -1385,14 +1601,13 @@
             const baseCost = globalFinancials.estServerCost;
             const currentMonthIndex = new Date().getMonth();
 
-            for (let i = 0; i <= currentMonthIndex + 1; i++) { // +1 for next month projection
+            for (let i = 0; i <= currentMonthIndex + 1; i++) { 
                 if(i > 11) break;
-                // Simple growth simulation backward and forward
                 let monthFactor = Math.pow(0.95, currentMonthIndex - i); 
-                if (i > currentMonthIndex) monthFactor = 1.08; // Project growth
+                if (i > currentMonthIndex) monthFactor = 1.08; 
                 
                 let rev = Math.round(baseRev * monthFactor);
-                let cst = globalFinancials.isRealCost ? baseCost : Math.round(baseCost * (1 + (currentMonthIndex-i)*0.01)); // cost slightly variable if estimasi
+                let cst = globalFinancials.isRealCost ? baseCost : Math.round(baseCost * (1 + (currentMonthIndex-i)*0.01)); 
                 let prf = rev - cst;
 
                 dataRevenue.push(rev);
@@ -1639,7 +1854,6 @@
                 const btnIconColor = hasPending ? 'var(--warning)' : 'var(--success)';
                 const btnBgColor = hasPending ? 'rgba(245, 158, 11, 0.1)' : 'transparent';
                 
-                /* PERBAIKAN: Memberikan flexbox alignment untuk baris teks money label di tabel agar ikon selaras */
                 const moneyLabel = hasPending ? `<div class="text-xs" style="color:var(--warning); margin-top:2px; font-weight:600; display: flex; align-items: center; gap: 4px;"><i data-lucide="clock" style="width:12px;"></i> Transaksi OTP Aktif</div>` : `<div class="text-xs text-muted" style="margin-top:2px;">Bagi Hasil: ${devShare}% | Tgl Jatuh Tempo: ${c.jatuhTempo || 10}</div>`;
 
                 return `
@@ -1655,12 +1869,23 @@
                     <td>${badgeStatus}</td>
                     <td style="color:var(--text-light); font-weight:600;">${rawSantri.toLocaleString('id-ID')} Santri</td>
                     <td>
-                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                        <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
                             <button class="btn btn-outline" style="padding: 6px 10px; color: var(--success); border-color: rgba(16, 185, 129, 0.3);" onclick="window.forceBillingPerTenant('${c.id}', '${tenantId}', '${c.name.replace(/'/g, "\\'")}')" title="Trigger Penagihan Manual (Override)">
                                 <i data-lucide="play-circle" style="width:14px;"></i>
                             </button>
                             <button class="btn btn-outline" style="padding: 6px 10px; color: ${btnIconColor}; border-color: rgba(16, 185, 129, 0.3); background: ${btnBgColor};" onclick="window.openModalWithdrawal('${c.id}', '${tenantId}', '${c.name.replace(/'/g, "\\'")}')" title="Kelola Pencairan">
                                 <i data-lucide="banknote" style="width:14px;"></i>
+                            </button>
+                            <!-- TOMBOL MANAJEMEN FITUR -->
+                            <button class="btn btn-outline" style="padding: 6px 10px; color: #0ea5e9; border-color: rgba(14, 165, 233, 0.3); background: rgba(14, 165, 233, 0.05);" onclick="window.openTenantFeatures('${tenantId}', '${c.name.replace(/'/g, "\\'")}')" title="Manajemen Modul & Fitur">
+                                <i data-lucide="sliders" style="width:14px;"></i>
+                            </button>
+                            <!-- TOMBOL IMPOR TEMPLATE ID CARD (JSON) -->
+                            <button class="btn btn-outline" style="padding: 6px 10px; color: var(--primary); border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.05);" onclick="window.openTenantIdCardImport('${tenantId}', '${c.name.replace(/'/g, "\\'")}')" title="Impor Template ID Card (JSON)">
+                                <i data-lucide="upload-cloud" style="width:14px;"></i>
+                            </button>
+                            <button class="btn btn-outline" style="padding: 6px 10px; color: var(--accent); border-color: rgba(139, 92, 246, 0.3); background: rgba(139, 92, 246, 0.05);" onclick="window.openTenantTwibbonConfig('${tenantId}', '${c.name.replace(/'/g, "\\'")}')" title="Upload Desain Twibbon Yayasan">
+                                <i data-lucide="image" style="width:14px;"></i>
                             </button>
                             <button class="btn btn-outline" style="padding: 6px 10px; color: var(--warning); border-color: rgba(245, 158, 11, 0.3);" onclick="window.openTenantCredential('${tenantId}', '${c.name.replace(/'/g, "\\'")}')" title="Akses Kredensial Super Admin">
                                 <i data-lucide="key" style="width:14px;"></i>
@@ -1678,6 +1903,351 @@
             }).join('');
             if(window.lucide) window.lucide.createIcons();
         }
+
+        window.openTenantFeatures = async function(tenantId, clientName) {
+            document.getElementById('features-tenant-id').value = tenantId;
+            document.getElementById('features-tenant-name').textContent = clientName;
+            
+            document.getElementById('toggle-feature-qr').checked = false;
+            document.getElementById('toggle-feature-sholat').checked = true;
+            document.getElementById('toggle-feature-tagihan').checked = true;
+            document.getElementById('toggle-feature-cetak').checked = false;
+
+            const btnSave = document.getElementById('btn-save-features');
+            btnSave.disabled = true; 
+            btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Memuat...';
+            if(window.lucide) window.lucide.createIcons();
+
+            window.openModal('modal-tenant-features');
+
+            try {
+                const docSnap = await getDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'));
+                if(docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('toggle-feature-qr').checked = data.isAbsensiQrActive === true;
+                    document.getElementById('toggle-feature-sholat').checked = data.isSholatModuleActive !== false;
+                    document.getElementById('toggle-feature-tagihan').checked = data.isTagihanAktif !== false;
+                    document.getElementById('toggle-feature-cetak').checked = data.isCetakKartuActive === true;
+                }
+            } catch(e) {
+                window.showToast("Gagal memuat status fitur yayasan.", true);
+            } finally {
+                btnSave.disabled = false; 
+                btnSave.innerHTML = '<i data-lucide="save" style="width:16px;"></i> Terapkan Fitur';
+                if(window.lucide) window.lucide.createIcons();
+            }
+        };
+
+        window.saveTenantFeatures = async function() {
+            const tenantId = document.getElementById('features-tenant-id').value;
+            const isAbsensiQrActive = document.getElementById('toggle-feature-qr').checked;
+            const isSholatModuleActive = document.getElementById('toggle-feature-sholat').checked;
+            const isTagihanAktif = document.getElementById('toggle-feature-tagihan').checked;
+            const isCetakKartuActive = document.getElementById('toggle-feature-cetak').checked;
+
+            const btnSave = document.getElementById('btn-save-features');
+            btnSave.disabled = true; 
+            btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Menyimpan...';
+            if(window.lucide) window.lucide.createIcons();
+
+            try {
+                await setDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'), {
+                    isAbsensiQrActive,
+                    isSholatModuleActive,
+                    isTagihanAktif,
+                    isCetakKartuActive,
+                    updatedAt: Date.now()
+                }, { merge: true });
+                
+                window.showToast("Modul & Fitur Yayasan berhasil diperbarui!");
+                window.closeModal('modal-tenant-features');
+            } catch(e) {
+                window.showToast("Gagal menyimpan konfigurasi fitur.", true);
+            } finally {
+                btnSave.disabled = false; 
+                btnSave.innerHTML = '<i data-lucide="save" style="width:16px;"></i> Terapkan Fitur';
+                if(window.lucide) window.lucide.createIcons();
+            }
+        };
+
+        async function executeCloudinaryUpload(file) {
+            const cloudName = globalSaaSSettings.cloudinaryCloudName || 'dpbo6ogyp';
+            const uploadPreset = globalSaaSSettings.cloudinaryUploadPreset || 'TahfizhPro';
+
+            if (!cloudName || !uploadPreset) throw new Error("Konfigurasi Cloudinary belum disetel! Harap ke menu Pengaturan.");
+            if (file.size > 5 * 1024 * 1024) throw new Error("Tolak: Ukuran maksimal file adalah 5MB!");
+
+            const formData = new FormData();
+            formData.append('file', file); 
+            formData.append('upload_preset', uploadPreset);
+
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method: 'POST', body: formData });
+            if (!response.ok) throw new Error("Cloudinary menolak upload. Periksa preset Anda.");
+
+            const data = await response.json();
+            return data.secure_url;
+        }
+
+        window.openTenantTwibbonConfig = async function(tenantId, clientName) {
+            document.getElementById('twibbon-tenant-id').value = tenantId;
+            document.getElementById('twibbon-tenant-name').textContent = clientName;
+            
+            const inputUrl = document.getElementById('input-twibbon-url');
+            inputUrl.value = ''; 
+            
+            const dropzoneText = document.getElementById('twibbon-upload-text');
+            dropzoneText.textContent = "Klik untuk Pilih File Gambar";
+            
+            window.updateTwibbonPreview(); 
+            
+            const btnSave = document.getElementById('btn-save-twibbon');
+            btnSave.disabled = true; 
+            btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Memuat...';
+            if(window.lucide) window.lucide.createIcons();
+            
+            window.openModal('modal-tenant-twibbon');
+            
+            try {
+                const docSnap = await getDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'));
+                if(docSnap.exists() && docSnap.data().twibbonFrameUrl) {
+                    inputUrl.value = docSnap.data().twibbonFrameUrl;
+                    window.updateTwibbonPreview();
+                }
+            } catch(e) {
+                window.showToast("Gagal memuat pengaturan twibbon yang ada.", true);
+            } finally {
+                btnSave.disabled = false; 
+                btnSave.innerHTML = '<i data-lucide="save" style="width:16px;"></i> Terapkan ke Yayasan';
+                if(window.lucide) window.lucide.createIcons();
+            }
+        };
+
+        window.handleTwibbonUpload = async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.type !== 'image/png') return window.showToast("Tolak: Desain frame wajib menggunakan format PNG transparan!", true);
+
+            const uploadText = document.getElementById('twibbon-upload-text');
+            const btnSave = document.getElementById('btn-save-twibbon');
+            
+            uploadText.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width:14px; height:14px;"></i> Sedang Mengunggah...';
+            btnSave.disabled = true;
+            if(window.lucide) window.lucide.createIcons();
+            
+            try {
+                const secureUrl = await executeCloudinaryUpload(file);
+                document.getElementById('input-twibbon-url').value = secureUrl;
+                window.updateTwibbonPreview();
+                window.showToast("Upload Twibbon Selesai! Klik Terapkan untuk menyimpan.");
+            } catch (error) { 
+                window.showToast(error.message || "Gagal mengunggah gambar ke Cloud.", true);
+            } finally {
+                uploadText.textContent = "Klik untuk Ganti File";
+                btnSave.disabled = false; event.target.value = ''; 
+            }
+        };
+
+        window.updateTwibbonPreview = function() {
+            const url = document.getElementById('input-twibbon-url').value.trim();
+            const img = document.getElementById('preview-tenant-twibbon');
+            const emptyState = document.getElementById('twibbon-empty-state');
+            
+            if(url) {
+                img.src = url; img.style.display = 'block'; emptyState.style.display = 'none';
+                emptyState.innerHTML = '<i data-lucide="image-off" style="width: 32px; height: 32px; margin-bottom: 8px; opacity: 0.5;"></i><div style="font-size: 12px; font-weight: 600;">Belum Ada Frame Terdeteksi</div>';
+                if(window.lucide) window.lucide.createIcons();
+            } else {
+                img.src = ''; img.style.display = 'none'; emptyState.style.display = 'block';
+            }
+        };
+
+        window.saveTenantTwibbonConfig = async function() {
+            const tenantId = document.getElementById('twibbon-tenant-id').value;
+            const url = document.getElementById('input-twibbon-url').value.trim();
+            
+            const btnSave = document.getElementById('btn-save-twibbon');
+            btnSave.disabled = true; btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Menyimpan...';
+            if(window.lucide) window.lucide.createIcons();
+            
+            try {
+                await setDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'), { twibbonFrameUrl: url || null }, { merge: true });
+                window.showToast("Data Tersimpan: Yayasan akan menggunakan frame Twibbon ini.");
+                window.closeModal('modal-tenant-twibbon');
+            } catch(e) { window.showToast("Gagal menyimpan ke konfigurasi Yayasan.", true);
+            } finally {
+                btnSave.disabled = false; btnSave.innerHTML = '<i data-lucide="save" style="width:16px;"></i> Terapkan ke Yayasan';
+                if(window.lucide) window.lucide.createIcons();
+            }
+        };
+
+        // ============================================================================
+        // LOGIKA BARU: IMPOR JSON ID CARD TEMPLATE (DENGAN AUTO-COMPRESS / CLOUDINARY)
+        // ============================================================================
+        window.openTenantIdCardImport = function(tenantId, clientName) {
+            document.getElementById('idcard-tenant-id').value = tenantId;
+            document.getElementById('idcard-tenant-name').textContent = clientName;
+            
+            document.getElementById('imported-front-json').value = '';
+            document.getElementById('imported-back-json').value = '';
+            
+            document.getElementById('import-status-area').style.display = 'none';
+            document.getElementById('btn-save-idcard').disabled = true;
+            
+            document.getElementById('json-upload-text').textContent = "Klik untuk Pilih File JSON";
+            document.getElementById('drop-zone-json').style.borderColor = 'var(--primary)';
+            
+            window.openModal('modal-tenant-idcard');
+        };
+
+        window.handleJsonImport = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.name.endsWith('.json')) {
+                window.showToast("Format ditolak: Harus berupa file .json!", true);
+                event.target.value = '';
+                return;
+            }
+
+            const uploadText = document.getElementById('json-upload-text');
+            uploadText.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width:14px; height:14px;"></i> Membaca File...';
+            if(window.lucide) window.lucide.createIcons();
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const payload = JSON.parse(e.target.result);
+                    
+                    if (payload.type !== "TahfizhPro_IDCard_Config") {
+                        throw new Error("File ini bukan format template ID Card yang valid.");
+                    }
+
+                    document.getElementById('imported-front-json').value = payload.front || '';
+                    document.getElementById('imported-back-json').value = payload.back || '';
+                    
+                    document.getElementById('import-status-area').style.display = 'flex';
+                    document.getElementById('btn-save-idcard').disabled = false;
+                    document.getElementById('drop-zone-json').style.borderColor = 'var(--success)';
+                    
+                    uploadText.textContent = file.name;
+                    window.showToast("File JSON terbaca! Siap dioptimasi saat simpan.");
+                } catch (err) {
+                    window.showToast(err.message || "Gagal membaca struktur file konfigurasi.", true);
+                    uploadText.textContent = "Gagal Membaca File";
+                    document.getElementById('drop-zone-json').style.borderColor = 'var(--danger)';
+                    document.getElementById('import-status-area').style.display = 'none';
+                    document.getElementById('btn-save-idcard').disabled = true;
+                } finally {
+                    event.target.value = ''; 
+                }
+            };
+            
+            reader.onerror = () => {
+                window.showToast("Terjadi kesalahan saat membaca file lokal.", true);
+                uploadText.textContent = "Klik untuk Pilih File JSON";
+                event.target.value = '';
+            };
+            
+            reader.readAsText(file);
+        };
+
+        // Algoritma Rahasia: Menghancurkan Base64 di dalam JSON menjadi URL pendek via Cloudinary
+        async function uploadBase64ToCloudinary(base64Data) {
+            const cloudName = globalSaaSSettings.cloudinaryCloudName || 'dpbo6ogyp';
+            const uploadPreset = globalSaaSSettings.cloudinaryUploadPreset || 'TahfizhPro';
+
+            if (!cloudName || !uploadPreset) throw new Error("Konfigurasi Cloudinary belum disetel! Harap isi di menu Pengaturan Sistem.");
+
+            const formData = new FormData();
+            formData.append('file', base64Data);
+            formData.append('upload_preset', uploadPreset);
+
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method: 'POST', body: formData });
+            if (!response.ok) throw new Error("Cloudinary menolak upload otomatis.");
+            
+            const data = await response.json();
+            return data.secure_url;
+        }
+
+        async function optimizeJsonImages(jsonString) {
+            if (!jsonString) return null;
+            try {
+                let jsonObj = JSON.parse(jsonString);
+                if(jsonObj.objects) {
+                    for (let i = 0; i < jsonObj.objects.length; i++) {
+                        let obj = jsonObj.objects[i];
+                        if (obj.type === 'image' && obj.src && obj.src.startsWith('data:image/') && !obj.placeholderType) {
+                            obj.src = await uploadBase64ToCloudinary(obj.src);
+                        } else if (obj.type === 'group' && obj.objects) {
+                            for(let j=0; j < obj.objects.length; j++) {
+                                let sub = obj.objects[j];
+                                if(sub.type === 'image' && sub.src && sub.src.startsWith('data:image/') && !sub.placeholderType) {
+                                    sub.src = await uploadBase64ToCloudinary(sub.src);
+                                }
+                            }
+                        }
+                    }
+                }
+                return JSON.stringify(jsonObj);
+            } catch(e) {
+                console.error("Gagal optimasi JSON:", e);
+                throw new Error("Struktur JSON rusak atau pengunggahan gambar ke Cloudinary gagal.");
+            }
+        }
+
+        window.saveTenantIdCardConfig = async function() {
+            const tenantId = document.getElementById('idcard-tenant-id').value;
+            let frontJson = document.getElementById('imported-front-json').value;
+            let backJson = document.getElementById('imported-back-json').value;
+            
+            if(!tenantId) return window.showToast("Error: Tenant ID tidak ditemukan.", true);
+
+            const btnSave = document.getElementById('btn-save-idcard');
+            btnSave.disabled = true; 
+            btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width:16px; height:16px;"></i> Mengoptimasi File...';
+            if(window.lucide) window.lucide.createIcons();
+            
+            try {
+                // OPTIMASI: Pindahkan base64 raksasa ke Cloudinary untuk menghemat limit 1MB Firestore
+                if (frontJson && frontJson.includes('data:image/')) {
+                    btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width:16px; height:16px;"></i> Upload Gambar Depan...';
+                    frontJson = await optimizeJsonImages(frontJson);
+                }
+                if (backJson && backJson.includes('data:image/')) {
+                    btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width:16px; height:16px;"></i> Upload Gambar Belakang...';
+                    backJson = await optimizeJsonImages(backJson);
+                }
+
+                // Validasi final limit aman Firestore (~900KB)
+                const currentSize = new Blob([frontJson || '', backJson || '']).size;
+                if (currentSize > 900000) {
+                    throw new Error("Setelah kompresi, JSON masih > 1MB. Kurangi detail kerumitan gambar di Studio Anda.");
+                }
+
+                btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width:16px; height:16px;"></i> Mendistribusikan...';
+
+                await setDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'), { 
+                    idCardFrontJson: frontJson || null,
+                    idCardBackJson: backJson || null,
+                    updatedAt: Date.now()
+                }, { merge: true });
+                
+                await setDoc(doc(db, 'saas_master', 'clients', 'list', tenantId), { 
+                    idCardFrontJson: frontJson || null,
+                    idCardBackJson: backJson || null
+                }, { merge: true });
+                
+                window.showToast("Template berhasil dikompresi dan didistribusikan ke Klien!");
+                window.closeModal('modal-tenant-idcard');
+            } catch(e) { 
+                window.showToast("Gagal memproses file: " + e.message, true);
+            } finally {
+                btnSave.disabled = false; 
+                btnSave.innerHTML = '<i data-lucide="send" style="width:16px;"></i> Simpan & Distribusikan';
+                if(window.lucide) window.lucide.createIcons();
+            }
+        };
 
         window.toggleSuspendClient = async function(id, newStatus) {
             try { await setDoc(doc(db, 'saas_master', 'clients', 'list', id), { status: newStatus }, { merge: true }); window.showToast(`Status klien diubah menjadi ${newStatus.toUpperCase()}`); } 
@@ -1731,7 +2301,6 @@
                         <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; color:var(--danger); border-color:var(--danger-bg);" onclick="window.processApproval('${a.id}', 'rejected', null, null)">Tolak</button>
                     </div>` : `<span class="text-xs text-muted" style="display:block; text-align:right;">Selesai diproses</span>`;
 
-                /* PERBAIKAN: Menggunakan class .price-change dengan properti flexbox yang di set di CSS. Arrow icon disetting agar tidak meleset */
                 return `<tr><td><div class="client-name">${a.clientName}</div><div class="client-meta">${a.tenantId}</div></td><td class="text-muted text-sm">${dateStr}</td><td><div class="price-change"><span class="price-old">Rp ${(a.oldPrice||0).toLocaleString('id-ID')}</span><i data-lucide="arrow-right" style="width:14px; color:var(--text-light); flex-shrink:0;"></i><span class="price-new">Rp ${(a.newPrice||0).toLocaleString('id-ID')}</span></div></td><td>${statusHtml}</td><td>${actionHtml}</td></tr>`;
             }).join('');
             if(window.lucide) window.lucide.createIcons();
