@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Verifikasi Santri - TahfizhPro</title>
+    <meta name="description" content="Portal Verifikasi Validitas Santri TahfizhPro Enterprise">
+    <meta name="theme-color" content="#F8FAFC">
+
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Pola Latar Belakang Titik (Dot Grid) yang Premium */
+        .bg-grid-pattern {
+            background-image: radial-gradient(#CBD5E1 1.5px, transparent 1.5px);
+            background-size: 28px 28px;
+        }
+
+        /* Animasi Efek Gelombang (Ripple) untuk Icon Status Utama */
+        .ripple-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ripple-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.15);
+            animation: ripple-anim 2.5s cubic-bezier(0.0, 0.2, 0.8, 1) infinite;
+        }
+        .ripple-circle:nth-child(2) {
+            animation-delay: 1.2s;
+        }
+        @keyframes ripple-anim {
+            0% { width: 0; height: 0; opacity: 1; border: 2px solid rgba(16, 185, 129, 0.5); }
+            100% { width: 160px; height: 160px; opacity: 0; border: 2px solid rgba(16, 185, 129, 0); }
+        }
+
+        /* Animasi Efek Pulse Khusus untuk Foto Santri */
+        @keyframes photo-pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+            70% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .photo-pulse-active {
+            animation: photo-pulse-glow 2s infinite cubic-bezier(0.66, 0, 0, 1);
+        }
+
+        /* Watermark Keamanan Kriptografi Semu */
+        .secure-watermark {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02);
+        }
+
+        /* Skeleton Animation */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        .skeleton {
+            background: #f1f5f9;
+            background-image: linear-gradient(to right, #f1f5f9 0%, #e2e8f0 20%, #f1f5f9 40%, #f1f5f9 100%);
+            background-repeat: no-repeat;
+            background-size: 1000px 100%; 
+            animation: shimmer 2s infinite linear forwards;
+        }
+    </style>
+</head>
+<body class="bg-grid-pattern min-h-screen flex flex-col items-center relative overflow-x-hidden">
+
+    <!-- Header Portal -->
+    <header class="w-full max-w-md px-6 py-5 flex justify-between items-center z-10 sticky top-0 bg-white/85 backdrop-blur-lg border-b border-slate-200/80 shadow-sm">
+        <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-md border border-slate-800">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </div>
+            <span class="font-extrabold text-slate-800 tracking-tight text-lg">TahfizhPro <span class="text-slate-400 font-medium">Verify</span></span>
+        </div>
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 shadow-sm">
+            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span class="text-[10px] font-bold text-emerald-700 tracking-wider uppercase">Live Server</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-md px-4 py-8 flex-1 flex flex-col items-center z-10">
+        
+        <!-- STATE 1: LOADING SKELETON (Lebih elegan) -->
+        <div id="state-loading" class="w-full flex flex-col items-center justify-center">
+            <div class="glass-card w-full rounded-3xl overflow-hidden border border-slate-200 p-8 flex flex-col items-center w-full mb-6 relative">
+                <!-- Aksen shimmer atas -->
+                <div class="absolute top-0 left-0 right-0 h-2 skeleton"></div>
+                
+                <div class="w-16 h-16 rounded-full skeleton mb-6"></div>
+                <div class="w-40 h-6 rounded-md skeleton mb-3"></div>
+                <div class="w-48 h-4 rounded-md skeleton mb-8"></div>
+                
+                <div class="w-32 h-32 rounded-full skeleton mb-6"></div>
+                <div class="w-48 h-8 rounded-md skeleton mb-3"></div>
+                <div class="flex gap-2 mb-8 w-full justify-center">
+                    <div class="w-16 h-6 rounded-full skeleton"></div>
+                    <div class="w-24 h-6 rounded-full skeleton"></div>
+                </div>
+                
+                <div class="w-full h-16 rounded-xl skeleton"></div>
+            </div>
+            <p class="text-sm font-semibold text-slate-500 animate-pulse flex items-center gap-2">
+                <i data-lucide="radio" class="w-4 h-4"></i> Memvalidasi Enkripsi QR...
+            </p>
+        </div>
+
+        <!-- STATE 2: SUCCESS (VALID) -->
+        <div id="state-success" class="w-full hidden flex-col items-center animate-in fade-in zoom-in duration-300">
+            
+            <div class="glass-card w-full rounded-3xl overflow-hidden border border-slate-200 relative mb-6">
+                <!-- Aksen Hijau atas -->
+                <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500"></div>
+                
+                <div class="p-8 flex flex-col items-center relative mt-2">
+                    <!-- Icon Ripple Aktif (Main Status) -->
+                    <div class="ripple-wrapper mb-6">
+                        <div class="ripple-circle"></div>
+                        <div class="ripple-circle"></div>
+                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl rotate-3 flex items-center justify-center shadow-lg shadow-emerald-200 relative z-10 border border-emerald-300">
+                            <i data-lucide="check-circle-2" class="w-8 h-8 text-white -rotate-3"></i>
+                        </div>
+                    </div>
+
+                    <h2 class="text-[22px] font-black text-slate-900 mb-1 text-center tracking-tight">STATUS VALID</h2>
+                    <p class="text-xs text-emerald-600 font-bold tracking-widest uppercase mb-8 flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Santri Diakui
+                    </p>
+
+                    <!-- Foto Profil dengan Efek Pulse Glow Premium -->
+                    <div class="relative w-32 h-32 mb-6 flex justify-center">
+                        <!-- Glow Container -->
+                        <div class="absolute inset-0 rounded-full photo-pulse-active z-0"></div>
+                        
+                        <!-- Actual Photo Frame -->
+                        <div class="relative w-full h-full rounded-full border-[5px] border-white shadow-xl overflow-hidden bg-slate-50 z-10 flex items-center justify-center">
+                            <img id="val-foto" src="" alt="Foto Santri" class="w-full h-full object-cover hidden">
+                            <div id="val-foto-fallback" class="w-full h-full flex flex-col items-center justify-center text-slate-300">
+                                <i data-lucide="user" class="w-12 h-12 mb-1"></i>
+                            </div>
+                        </div>
+
+                        <!-- Verified Badge terikat pada foto -->
+                        <div class="absolute bottom-0 right-1 bg-emerald-500 text-white rounded-full p-1.5 border-2 border-white shadow-md z-20" title="Identitas Tervalidasi">
+                            <i data-lucide="badge-check" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+
+                    <!-- Data Santri -->
+                    <h3 id="val-nama" class="text-2xl font-extrabold text-slate-800 text-center mb-3 tracking-tight">Nama Santri</h3>
+                    
+                    <div class="flex flex-wrap justify-center items-center gap-2 mb-8">
+                        <div class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold border border-slate-200">
+                            <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-400"></i>
+                            <span id="val-kelas">Kelas</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-100 font-mono tracking-wide">
+                            <i data-lucide="fingerprint" class="w-3.5 h-3.5 text-blue-400"></i>
+                            <span id="val-id">ID</span>
+                        </div>
+                    </div>
+
+                    <!-- Waktu Scan Realtime -->
+                    <div class="w-full bg-slate-50/80 rounded-2xl p-4 border border-slate-200/60 mb-4 shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="clock-4" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Waktu Pemindaian (Live)</p>
+                                <p id="val-time" class="text-sm font-bold text-slate-700 font-mono"></p>
+                                <p id="val-date" class="text-xs text-slate-500 font-medium"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nama Institusi -->
+                    <div class="w-full flex items-start gap-3 bg-slate-900 rounded-2xl p-4 text-left shadow-lg relative overflow-hidden">
+                        <!-- Dekorasi background institusi -->
+                        <i data-lucide="building" class="absolute -right-4 -bottom-4 w-24 h-24 text-slate-800 opacity-50 z-0"></i>
+                        
+                        <div class="w-10 h-10 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center flex-shrink-0 z-10 secure-watermark">
+                            <i data-lucide="building-2" class="w-5 h-5 text-slate-300"></i>
+                        </div>
+                        <div class="z-10 relative">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Terdaftar Secara Resmi Di:</p>
+                            <p id="val-institusi" class="text-sm font-bold text-white leading-tight">Sistem Internal Enterprise</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <button onclick="window.location.reload()" class="w-full py-4 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 border border-slate-200 shadow-sm active:scale-[0.98]">
+                <i data-lucide="scan-line" class="w-5 h-5"></i> Pindai QR Lainnya
+            </button>
+        </div>
+
+        <!-- STATE 3: ERROR / NOT FOUND -->
+        <div id="state-error" class="w-full hidden flex-col items-center animate-in fade-in zoom-in duration-300">
+            <div class="glass-card w-full rounded-3xl overflow-hidden border border-red-200 relative mb-6 shadow-md shadow-red-100/50">
+                <!-- Aksen Merah atas -->
+                <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-400 via-red-500 to-rose-500"></div>
+                
+                <div class="p-8 flex flex-col items-center text-center relative overflow-hidden mt-4">
+                    <i data-lucide="alert-triangle" class="absolute -bottom-10 -right-10 w-56 h-56 text-red-50 opacity-60 z-0 rotate-12"></i>
+
+                    <div class="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mb-5 relative z-10 border border-red-100 shadow-inner">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center shadow-sm">
+                            <i data-lucide="shield-alert" class="w-8 h-8 text-red-500"></i>
+                        </div>
+                    </div>
+
+                    <h2 class="text-[22px] font-black text-slate-900 mb-2 relative z-10 tracking-tight">QR Code Tidak Valid</h2>
+                    <p id="error-desc" class="text-sm text-slate-600 mb-8 relative z-10 leading-relaxed max-w-xs">
+                        Kami tidak dapat menemukan data santri yang terhubung dengan QR Code ini di pangkalan data kami.
+                    </p>
+
+                    <div class="w-full bg-slate-50/80 rounded-2xl p-4 border border-slate-200/60 mb-2 relative z-10 text-left flex items-start gap-3">
+                        <div class="mt-0.5">
+                            <i data-lucide="terminal" class="w-5 h-5 text-slate-400"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Diagnosa Sistem</p>
+                            <p id="error-code" class="text-xs font-bold text-slate-700 font-mono bg-white px-2 py-1 rounded border border-slate-200 inline-block">ERROR_CODE</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="window.location.reload()" class="w-full py-4 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-md shadow-red-200 active:scale-[0.98]">
+                <i data-lucide="qr-code" class="w-5 h-5"></i> Coba Pindai Lagi
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="py-6 text-center z-10 w-full mt-auto">
+        <div class="flex items-center justify-center gap-1.5 opacity-60 hover:opacity-100 transition-opacity">
+            <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400"></i>
+            <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">
+                Secured by TahfizhPro Enterprise
+            </p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK & Logika Aplikasi -->
+    <script type="module">
+        // Import konfigurasi Firebase
+        import { db, appId } from './firebase-config.js';
+        import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // DOM Elements
+        const stateLoading = document.getElementById('state-loading');
+        const stateSuccess = document.getElementById('state-success');
+        const stateError = document.getElementById('state-error');
+
+        // Waktu Realtime
+        function startRealtimeClock() {
+            const timeEl = document.getElementById('val-time');
+            const dateEl = document.getElementById('val-date');
+            
+            setInterval(() => {
+                const now = new Date();
+                timeEl.textContent = now.toLocaleTimeString('id-ID', { hour12: false }) + ' WIB';
+                dateEl.textContent = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }, 1000);
+            
+            // Trigger awal
+            const now = new Date();
+            timeEl.textContent = now.toLocaleTimeString('id-ID', { hour12: false }) + ' WIB';
+            dateEl.textContent = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        // Fungsi Transisi Tampilan UI
+        function showUI(stateId) {
+            stateLoading.classList.add('hidden');
+            stateSuccess.classList.add('hidden');
+            stateError.classList.add('hidden');
+            
+            document.getElementById(stateId).classList.remove('hidden');
+            document.getElementById(stateId).classList.add('flex');
+            
+            if(window.lucide) window.lucide.createIcons();
+        }
+
+        function triggerError(code, message) {
+            document.getElementById('error-code').textContent = code;
+            document.getElementById('error-desc').textContent = message;
+            showUI('state-error');
+        }
+
+        async function initVerification() {
+            startRealtimeClock();
+
+            // 1. Ambil Parameter ID dari URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const santriId = urlParams.get('id');
+
+            // Jika QR Code di-scan tapi parameter ?id= hilang
+            if (!santriId) {
+                return setTimeout(() => {
+                    triggerError(
+                        "PARAMETER_ID_HILANG", 
+                        "Sistem tidak mendeteksi ID pada tautan. Pastikan Anda memindai QR Code resmi menggunakan pemindai QR atau kamera standar."
+                    );
+                }, 1000);
+            }
+
+            try {
+                // 2. Cari Data Santri di Database secara spesifik ke tenant (appId)
+                const studentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'students');
+                const studentsSnapshot = await getDocs(studentsRef);
+                
+                let validStudent = null;
+
+                // Memfilter di sisi klien untuk mencocokkan kodeSiswa atau Document ID
+                studentsSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.kodeSiswa === santriId || doc.id === santriId) {
+                        validStudent = { id: doc.id, ...data };
+                    }
+                });
+
+                // Jika santri tidak ditemukan
+                if (!validStudent) {
+                    return setTimeout(() => {
+                        triggerError(
+                            "SANTRI_TIDAK_DITEMUKAN", 
+                            "Identitas dengan kode tersebut tidak ditemukan. Kemungkinan ID Card tidak resmi atau status santri telah dicabut oleh Administrator."
+                        );
+                    }, 1200);
+                }
+
+                // 3. Cari Nama Kelas
+                let namaKelas = "Tanpa Kelas";
+                if (validStudent.kelas_id) {
+                    const classDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', validStudent.kelas_id));
+                    if (classDoc.exists()) {
+                        namaKelas = classDoc.data().nama_kelas || classDoc.data().name || "Tanpa Kelas";
+                    }
+                }
+
+                // 4. Update Tampilan Success
+                document.getElementById('val-nama').textContent = validStudent.nama || validStudent.name || "Tanpa Nama";
+                document.getElementById('val-id').textContent = validStudent.kodeSiswa || "-";
+                document.getElementById('val-kelas').textContent = namaKelas;
+                
+                // Gunakan nama Institusi (mengambil dari string appId agar rapi)
+                const formatInstitusi = appId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                document.getElementById('val-institusi').textContent = formatInstitusi || "Sistem Internal Institusi";
+
+                // Atur Foto Profil & Hilangkan fallback
+                const imgEl = document.getElementById('val-foto');
+                const fallbackEl = document.getElementById('val-foto-fallback');
+                if (validStudent.fotoProfil) {
+                    imgEl.src = validStudent.fotoProfil;
+                    imgEl.onload = () => {
+                        imgEl.classList.remove('hidden');
+                        fallbackEl.classList.add('hidden');
+                    };
+                } else {
+                    imgEl.classList.add('hidden');
+                    fallbackEl.classList.remove('hidden');
+                }
+
+                // Tampilkan sukses dengan delay minimum agar animasi skeleton sempat terlihat (memberi kesan sistem bekerja secara mendalam)
+                setTimeout(() => {
+                    showUI('state-success');
+                }, 1500); 
+
+            } catch (error) {
+                console.error("Verification Error:", error);
+                triggerError(
+                    "KONEKSI_DATABASE_GAGAL", 
+                    "Terjadi kesalahan teknis saat menghubungi server keamanan kami. Silakan periksa koneksi internet Anda dan muat ulang halaman."
+                );
+            }
+        }
+
+        // Initialize Icons & Verification Logic on load
+        window.addEventListener('DOMContentLoaded', () => {
+            window.lucide.createIcons();
+            initVerification();
+        });
+
+    </script>
+</body>
+</html>

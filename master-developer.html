@@ -240,7 +240,6 @@
 </head>
 <body>
 
-    <!-- GLOBAL OVERLAYS & TOASTS -->
     <div id="system-update-overlay" class="system-update-overlay">
         <div class="loader-spinner-large"></div>
         <h2 style="font-size: 24px; margin-bottom: 8px;">Memproses Operasi Global</h2>
@@ -251,7 +250,6 @@
     
     <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="window.toggleSidebar()"></div>
 
-    <!-- VIEW 1: MASTER LOGIN -->
     <div id="login-view">
         <div class="login-card">
             <div class="dev-logo">
@@ -274,7 +272,6 @@
         </div>
     </div>
 
-    <!-- VIEW 2: MASTER DASHBOARD -->
     <div id="dashboard-view">
         
         <aside class="sidebar" id="main-sidebar">
@@ -311,7 +308,6 @@
                 </div>
             </header>
 
-            <!-- TAB: COMMAND CENTER -->
             <div id="tab-overview" class="content-area active">
                 <div style="margin-bottom: 32px;">
                     <h1 style="font-size: 28px; color: white; margin-bottom: 8px;">Kekuasaan & Kendali</h1>
@@ -364,7 +360,6 @@
                 </div>
             </div>
 
-            <!-- TAB: KEUANGAN & ASET -->
             <div id="tab-finance" class="content-area">
                 <div style="margin-bottom: 32px;">
                     <h1 style="font-size: 28px; color: white; margin-bottom: 8px;">Keuangan, Aset & Proyeksi</h1>
@@ -479,7 +474,6 @@
                 </div>
             </div>
 
-            <!-- TAB: MANAJEMEN KLIEN -->
             <div id="tab-clients" class="content-area">
                 <div class="data-card">
                     <div class="data-header">
@@ -504,7 +498,6 @@
                 </div>
             </div>
 
-            <!-- TAB: APPROVAL HARGA -->
             <div id="tab-approvals" class="content-area">
                 <div style="margin-bottom: 32px;">
                     <h1 style="font-size: 24px; color: white; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;">
@@ -525,7 +518,6 @@
                 </div>
             </div>
 
-            <!-- TAB: DEPLOY & UPDATE -->
             <div id="tab-updates" class="content-area">
                 <div style="margin-bottom: 32px; max-width: 800px;">
                     <h1 style="font-size: 24px; color: white; margin-bottom: 8px;">Pusat Deploy & Update</h1>
@@ -579,7 +571,6 @@
                 </div>
             </div>
 
-            <!-- TAB: PENGATURAN SISTEM -->
             <div id="tab-settings" class="content-area">
                 <div style="margin-bottom: 32px; max-width: 600px;">
                     <h1 style="font-size: 24px; color: white; margin-bottom: 8px;">Konfigurasi Sistem Induk</h1>
@@ -675,7 +666,6 @@
         </main>
     </div>
 
-    <!-- MODAL BARU: MANAJEMEN MODUL & FITUR YAYASAN -->
     <div id="modal-tenant-features" class="modal-overlay">
         <div class="modal-container" style="max-width: 500px; border: 1px solid var(--primary); box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);">
             <div class="modal-header" style="background: rgba(59, 130, 246, 0.05); border-bottom: 1px solid rgba(59, 130, 246, 0.2);">
@@ -690,16 +680,42 @@
                 <input type="hidden" id="features-tenant-id">
                 
                 <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- MODUL TAHFIZH (NEW) -->
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
                         <div>
-                            <span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="scan" style="width:16px; color: var(--success);"></i> Presensi QR Scanner</span>
-                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Fitur absensi harian menggunakan scan kartu QR di Dasbor Pengajar.</p>
+                            <span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="book-open" style="width:16px; color: var(--primary);"></i> Modul Tahfizh Al-Quran</span>
+                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Fitur evaluasi, hafalan, dan penilaian kelancaran/tajwid santri.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-feature-tahfizh">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Basic QR Toggle -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <div>
+                            <span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="scan" style="width:16px; color: var(--success);"></i> Presensi QR (Basic)</span>
+                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Fitur absensi harian scan manual per-siswa.</p>
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="toggle-feature-qr">
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
+
+                    <!-- PREMIUM QR Toggle -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-md);">
+                        <div>
+                            <span class="text-sm" style="font-weight: 700; color: #FBBF24; display: flex; align-items: center; gap: 8px;"><i data-lucide="crown" style="width:16px;"></i> Presensi Cerdas (Premium)</span>
+                            <p style="font-size: 11px; color: rgba(253, 230, 138, 0.8); margin-top: 4px;">Scanner otomatis dengan deteksi keterlambatan real-time.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-feature-premium-qr">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
                         <div>
                             <span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="moon" style="width:16px; color: var(--accent);"></i> Mutaba'ah Sholat Wajib</span>
@@ -723,7 +739,7 @@
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
                         <div>
                             <span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="printer" style="width:16px; color: var(--primary);"></i> Fitur Cetak ID Card PDF</span>
-                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Beri izin bagi Super Admin yayasan untuk mencetak dan mengunduh ID Card Santri (Massal & Satuan).</p>
+                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Beri izin bagi Super Admin yayasan untuk mencetak dan mengunduh ID Card Santri.</p>
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="toggle-feature-cetak">
@@ -739,7 +755,6 @@
         </div>
     </div>
 
-    <!-- MODAL: DAFTAR / EDIT CLIENT -->
     <div id="modal-client" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -799,7 +814,7 @@
         </div>
     </div>
 
-    <!-- MODAL BARU: IMPOR TEMPLATE ID CARD DENGAN AUTO-COMPRESS -->
+    <!-- MODAL IMPOR TEMPLATE ID CARD DENGAN AUTO-COMPRESS -->
     <div id="modal-tenant-idcard" class="modal-overlay">
         <div class="modal-container" style="border: 1px solid var(--primary); box-shadow: 0 0 50px rgba(59, 130, 246, 0.2);">
             
@@ -859,7 +874,7 @@
         </div>
     </div>
 
-    <!-- MODAL LAMA: KONFIGURASI TWIBBON TENANT DINAMIS -->
+    <!-- MODAL KONFIGURASI TWIBBON TENANT DINAMIS -->
     <div id="modal-tenant-twibbon" class="modal-overlay">
         <div class="modal-container" style="max-width: 760px; border: 1px solid var(--accent); box-shadow: 0 0 30px rgba(139, 92, 246, 0.15);">
             <div class="modal-header" style="background: rgba(139, 92, 246, 0.05); border-bottom: 1px solid rgba(139, 92, 246, 0.2);">
@@ -1046,7 +1061,6 @@
         </div>
     </div>
 
-    <!-- SCRIPT INJECTIONS & FIREBASE -->
     <script type="module">
         import { db, auth } from './firebase-config.js';
         import { signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -1407,7 +1421,6 @@
         window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
         window.closeModal = function(id) {
             document.getElementById(id).classList.remove('active');
-            // Jika yang ditutup adalah modal id card, bersihkan input file agar bisa import lagi
             if(id === 'modal-tenant-idcard') {
                 const fileInput = document.getElementById('upload-json-template');
                 if(fileInput) fileInput.value = '';
@@ -1713,6 +1726,80 @@
             } catch(e) { window.showToast("Gagal menyimpan ke server.", true); }
         };
 
+        window.openTenantFeatures = async function(tenantId, clientName) {
+            document.getElementById('features-tenant-id').value = tenantId;
+            document.getElementById('features-tenant-name').textContent = clientName;
+            
+            document.getElementById('toggle-feature-tahfizh').checked = true;
+            document.getElementById('toggle-feature-qr').checked = false;
+            document.getElementById('toggle-feature-premium-qr').checked = false;
+            document.getElementById('toggle-feature-sholat').checked = true;
+            document.getElementById('toggle-feature-tagihan').checked = true;
+            document.getElementById('toggle-feature-cetak').checked = false;
+
+            const btnSave = document.getElementById('btn-save-features');
+            btnSave.disabled = true; 
+            btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Memuat...';
+            if(window.lucide) window.lucide.createIcons();
+
+            window.openModal('modal-tenant-features');
+
+            try {
+                const docSnap = await getDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'));
+                if(docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('toggle-feature-tahfizh').checked = data.isTahfizhActive !== false;
+                    document.getElementById('toggle-feature-qr').checked = data.isAbsensiQrActive === true;
+                    document.getElementById('toggle-feature-premium-qr').checked = data.isPremiumAttendanceActive === true;
+                    document.getElementById('toggle-feature-sholat').checked = data.isSholatModuleActive !== false;
+                    document.getElementById('toggle-feature-tagihan').checked = data.isTagihanAktif !== false;
+                    document.getElementById('toggle-feature-cetak').checked = data.isCetakKartuActive === true;
+                }
+            } catch(e) {
+                window.showToast("Gagal memuat status fitur yayasan.", true);
+            } finally {
+                btnSave.disabled = false; 
+                btnSave.innerHTML = '<i data-lucide="save" style="width:16px;"></i> Terapkan Fitur';
+                if(window.lucide) window.lucide.createIcons();
+            }
+        };
+
+        window.saveTenantFeatures = async function() {
+            const tenantId = document.getElementById('features-tenant-id').value;
+            const isTahfizhActive = document.getElementById('toggle-feature-tahfizh').checked;
+            const isAbsensiQrActive = document.getElementById('toggle-feature-qr').checked;
+            const isPremiumAttendanceActive = document.getElementById('toggle-feature-premium-qr').checked;
+            const isSholatModuleActive = document.getElementById('toggle-feature-sholat').checked;
+            const isTagihanAktif = document.getElementById('toggle-feature-tagihan').checked;
+            const isCetakKartuActive = document.getElementById('toggle-feature-cetak').checked;
+
+            const btnSave = document.getElementById('btn-save-features');
+            btnSave.disabled = true; 
+            btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Menyimpan...';
+            if(window.lucide) window.lucide.createIcons();
+
+            try {
+                await setDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'), {
+                    isTahfizhActive,
+                    isAbsensiQrActive,
+                    isPremiumAttendanceActive,
+                    isSholatModuleActive,
+                    isTagihanAktif,
+                    isCetakKartuActive,
+                    updatedAt: Date.now()
+                }, { merge: true });
+                
+                window.showToast("Modul & Fitur Yayasan berhasil diperbarui!");
+                window.closeModal('modal-tenant-features');
+            } catch(e) {
+                window.showToast("Gagal menyimpan konfigurasi fitur.", true);
+            } finally {
+                btnSave.disabled = false; 
+                btnSave.innerHTML = '<i data-lucide="save" style="width:16px;"></i> Terapkan Fitur';
+                if(window.lucide) window.lucide.createIcons();
+            }
+        };
+
         window.openModalWithdrawal = async function(clientId, tenantId, clientName) {
             document.getElementById('wd-loading-section').style.display = 'block';
             document.getElementById('wd-main-section').style.display = 'none';
@@ -1904,72 +1991,6 @@
             if(window.lucide) window.lucide.createIcons();
         }
 
-        window.openTenantFeatures = async function(tenantId, clientName) {
-            document.getElementById('features-tenant-id').value = tenantId;
-            document.getElementById('features-tenant-name').textContent = clientName;
-            
-            document.getElementById('toggle-feature-qr').checked = false;
-            document.getElementById('toggle-feature-sholat').checked = true;
-            document.getElementById('toggle-feature-tagihan').checked = true;
-            document.getElementById('toggle-feature-cetak').checked = false;
-
-            const btnSave = document.getElementById('btn-save-features');
-            btnSave.disabled = true; 
-            btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Memuat...';
-            if(window.lucide) window.lucide.createIcons();
-
-            window.openModal('modal-tenant-features');
-
-            try {
-                const docSnap = await getDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'));
-                if(docSnap.exists()) {
-                    const data = docSnap.data();
-                    document.getElementById('toggle-feature-qr').checked = data.isAbsensiQrActive === true;
-                    document.getElementById('toggle-feature-sholat').checked = data.isSholatModuleActive !== false;
-                    document.getElementById('toggle-feature-tagihan').checked = data.isTagihanAktif !== false;
-                    document.getElementById('toggle-feature-cetak').checked = data.isCetakKartuActive === true;
-                }
-            } catch(e) {
-                window.showToast("Gagal memuat status fitur yayasan.", true);
-            } finally {
-                btnSave.disabled = false; 
-                btnSave.innerHTML = '<i data-lucide="save" style="width:16px;"></i> Terapkan Fitur';
-                if(window.lucide) window.lucide.createIcons();
-            }
-        };
-
-        window.saveTenantFeatures = async function() {
-            const tenantId = document.getElementById('features-tenant-id').value;
-            const isAbsensiQrActive = document.getElementById('toggle-feature-qr').checked;
-            const isSholatModuleActive = document.getElementById('toggle-feature-sholat').checked;
-            const isTagihanAktif = document.getElementById('toggle-feature-tagihan').checked;
-            const isCetakKartuActive = document.getElementById('toggle-feature-cetak').checked;
-
-            const btnSave = document.getElementById('btn-save-features');
-            btnSave.disabled = true; 
-            btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Menyimpan...';
-            if(window.lucide) window.lucide.createIcons();
-
-            try {
-                await setDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'), {
-                    isAbsensiQrActive,
-                    isSholatModuleActive,
-                    isTagihanAktif,
-                    isCetakKartuActive,
-                    updatedAt: Date.now()
-                }, { merge: true });
-                
-                window.showToast("Modul & Fitur Yayasan berhasil diperbarui!");
-                window.closeModal('modal-tenant-features');
-            } catch(e) {
-                window.showToast("Gagal menyimpan konfigurasi fitur.", true);
-            } finally {
-                btnSave.disabled = false; 
-                btnSave.innerHTML = '<i data-lucide="save" style="width:16px;"></i> Terapkan Fitur';
-                if(window.lucide) window.lucide.createIcons();
-            }
-        };
-
         async function executeCloudinaryUpload(file) {
             const cloudName = globalSaaSSettings.cloudinaryCloudName || 'dpbo6ogyp';
             const uploadPreset = globalSaaSSettings.cloudinaryUploadPreset || 'TahfizhPro';
@@ -1987,40 +2008,6 @@
             const data = await response.json();
             return data.secure_url;
         }
-
-        window.openTenantTwibbonConfig = async function(tenantId, clientName) {
-            document.getElementById('twibbon-tenant-id').value = tenantId;
-            document.getElementById('twibbon-tenant-name').textContent = clientName;
-            
-            const inputUrl = document.getElementById('input-twibbon-url');
-            inputUrl.value = ''; 
-            
-            const dropzoneText = document.getElementById('twibbon-upload-text');
-            dropzoneText.textContent = "Klik untuk Pilih File Gambar";
-            
-            window.updateTwibbonPreview(); 
-            
-            const btnSave = document.getElementById('btn-save-twibbon');
-            btnSave.disabled = true; 
-            btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Memuat...';
-            if(window.lucide) window.lucide.createIcons();
-            
-            window.openModal('modal-tenant-twibbon');
-            
-            try {
-                const docSnap = await getDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'));
-                if(docSnap.exists() && docSnap.data().twibbonFrameUrl) {
-                    inputUrl.value = docSnap.data().twibbonFrameUrl;
-                    window.updateTwibbonPreview();
-                }
-            } catch(e) {
-                window.showToast("Gagal memuat pengaturan twibbon yang ada.", true);
-            } finally {
-                btnSave.disabled = false; 
-                btnSave.innerHTML = '<i data-lucide="save" style="width:16px;"></i> Terapkan ke Yayasan';
-                if(window.lucide) window.lucide.createIcons();
-            }
-        };
 
         window.handleTwibbonUpload = async function(event) {
             const file = event.target.files[0];
@@ -2081,9 +2068,6 @@
             }
         };
 
-        // ============================================================================
-        // LOGIKA BARU: IMPOR JSON ID CARD TEMPLATE (DENGAN AUTO-COMPRESS / CLOUDINARY)
-        // ============================================================================
         window.openTenantIdCardImport = function(tenantId, clientName) {
             document.getElementById('idcard-tenant-id').value = tenantId;
             document.getElementById('idcard-tenant-name').textContent = clientName;
@@ -2152,7 +2136,6 @@
             reader.readAsText(file);
         };
 
-        // Algoritma Rahasia: Menghancurkan Base64 di dalam JSON menjadi URL pendek via Cloudinary
         async function uploadBase64ToCloudinary(base64Data) {
             const cloudName = globalSaaSSettings.cloudinaryCloudName || 'dpbo6ogyp';
             const uploadPreset = globalSaaSSettings.cloudinaryUploadPreset || 'TahfizhPro';

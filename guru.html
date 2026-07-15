@@ -2,11 +2,11 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <title>TahfizhPro - Portal Pengajar</title>
     <meta name="title" content="TahfizhPro - Portal Pengajar">
-    <meta name="description" content="Portal khusus pengajar untuk manajemen tahfizh Al-Quran 114 Surah. Kelola setoran, evaluasi, dan buku penghubung dengan mudah.">
+    <meta name="description" content="Portal khusus pengajar untuk manajemen tahfizh Al-Quran 114 Surah dan Presensi Cerdas.">
     <meta name="theme-color" content="#ffffff">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -16,7 +16,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://tahfizhpro-enterprise.web.app/guru.html">
     <meta property="og:title" content="TahfizhPro - Portal Pengajar">
-    <meta property="og:description" content="Portal khusus pengajar untuk manajemen tahfizh Al-Quran 114 Surah. Kelola setoran, evaluasi, dan buku penghubung dengan mudah.">
+    <meta property="og:description" content="Portal khusus pengajar untuk manajemen tahfizh Al-Quran dan Presensi.">
     <meta property="og:image" content="https://i.ibb.co.com/NnSrcJvc/Desain-tanpa-judul-7.jpg">
     <meta property="og:image:secure_url" content="https://i.ibb.co.com/NnSrcJvc/Desain-tanpa-judul-7.jpg">
     <meta property="og:image:type" content="image/jpeg">
@@ -24,13 +24,6 @@
     <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="TahfizhPro Enterprise">
     <meta property="og:locale" content="id_ID">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://tahfizhpro-enterprise.web.app/guru.html">
-    <meta property="twitter:title" content="TahfizhPro - Portal Pengajar">
-    <meta property="twitter:description" content="Portal khusus pengajar untuk manajemen tahfizh Al-Quran 114 Surah. Kelola setoran, evaluasi, dan buku penghubung dengan mudah.">
-    <meta property="twitter:image" content="https://i.ibb.co.com/NnSrcJvc/Desain-tanpa-judul-7.jpg">
 
     <!-- Ikon Aplikasi -->
     <link rel="icon" href="./logo.png" type="image/png">
@@ -75,6 +68,10 @@
             --purple-bg: #F5F3FF;
             --purple-text: #5B21B6;
             
+            --premium-gold: #D97706;
+            --premium-gold-light: #FDE68A;
+            --premium-gold-bg: #FFFBEB;
+
             --radius-sm: 6px;
             --radius-md: 8px;
             --radius-lg: 12px;
@@ -85,6 +82,7 @@
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.2);
+            --shadow-premium: 0 10px 25px -5px rgba(217, 119, 6, 0.4);
 
             --bottom-nav-height: 65px;
         }
@@ -115,6 +113,9 @@
         .btn-ghost { border: none; background: transparent; box-shadow: none; color: var(--text-muted); }
         .btn-ghost:hover:not(:disabled) { background: #F1F5F9; color: var(--text-main); }
         
+        .btn-premium { background: linear-gradient(135deg, var(--premium-gold) 0%, #F59E0B 100%); color: white; border: none; box-shadow: var(--shadow-premium); font-weight: 800; border-radius: var(--radius-xl); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .btn-premium:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px -5px rgba(217, 119, 6, 0.5); }
+
         .input-group { margin-bottom: 16px; }
         .input-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-main); margin-bottom: 6px; }
         .input-field { width: 100%; padding: 10px 12px; font-size: 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-surface); color: var(--text-main); transition: border-color 0.15s, box-shadow 0.15s; }
@@ -129,6 +130,11 @@
 
         .badge { display: inline-flex; align-items: center; padding: 4px 8px; font-size: 11px; font-weight: 600; border-radius: var(--radius-full); text-transform: uppercase; letter-spacing: 0.05em; }
         .badge-sholat { padding: 4px 8px; font-size: 11px; font-weight: 700; border-radius: var(--radius-md); display: inline-flex; align-items: center; gap: 4px; }
+        
+        .badge-kehadiran { padding: 4px 8px; font-size: 11px; font-weight: 700; border-radius: var(--radius-md); display: inline-flex; align-items: center; gap: 4px; }
+        .badge-hadir { background: var(--success-bg); color: var(--success); border: 1px solid #A7F3D0; }
+        .badge-terlambat { background: var(--warning-bg); color: var(--warning); border: 1px solid #FDE68A; }
+        .badge-alpa { background: var(--danger-bg); color: var(--danger); border: 1px solid #FECACA; }
 
         .mini-progress-track { width: 100%; height: 4px; background: #E2E8F0; border-radius: var(--radius-full); overflow: hidden; margin-top: 8px; }
         .mini-progress-fill { height: 100%; background: var(--primary); border-radius: var(--radius-full); width: 0%; transition: width 1s ease; }
@@ -215,9 +221,9 @@
         .timeline-item::before { content: ''; position: absolute; left: -5px; top: 6px; width: 12px; height: 12px; background: var(--bg-surface); border: 2px solid var(--primary); border-radius: 50%; box-shadow: 0 0 0 3px var(--bg-body); z-index: 2; }
         .timeline-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: flex-start; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.2s ease; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.25s ease; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-container { width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; transform: scale(0.95); transition: transform 0.2s ease; background: var(--bg-body); border-radius: var(--radius-lg); }
+        .modal-container { width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; transform: scale(0.95); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); background: var(--bg-body); border-radius: var(--radius-xl); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
         .modal-overlay.active .modal-container { transform: scale(1); }
         .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); position: sticky; top: 0; z-index: 10; }
         .modal-body { padding: 24px; }
@@ -255,7 +261,7 @@
         .time-col button:hover { background: var(--border-color); color: var(--text-main); }
         .time-val { font-size: 18px; font-weight: 700; width: 40px; text-align: center; margin: 4px 0; }
 
-        .toast { position: fixed; top: 24px; right: 24px; left: 24px; margin: 0 auto; max-width: 340px; padding: 14px 20px; background: #1E293B; color: #FFFFFF; font-size: 13px; font-weight: 500; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 12px; transform: translateY(-150%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 4000; }
+        .toast { position: fixed; top: 24px; right: 24px; left: 24px; margin: 0 auto; max-width: 340px; padding: 14px 20px; background: #1E293B; color: #FFFFFF; font-size: 13px; font-weight: 500; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 12px; transform: translateY(-150%); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 4000; }
         @media (min-width: 640px) { .toast { left: auto; top: 24px; right: 24px; transform: translateY(-150%); } }
         .toast.error { background: var(--danger); }
         .toast.show { transform: translateY(0); }
@@ -266,17 +272,22 @@
         .zoom-slider-container { display: none; margin-bottom: 20px; background: var(--bg-surface); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
         .zoom-slider { width: 100%; accent-color: var(--primary); }
 
-        /* QR Scanner Custom Styling */
-        .scanner-wrapper { position: relative; width: 100%; border-radius: var(--radius-lg); overflow: hidden; background: #000; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); height: 320px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+        /* QR Scanner Premium Styling */
+        .scanner-wrapper { position: relative; width: 100%; border-radius: var(--radius-lg); overflow: hidden; background: #000; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); height: 360px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
         #reader-canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; border: none !important; }
         #reader-canvas video { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: var(--radius-lg); }
         #reader-canvas > div:not(:first-child), #reader-canvas img, #reader-canvas span, #reader-canvas a { display: none !important; opacity: 0 !important; visibility: hidden !important; }
         
-        .scan-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.65); z-index: 5; pointer-events: none; clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, calc(50% - 100px) calc(50% - 100px), calc(50% + 100px) calc(50% - 100px), calc(50% + 100px) calc(50% + 100px), calc(50% - 100px) calc(50% + 100px), calc(50% - 100px) calc(50% - 100px)); }
-        .scan-frame { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border: 3px solid var(--primary); border-radius: 16px; z-index: 10; overflow: hidden; box-shadow: 0 0 0 4000px rgba(15,23,42,0.65); /* Fallback for browsers without clip-path */ }
+        .scan-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.65); z-index: 5; pointer-events: none; clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, calc(50% - 110px) calc(50% - 110px), calc(50% + 110px) calc(50% - 110px), calc(50% + 110px) calc(50% + 110px), calc(50% - 110px) calc(50% + 110px), calc(50% - 110px) calc(50% - 110px)); }
+        .scan-frame { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 220px; border: 3px solid var(--premium-gold); border-radius: 16px; z-index: 10; overflow: hidden; box-shadow: 0 0 0 4000px rgba(15,23,42,0.65); }
         @supports (clip-path: polygon(0% 0%)) { .scan-frame { box-shadow: none; } }
-        .scan-laser { position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--primary); box-shadow: 0 0 12px var(--primary); animation: scanLaser 2s infinite ease-in-out; }
+        .scan-laser { position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--premium-gold); box-shadow: 0 0 15px var(--premium-gold); animation: scanLaser 2s infinite ease-in-out; }
         @keyframes scanLaser { 0% { top: -5%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 105%; opacity: 0; } }
+
+        /* Continuous Scan Notification Overlay */
+        .scan-toast { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(50px); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); padding: 12px 20px; border-radius: var(--radius-full); z-index: 50; display: flex; align-items: center; gap: 10px; opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); width: max-content; max-width: 90%; }
+        .scan-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; }
+        .scan-toast-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
         /* Global System Update Overlay */
         .system-update-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 99999; color: white; flex-direction: column; text-align: center; }
@@ -327,7 +338,7 @@
                 </p>
                 <ol style="font-size: 12px; color: var(--text-muted); padding-left: 20px; line-height: 1.6; margin: 0;">
                     <li>Hubungi admin/pengelola di sekolah Anda.</li>
-                    <li>Mintalah <strong style="color:var(--text-main);">"Tautan Portal TahfizhPro"</strong>.</li>
+                    <li>Mintalah <strong style="color:var(--text-main);">"Tautan Portal Aplikasi"</strong>.</li>
                     <li>Buka tautan tersebut di browser ini.</li>
                 </ol>
             </div>
@@ -338,7 +349,7 @@
                     <i data-lucide="building-2" style="width: 18px;"></i>
                 </div>
                 <h3 style="font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">Lembaga Anda Belum Bergabung?</h3>
-                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Digitalisasi mutaba'ah hafalan siswa Anda menggunakan sistem Enterprise kami.</p>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">Digitalisasi mutaba'ah siswa Anda menggunakan sistem Enterprise kami.</p>
                 <a href="#" id="btn-cta-sales" target="_blank" class="btn" style="width: 100%; padding: 10px; font-size: 12px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; border: none; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); border-radius: var(--radius-full); text-decoration: none;">
                     <i data-lucide="phone-call" style="width: 14px;"></i> Hubungi Tim Pusat
                 </a>
@@ -357,8 +368,8 @@
                 <div class="logo-box">
                     <i data-lucide="briefcase" style="width: 32px; height: 32px;"></i>
                 </div>
-                <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 8px; color: #0F172A; letter-spacing: -0.03em;">TahfizhPro</h1>
-                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 36px;">Portal Akademi Pengajar</p>
+                <h1 style="font-size: 24px; font-weight: 800; margin-bottom: 8px; color: #0F172A; letter-spacing: -0.03em;">Portal Guru</h1>
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 36px;">Akademi Pengajar & Mutaba'ah</p>
                 
                 <div class="input-group" style="text-align: left; margin-bottom: 16px;">
                     <label class="input-label">Identitas Pengajar (Nama / ID)</label>
@@ -430,6 +441,7 @@
                 </div>
             </div>
 
+            <!-- TAB: DIREKTORI SANTRI -->
             <div id="tab-direktori" class="tab-content active">
                 <div id="search-sticky-wrapper" class="search-sticky-wrapper">
                     <div class="section-header" style="margin-bottom: 12px;">
@@ -451,16 +463,14 @@
                     </div>
                 </div>
                 
-                <!-- TOMBOL SCAN QR ABSENSI (Dikendalikan oleh AppSettings) -->
+                <!-- TOMBOL ABSENSI / SCANNER -->
                 <div id="container-absensi-qr" style="display: none; margin-bottom: 16px;">
-                    <button class="btn btn-primary" onclick="window.bukaModalScanner()" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); font-weight: 700;">
-                        <i data-lucide="scan" style="width: 18px;"></i> Scan QR Presensi Kehadiran
-                    </button>
+                    <!-- Diinjeksi oleh JS berdasarkan status langganan -->
                 </div>
 
                 <div style="background: #FFFBEB; border: 1px solid #FDE68A; padding: 12px 16px; border-radius: var(--radius-md); display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px;">
                     <i data-lucide="info" style="width: 16px; color: #D97706; flex-shrink: 0; margin-top: 2px;"></i>
-                    <p style="font-size: 12px; color: #92400E; margin: 0; line-height: 1.5;"><strong>Tips UX:</strong> Untuk Mengedit Profil (termasuk Misi) atau Mengeluarkan Santri, <strong>Tekan dan Tahan (Long Press)</strong> pada kartu santri yang bersangkutan.</p>
+                    <p style="font-size: 12px; color: #92400E; margin: 0; line-height: 1.5;"><strong>Tips UX:</strong> Untuk Mengedit Profil (termasuk Misi Tahfizh) atau Mengeluarkan Santri, <strong>Tekan dan Tahan (Long Press)</strong> pada kartu santri yang bersangkutan.</p>
                 </div>
 
                 <div id="list-siswa-guru" class="student-list">
@@ -471,6 +481,7 @@
                 </div>
             </div>
 
+            <!-- TAB: REKAP DATA -->
             <div id="tab-rekap" class="tab-content">
                 <div class="card" style="padding: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
@@ -484,7 +495,7 @@
                     </div>
                     
                     <p id="keterangan-bobot-rekap" style="font-size: 12px; color: var(--text-muted); margin: 0 0 16px 0; line-height: 1.5;">
-                        *Peringkat disusun berdasarkan Nilai Akhir tertinggi. Komposisi: <strong>Kelancaran (50%) + Tajwid (30%) + Disiplin Sholat (20%)</strong>.
+                        *Komposisi nilai dan peringkat akan menyesuaikan dengan modul berlangganan yang aktif.
                     </p>
                     
                     <div style="overflow-x: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
@@ -493,9 +504,9 @@
                                 <tr>
                                     <th style="text-align: center;">Rank</th>
                                     <th>Nama Santri</th>
-                                    <th>Tot. Hafalan</th>
-                                    <th>Kelancaran</th>
-                                    <th>Tajwid</th>
+                                    <th id="th-hafalan">Tot. Hafalan</th>
+                                    <th id="th-kelancaran">Kelancaran</th>
+                                    <th id="th-tajwid">Tajwid</th>
                                     <th id="th-disiplin-sholat">Disiplin Sholat</th>
                                     <th>Nilai Akhir</th>
                                     <th>Predikat</th>
@@ -508,6 +519,7 @@
                 </div>
             </div>
 
+            <!-- TAB: DELEGASI -->
             <div id="tab-delegasi" class="tab-content">
                 <div class="card" style="padding: 20px;">
                     <div style="background: #FFFBEB; border: 1px solid #FDE68A; padding: 12px; border-radius: var(--radius-md); display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px;">
@@ -574,19 +586,60 @@
         </nav>
     </div>
 
-    <!-- MODAL SCANNER QR -->
+    <!-- MODAL PRE-SCAN (KONFIGURASI JAM MASUK) -->
+    <div id="modal-prescan" class="modal-overlay" style="z-index: 2900;">
+        <div class="card modal-container" style="text-align: center; padding: 0;">
+            <div class="modal-header">
+                <h3 style="font-size: 16px; margin: 0; color: var(--text-main); display: flex; align-items: center; gap: 8px;"><i data-lucide="settings" style="width: 18px; color: var(--premium-gold);"></i> Konfigurasi Sesi Presensi</h3>
+                <button class="btn-ghost" onclick="window.tutupModal('modal-prescan')" style="padding: 4px; border:none; background:transparent;"><i data-lucide="x" style="width: 18px;"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 24px; text-align: left;">
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">Tentukan batas jam masuk standar untuk sesi ini. Santri yang memindai QR melebihi batas waktu akan otomatis dikategorikan Terlambat.</p>
+                
+                <div class="input-group">
+                    <label class="input-label" style="color: var(--premium-gold); font-weight: 700;">Batas Jam Masuk (Tepat Waktu)</label>
+                    <input type="time" id="input-batas-masuk" class="input-field" value="07:00" style="font-size: 18px; font-weight: 800; font-family: monospace; letter-spacing: 2px;">
+                </div>
+
+                <div style="background: var(--premium-gold-bg); border: 1px dashed var(--premium-gold); padding: 12px; border-radius: var(--radius-md); margin-bottom: 24px;">
+                    <ul style="font-size: 11px; color: #92400E; margin: 0; padding-left: 16px; line-height: 1.6;">
+                        <li><strong>&le; Batas:</strong> Tepat Waktu</li>
+                        <li><strong>Batas s/d +15 Menit:</strong> Terlambat</li>
+                        <li><strong>&gt; 15 Menit:</strong> Sangat Terlambat / Alpa (Tergantung Kebijakan)</li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-premium" onclick="window.mulaiScanner()" style="width: 100%; padding: 14px;">
+                    <i data-lucide="scan" style="width: 18px;"></i> Mulai Pemindaian Cerdas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SCANNER QR (PREMIUM CONTINUOUS) -->
     <div id="modal-scanner" class="modal-overlay" style="z-index: 3000;">
         <div class="card modal-container" style="text-align: center; padding: 0;">
             <div class="modal-header">
-                <h3 style="font-size: 16px; margin: 0; color: var(--text-main); display: flex; align-items: center; gap: 8px;"><i data-lucide="scan" style="width: 18px; color: var(--primary);"></i> Scan QR Kehadiran</h3>
+                <h3 style="font-size: 16px; margin: 0; color: var(--text-main); display: flex; align-items: center; gap: 8px;"><i data-lucide="scan" style="width: 18px; color: var(--premium-gold);"></i> Scanner Presensi Cerdas</h3>
                 <button class="btn-ghost" onclick="window.tutupModalScanner()" style="padding: 4px; border:none; background:transparent;"><i data-lucide="x" style="width: 18px;"></i></button>
             </div>
-            <div class="modal-body" style="padding: 24px;">
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; font-weight: 500;">Arahkan kamera ke QR Code pada ID Card santri untuk merekam kehadiran hari ini.</p>
+            <div class="modal-body" style="padding: 24px; position: relative;">
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500;">Batas Masuk: <strong id="display-batas-masuk" style="color: var(--premium-gold); font-family: monospace; font-size: 15px;">07:00</strong></p>
                 <div class="scanner-wrapper">
                     <div id="reader-canvas"></div>
                     <div class="scan-overlay"></div>
                     <div class="scan-frame"><div class="scan-laser"></div></div>
+                    
+                    <!-- Floating Toast Notification (Di dalam Scanner) -->
+                    <div id="scan-toast-overlay" class="scan-toast">
+                        <div id="scan-toast-icon" class="scan-toast-icon" style="background: var(--success-bg); color: var(--success);">
+                            <i data-lucide="check" style="width: 20px;"></i>
+                        </div>
+                        <div style="text-align: left;">
+                            <div id="scan-toast-title" style="font-size: 14px; font-weight: 800; color: white; line-height: 1.2;">Nama Santri</div>
+                            <div id="scan-toast-desc" style="font-size: 11px; color: #94A3B8; margin-top: 2px;">Tepat Waktu (06:55)</div>
+                        </div>
+                    </div>
                 </div>
                 <button class="btn btn-danger" onclick="window.tutupModalScanner()" style="width: 100%; padding: 12px; font-weight: 600;">
                     <i data-lucide="x-circle" style="width: 16px;"></i> Tutup Kamera
@@ -595,6 +648,39 @@
         </div>
     </div>
 
+    <!-- MODAL PREMIUM LOCKED -->
+    <div id="modal-premium-locked" class="modal-overlay">
+        <div class="card modal-container" style="text-align: center; padding: 0;">
+            <div class="modal-body" style="padding: 32px 24px;">
+                <div style="width: 64px; height: 64px; background: var(--premium-gold-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; border: 4px solid var(--premium-gold-light);">
+                    <i data-lucide="lock" style="width: 28px; height: 28px; color: var(--premium-gold);"></i>
+                </div>
+                <h3 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 12px;">Modul Presensi Terkunci</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">Yayasan Anda belum mengaktifkan fitur <strong>Presensi Cerdas (Real-Time)</strong>. Hubungi Master Developer / Pusat untuk meng-upgrade layanan agar dapat menikmati fitur ini.</p>
+                <button class="btn btn-outline" onclick="window.tutupModal('modal-premium-locked')" style="width: 100%;">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL RIWAYAT KEHADIRAN (STANDALONE MODULE) -->
+    <div id="modal-riwayat-kehadiran" class="modal-overlay">
+        <div class="card modal-container" style="padding: 0;">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="clock" style="width: 18px; color: var(--success);"></i>
+                    <h3 style="font-size: 16px; margin: 0;">Log Kehadiran</h3>
+                </div>
+                <button class="btn btn-ghost" onclick="window.tutupModal('modal-riwayat-kehadiran')" style="padding: 4px;"><i data-lucide="x" style="width: 18px;"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 16px 24px; background: var(--bg-surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
+                <div id="list-riwayat-kehadiran" class="timeline" style="max-height: 50vh; overflow-y: auto;">
+                    <!-- Data injeksi via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DISKUSI -->
     <div id="modal-diskusi-guru" class="modal-overlay">
         <div class="card modal-container" style="padding: 0;">
             <div class="modal-header">
@@ -621,6 +707,7 @@
         </div>
     </div>
 
+    <!-- MODAL CALENDAR -->
     <div id="modal-calendar" class="modal-overlay" style="z-index: 3000;">
         <div class="modal-container" style="max-width: 320px; border-radius: var(--radius-lg); background: transparent; box-shadow: none;">
             <div class="custom-calendar">
@@ -657,6 +744,7 @@
         </div>
     </div>
 
+    <!-- MODAL OPSI LANJUTAN -->
     <div id="modal-opsi-lanjutan" class="modal-overlay">
         <div class="card modal-container" style="max-width: 340px; padding: 0;">
             <div class="modal-header">
@@ -671,9 +759,9 @@
                 
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <button class="btn btn-primary" onclick="window.lanjutEdit()" style="width: 100%; padding: 12px;">
-                        <i data-lucide="edit-3" style="width: 16px;"></i> Edit Profil & Misi
+                        <i data-lucide="edit-3" style="width: 16px;"></i> Edit Profil <span id="label-edit-misi"></span>
                     </button>
-                    <button class="btn" onclick="window.bukaDaftarApresiasi()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%); color: #78350F; border: 1px solid #D97706; box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.2); font-weight: 700;">
+                    <button id="btn-lanjut-twibbon" class="btn" onclick="window.bukaDaftarApresiasi()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 100%); color: #78350F; border: 1px solid #D97706; box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.2); font-weight: 700; display: none;">
                         <i data-lucide="award" style="width: 16px;"></i> Buat Twibbon Apresiasi
                     </button>
                     <button class="btn btn-danger" onclick="window.lanjutHapus()" style="width: 100%; padding: 12px;">
@@ -684,6 +772,7 @@
         </div>
     </div>
 
+    <!-- MODAL DAFTAR APRESIASI -->
     <div id="modal-daftar-apresiasi" class="modal-overlay">
         <div class="card modal-container" style="padding: 0; max-width: 380px;">
             <div class="modal-header">
@@ -701,6 +790,7 @@
         </div>
     </div>
 
+    <!-- MODAL SETORAN (TAHFIZH MODULE ONLY) -->
     <div id="modal-setoran" class="modal-overlay">
         <div class="card modal-container" style="padding: 0;">
             <div class="modal-header">
@@ -773,6 +863,7 @@
         </div>
     </div>
 
+    <!-- MODAL TAMBAH SISWA -->
     <div id="modal-tambah-siswa" class="modal-overlay">
         <div class="card modal-container" style="padding: 0;">
             <div class="modal-header">
@@ -800,10 +891,11 @@
         </div>
     </div>
 
+    <!-- MODAL EDIT SISWA -->
     <div id="modal-edit-siswa" class="modal-overlay">
         <div class="card modal-container" style="padding: 0;">
             <div class="modal-header">
-                <h3 style="font-size: 16px; margin: 0;">Edit Profil & Misi</h3>
+                <h3 style="font-size: 16px; margin: 0;">Edit Profil</h3>
                 <button class="btn btn-ghost" onclick="window.tutupModal('modal-edit-siswa')" style="padding: 4px;"><i data-lucide="x" style="width: 18px;"></i></button>
             </div>
             <div class="modal-body" style="background: var(--bg-surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 24px;">
@@ -816,7 +908,8 @@
                     <input type="number" id="edit-wa-ortu" class="input-field">
                 </div>
                 
-                <div class="input-group" style="margin-top: 16px; border-top: 1px dashed var(--border-color); padding-top: 16px;">
+                <!-- Hanya tampil jika Modul Tahfizh Aktif -->
+                <div id="edit-misi-section" class="input-group" style="display: none; margin-top: 16px; border-top: 1px dashed var(--border-color); padding-top: 16px;">
                     <label class="input-label" style="color: var(--primary); display: flex; align-items: center; gap: 6px;"><i data-lucide="target" style="width: 16px;"></i> Pengaturan Misi Hafalan Aktif</label>
                     <div class="custom-select-wrapper" style="margin-bottom: 12px;">
                         <div class="custom-select" id="cs-preset-misi">
@@ -851,10 +944,11 @@
         </div>
     </div>
 
+    <!-- MODAL RIWAYAT SETORAN TAHFIZH -->
     <div id="modal-riwayat-setoran" class="modal-overlay">
         <div class="card modal-container" style="padding: 0;">
             <div class="modal-header">
-                <h3 style="font-size: 16px; margin: 0;">Riwayat Setoran</h3>
+                <h3 style="font-size: 16px; margin: 0;">Riwayat Setoran Hafalan</h3>
                 <button class="btn btn-ghost" onclick="window.tutupModal('modal-riwayat-setoran')" style="padding: 4px;"><i data-lucide="x" style="width: 18px;"></i></button>
             </div>
             <div class="modal-body" style="padding: 16px 24px; background: var(--bg-surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
@@ -863,6 +957,7 @@
         </div>
     </div>
 
+    <!-- MODAL KONFIRMASI -->
     <div id="modal-konfirmasi" class="modal-overlay">
         <div class="card modal-container" style="max-width: 360px; padding: 0;">
             <div class="modal-body" style="text-align: center; padding: 32px 24px 24px; background: var(--bg-surface); border-radius: var(--radius-lg);">
@@ -885,6 +980,7 @@
         </div>
     </div>
 
+    <!-- MODAL KONFIRMASI TWIBBON -->
     <div id="modal-konfirmasi-twibbon" class="modal-overlay">
         <div class="card modal-container" style="max-width: 360px; padding: 0;">
             <div class="modal-body" style="text-align: center; padding: 32px 24px 24px; background: var(--bg-surface); border-radius: var(--radius-lg);">
@@ -902,6 +998,7 @@
         </div>
     </div>
 
+    <!-- MODAL STUDIO TWIBBON -->
     <div id="modal-studio-twibbon" class="modal-overlay">
         <div class="modal-container" style="background: var(--bg-surface);">
             <div class="modal-header">
@@ -941,6 +1038,7 @@
         </div>
     </div>
 
+    <!-- SCRIPTS -->
     <script type="module">
         import { auth, db, appId } from "./firebase-config.js";
         import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -948,8 +1046,10 @@
 
         // Variabel Pengaturan Global
         window.appSettings = { 
+            isTahfizhActive: true, // Fitur Tahfizh Menyala Default
             isSholatModuleActive: true,
-            isAbsensiQrActive: false, // Default mati, bisa dinyalakan dari Developer Console
+            isAbsensiQrActive: false, // Digunakan jika fallback basic
+            isPremiumAttendanceActive: false, // Fitur Khusus Premium
             isTagihanAktif: true,
             twibbonFrameUrl: null 
         };
@@ -1019,7 +1119,7 @@
         let sentuhanMulaiX = 0;
         let sentuhanSelesaiX = 0;
 
-        let selectedLoginGuruId = ""; // Penambahan variabel global untuk login
+        let selectedLoginGuruId = ""; 
         let selectedSurahAwal = "Al-Fatihah";
         let selectedSurahAkhir = "Al-Fatihah";
         let selectedKelancaran = "Mumtaz (Lancar Sekali)";
@@ -1054,6 +1154,10 @@
         let calMinute = 0;
         let rekapSortMode = 'rank'; 
 
+        // State untuk Scanner Continuous
+        window.isScanningPaused = false;
+        let scanBatasMasuk = "07:00"; // Default
+
         window.tempTwibbonData = null;
         let twibbonState = {
             imgUser: null, imgFrame: null, baseScale: 1, scaleMultiplier: 1, x: 0, y: 0, isDragging: false, startX: 0, startY: 0
@@ -1065,18 +1169,15 @@
             pasangListenerSwipeGuru();
             initTwibbonListenersGuru(); 
             
-            // Set Copyright Year
             const currentYear = new Date().getFullYear();
             const yearSpan = document.getElementById('dynamic-year');
             const yearSpanLock = document.getElementById('dynamic-year-lock');
             if (yearSpan) yearSpan.textContent = currentYear;
             if (yearSpanLock) yearSpanLock.textContent = currentYear;
 
-            // CEK KONDISI SAFETY NET SAAT LOAD
             if (window.SAAS_TENANT_MISSING === true) {
                 const safetyNet = document.getElementById('safety-net-ui');
                 if(safetyNet) safetyNet.style.display = 'flex';
-                // PERBAIKAN BUG: Sembunyikan seluruh container view-login, bukan hanya form inputnya
                 const loginView = document.getElementById('view-login');
                 if(loginView) loginView.style.display = 'none';
             }
@@ -1089,6 +1190,161 @@
                 else searchWrapper.classList.remove('scrolled');
             }
         });
+
+        // ==========================================
+        // FITUR PRE-SCAN & SCANNER CERDAS (PREMIUM)
+        // ==========================================
+        
+        window.bukaPreScan = function() {
+            window.bukaModal('modal-prescan');
+        };
+
+        window.bukaPremiumLocked = function() {
+            window.bukaModal('modal-premium-locked');
+        };
+
+        let html5QrCode = null;
+        
+        window.mulaiScanner = function() {
+            // Ambil waktu batas dari input
+            scanBatasMasuk = document.getElementById('input-batas-masuk').value;
+            if(!scanBatasMasuk) scanBatasMasuk = "07:00";
+
+            document.getElementById('display-batas-masuk').textContent = scanBatasMasuk;
+            
+            window.tutupModal('modal-prescan');
+            window.bukaModal('modal-scanner');
+            
+            if(!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader-canvas");
+                html5QrCode.start( 
+                    { facingMode: "environment" }, 
+                    { fps: 10 }, 
+                    window.onScanSuccess, 
+                    window.onScanFailure 
+                ).catch(err => { 
+                    window.tampilkanToast("Kamera tidak tersedia atau ditolak.", true); 
+                });
+            }
+        };
+        
+        window.tutupModalScanner = function() {
+            if(html5QrCode) { 
+                html5QrCode.stop().then(() => { 
+                    html5QrCode.clear(); 
+                    html5QrCode = null; 
+                }).catch(err => console.error(err)); 
+            }
+            window.isScanningPaused = false;
+            window.tutupModal('modal-scanner');
+        };
+
+        function hitungKategoriKeterlambatan(waktuBatas) {
+            const now = new Date();
+            const currentH = now.getHours();
+            const currentM = now.getMinutes();
+            
+            const [batasH, batasM] = waktuBatas.split(':').map(Number);
+            
+            const currentTotalMins = (currentH * 60) + currentM;
+            const batasTotalMins = (batasH * 60) + batasM;
+            
+            const diff = currentTotalMins - batasTotalMins;
+            
+            let kategori = "Tepat Waktu";
+            if (diff > 0 && diff <= 15) {
+                kategori = "Terlambat";
+            } else if (diff > 15) {
+                kategori = "Alpa / Sangat Terlambat";
+            }
+            
+            const jamScan = `${String(currentH).padStart(2, '0')}:${String(currentM).padStart(2, '0')}`;
+            
+            return { kategori, diff, jamScan };
+        }
+
+        window.onScanSuccess = async function(decodedText, decodedResult) {
+            if(window.isScanningPaused) return;
+            window.isScanningPaused = true;
+            
+            const siswaScanned = semuaSiswa.find(s => s.kodeSiswa === decodedText);
+            
+            const toastOverlay = document.getElementById('scan-toast-overlay');
+            const toastIcon = document.getElementById('scan-toast-icon');
+            const toastTitle = document.getElementById('scan-toast-title');
+            const toastDesc = document.getElementById('scan-toast-desc');
+
+            if(siswaScanned) {
+                // Hitung keterlambatan
+                const hasil = hitungKategoriKeterlambatan(scanBatasMasuk);
+                
+                // Siapkan data untuk disimpan
+                const dataAbsen = { 
+                    idAbsen: `absen_${Date.now()}`, 
+                    timestamp: Date.now(), 
+                    status: 'Hadir',
+                    kategori: hasil.kategori,
+                    jamBatas: scanBatasMasuk,
+                    jamScan: hasil.jamScan
+                };
+                
+                const kehadiranBaru = [...(siswaScanned.kehadiran || []), dataAbsen];
+                
+                try { 
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', siswaScanned.docId), { kehadiran: kehadiranBaru }); 
+                    
+                    // Tampilkan Overlay Cerdas di Dalam Scanner
+                    toastTitle.textContent = siswaScanned.nama;
+                    toastDesc.textContent = `${hasil.kategori} (${hasil.jamScan})`;
+                    
+                    if(hasil.kategori === 'Tepat Waktu') {
+                        toastIcon.style.background = 'var(--success-bg)';
+                        toastIcon.style.color = 'var(--success)';
+                        toastIcon.innerHTML = '<i data-lucide="check" style="width: 20px;"></i>';
+                    } else if(hasil.kategori === 'Terlambat') {
+                        toastIcon.style.background = 'var(--warning-bg)';
+                        toastIcon.style.color = 'var(--warning)';
+                        toastIcon.innerHTML = '<i data-lucide="clock" style="width: 20px;"></i>';
+                    } else {
+                        toastIcon.style.background = 'var(--danger-bg)';
+                        toastIcon.style.color = 'var(--danger)';
+                        toastIcon.innerHTML = '<i data-lucide="alert-triangle" style="width: 20px;"></i>';
+                    }
+
+                    if(window.lucide) window.lucide.createIcons();
+                    toastOverlay.classList.add('show');
+                    
+                    // Autoclose and resume scanner
+                    setTimeout(() => {
+                        toastOverlay.classList.remove('show');
+                        window.isScanningPaused = false;
+                    }, 2500);
+
+                } catch (err) { 
+                    window.isScanningPaused = false;
+                }
+            } else { 
+                toastTitle.textContent = "ID Tidak Dikenali!";
+                toastDesc.textContent = "Coba pindai ulang kartu santri.";
+                toastIcon.style.background = 'var(--danger-bg)';
+                toastIcon.style.color = 'var(--danger)';
+                toastIcon.innerHTML = '<i data-lucide="x" style="width: 20px;"></i>';
+                
+                if(window.lucide) window.lucide.createIcons();
+                toastOverlay.classList.add('show');
+                
+                setTimeout(() => {
+                    toastOverlay.classList.remove('show');
+                    window.isScanningPaused = false;
+                }, 2000);
+            }
+        };
+        
+        window.onScanFailure = function(error) {};
+
+        // ==========================================
+        // TWIBBON & APRESIASI
+        // ==========================================
 
         window.konfirmasiTwibbon = function(nama, pencapaian, wa, kirimWAState, pesanFallback, kelasNama) {
             window.tempTwibbonData = { nama, pencapaian, wa, kirimWAState, pesanFallback, kelasNama };
@@ -1361,60 +1617,6 @@
             setTimeout(() => { window.bukaStudioTwibbon(); }, 300);
         };
 
-        // SCANNER QR ABSENSI
-        let html5QrCode = null;
-        window.bukaModalScanner = function() {
-            window.bukaModal('modal-scanner');
-            if(!html5QrCode) {
-                html5QrCode = new Html5Qrcode("reader-canvas");
-                html5QrCode.start( 
-                    { facingMode: "environment" }, 
-                    { fps: 10 }, 
-                    window.onScanSuccess, 
-                    window.onScanFailure 
-                ).catch(err => { 
-                    window.tampilkanToast("Kamera tidak tersedia atau ditolak.", true); 
-                });
-            }
-        }
-        
-        window.tutupModalScanner = function() {
-            if(html5QrCode) { 
-                html5QrCode.stop().then(() => { 
-                    html5QrCode.clear(); 
-                    html5QrCode = null; 
-                }).catch(err => console.error(err)); 
-            }
-            window.tutupModal('modal-scanner');
-        }
-
-        window.onScanSuccess = async function(decodedText, decodedResult) {
-            const siswaScanned = semuaSiswa.find(s => s.kodeSiswa === decodedText);
-            if(siswaScanned) {
-                window.tutupModalScanner(); 
-                await window.catatAbsensiScan(siswaScanned, 'Hadir');
-                window.tampilkanToast(`Berhasil! ${siswaScanned.nama} hadir.`);
-            } else { 
-                window.tampilkanToast("Kode QR tidak dikenali pada kelas ini!", true); 
-            }
-        }
-        
-        window.onScanFailure = function(error) {}
-
-        window.catatAbsensiScan = async function(siswa, status) {
-            if(!currentUser) return;
-            const dataAbsen = { idAbsen: `absen_${Date.now()}`, timestamp: Date.now(), status: status };
-            
-            // SAFETY NET: Jika database sebelumnya kosong, "siswa.kehadiran" akan otomatis dibuat sebagai Array []
-            const kehadiranBaru = [...(siswa.kehadiran || []), dataAbsen];
-            
-            try { 
-                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', siswa.docId), { kehadiran: kehadiranBaru }); 
-            } catch (err) { 
-                window.tampilkanToast("Gagal menyimpan data absensi.", true);
-            }
-        }
-
         function pasangListenerSwipeGuru() {
             const areaGeser = document.getElementById('swipeable-dashboard-guru');
             if(!areaGeser) return;
@@ -1489,66 +1691,8 @@
             let wa = siswa.waOrtu;
             if (wa && wa.startsWith('0')) wa = '62' + wa.slice(1);
 
-            let pesan = `Assalamu'alaikum Ayah/Bunda,\n\nSelamat datang di *TahfizhPro Enterprise*.\nBerikut adalah akses Portal Wali Murid untuk memantau progres hafalan ananda *${siswa.nama}* secara real-time:\n\n🔑 *ID Akun:* ${siswa.kodeSiswa}\n🌐 *Link Portal:* ${baseUrl}\n\n📱 *PANDUAN INSTALASI APLIKASI DI HP:*\n1. Buka link portal di atas menggunakan browser Google Chrome (Android) atau Safari (iPhone).\n2. Jika muncul, klik tombol *"Install"* di bagian atas layar.\n3. Atau, klik ikon menu (titik tiga) di pojok kanan atas browser, lalu pilih *"Tambahkan ke Layar Utama"* (Add to Home Screen).\n\nSetelah terinstal, Ayah/Bunda dapat memantau mutaba'ah ananda langsung dari layar HP tanpa perlu mengetik link lagi.\n\nTerima kasih atas sinergi dan kerja samanya. 🙏`;
+            let pesan = `Assalamu'alaikum Ayah/Bunda,\n\nSelamat datang di *TahfizhPro Enterprise*.\nBerikut adalah akses Portal Wali Murid untuk memantau progres ananda *${siswa.nama}* secara real-time:\n\n🔑 *ID Akun:* ${siswa.kodeSiswa}\n🌐 *Link Portal:* ${baseUrl}\n\n📱 *PANDUAN INSTALASI APLIKASI DI HP:*\n1. Buka link portal di atas menggunakan browser Google Chrome (Android) atau Safari (iPhone).\n2. Jika muncul, klik tombol *"Install"* di bagian atas layar.\n3. Atau, klik ikon menu (titik tiga) di pojok kanan atas browser, lalu pilih *"Tambahkan ke Layar Utama"* (Add to Home Screen).\n\nSetelah terinstal, Ayah/Bunda dapat memantau ananda langsung dari layar HP tanpa perlu mengetik link lagi.\n\nTerima kasih atas sinergi dan kerja samanya. 🙏`;
             window.open(`https://wa.me/${wa}?text=${encodeURIComponent(pesan)}`, '_blank');
-        };
-
-        window.hitungProgresAlQuran = function(riwayatArray) {
-            if (!riwayatArray || riwayatArray.length === 0) return 0;
-            let hafalan = {};
-            riwayatArray.forEach(setoran => {
-                const sAwal = dataAlQuran[setoran.surahAwal]; const sAkhir = dataAlQuran[setoran.surahAkhir];
-                if (!sAwal || !sAkhir) return;
-                const urutanMulai = sAwal.urutan; const urutanSelesai = Math.max(sAwal.urutan, sAkhir.urutan);
-                for (let i = urutanMulai; i <= urutanSelesai; i++) {
-                    const namaSurah = Object.keys(dataAlQuran).find(k => dataAlQuran[k].urutan === i);
-                    if (!hafalan[namaSurah]) hafalan[namaSurah] = new Set();
-                    let mulaiAyat = (i === urutanMulai) ? parseInt(setoran.ayatAwal) : 1;
-                    let akhirAyat = (i === urutanSelesai) ? parseInt(setoran.ayatAkhir) : dataAlQuran[namaSurah].ayat;
-                    for (let a = mulaiAyat; a <= akhirAyat; a++) hafalan[namaSurah].add(a);
-                }
-            });
-            let totalDihafal = 0; for (let surah in hafalan) totalDihafal += hafalan[surah].size;
-            return totalDihafal;
-        };
-
-        window.hitungProgresMisi = function(riwayatArray, misiAktif) {
-            if (!misiAktif || !misiAktif.totalAyatTarget) return 0;
-            if (!riwayatArray || riwayatArray.length === 0) return 0;
-
-            if (!misiAktif.isPreset) {
-                const currentTotal = window.hitungProgresAlQuran(riwayatArray);
-                const added = currentTotal - (misiAktif.startTotalAyat || 0);
-                if (added <= 0) return 0;
-                let persentase = (added / misiAktif.totalAyatTarget) * 100;
-                return Math.min(Math.round(persentase), 100);
-            }
-
-            let dihafal = new Set();
-            riwayatArray.forEach(setoran => {
-                const sAwal = dataAlQuran[setoran.surahAwal]; const sAkhir = dataAlQuran[setoran.surahAkhir];
-                if (!sAwal || !sAkhir) return;
-                const urutanMulai = sAwal.urutan; const urutanSelesai = Math.max(sAwal.urutan, sAkhir.urutan);
-                for (let i = urutanMulai; i <= urutanSelesai; i++) {
-                    const namaSurah = Object.keys(dataAlQuran).find(k => dataAlQuran[k].urutan === i);
-                    let mulaiAyat = (i === urutanMulai) ? parseInt(setoran.ayatAwal) : 1;
-                    let akhirAyat = (i === urutanSelesai) ? parseInt(setoran.ayatAkhir) : dataAlQuran[namaSurah].ayat;
-                    for (let a = mulaiAyat; a <= akhirAyat; a++) dihafal.add(`${namaSurah}:${a}`);
-                }
-            });
-
-            let targetAyat = new Set();
-            (misiAktif.rentangAyat || []).forEach(rentang => {
-                for (let a = rentang.dariAyat; a <= rentang.sampaiAyat; a++) {
-                    targetAyat.add(`${rentang.surah}:${a}`);
-                }
-            });
-
-            let match = 0;
-            targetAyat.forEach(ayat => { if (dihafal.has(ayat)) match++; });
-
-            let persentase = (match / misiAktif.totalAyatTarget) * 100;
-            return Math.min(Math.round(persentase), 100);
         };
 
         window.validasiLulusMisi = async function(docId) {
@@ -1573,6 +1717,63 @@
                 window.konfirmasiTwibbon(siswa.nama, namaLencana, siswa.waOrtu, false, "", kelasNama); 
             } catch (error) { window.tampilkanToast("Gagal memvalidasi kelulusan misi.", true); }
         };
+
+        function hitungProgresAlQuran(riwayat) {
+            if (!riwayat || riwayat.length === 0) return 0;
+            let totalAyat = 0;
+            const uniqueAyatMap = new Map();
+            riwayat.forEach(item => {
+                let currentSurahId = dataAlQuran[item.surahAwal].urutan;
+                const endSurahId = dataAlQuran[item.surahAkhir].urutan;
+                while (currentSurahId <= endSurahId) {
+                    const surahName = Object.keys(dataAlQuran).find(k => dataAlQuran[k].urutan === currentSurahId);
+                    if (!uniqueAyatMap.has(surahName)) uniqueAyatMap.set(surahName, new Set());
+                    let startAyat = (currentSurahId === dataAlQuran[item.surahAwal].urutan) ? item.ayatAwal : 1;
+                    let lastAyat = (currentSurahId === endSurahId) ? item.ayatAkhir : dataAlQuran[surahName].ayat;
+                    for (let i = startAyat; i <= lastAyat; i++) { uniqueAyatMap.get(surahName).add(i); }
+                    currentSurahId++;
+                }
+            });
+            uniqueAyatMap.forEach(ayatSet => { totalAyat += ayatSet.size; });
+            return totalAyat;
+        }
+
+        function hitungProgresMisi(riwayat, misi) {
+            if (!riwayat || riwayat.length === 0 || !misi) return 0;
+            const target = misi.totalAyatTarget;
+            let tercapai = 0;
+
+            if (misi.isPreset && misi.rentangAyat) {
+                const mapMisi = new Map();
+                misi.rentangAyat.forEach(r => {
+                    if (!mapMisi.has(r.surah)) mapMisi.set(r.surah, new Set());
+                    for (let i = r.dariAyat; i <= r.sampaiAyat; i++) mapMisi.get(r.surah).add(i);
+                });
+
+                riwayat.forEach(item => {
+                    let cId = dataAlQuran[item.surahAwal].urutan; const eId = dataAlQuran[item.surahAkhir].urutan;
+                    while (cId <= eId) {
+                        const sName = Object.keys(dataAlQuran).find(k => dataAlQuran[k].urutan === cId);
+                        if (mapMisi.has(sName)) {
+                            let sA = (cId === dataAlQuran[item.surahAwal].urutan) ? item.ayatAwal : 1;
+                            let lA = (cId === eId) ? item.ayatAkhir : dataAlQuran[sName].ayat;
+                            for (let i = sA; i <= lA; i++) {
+                                if (mapMisi.get(sName).has(i)) { mapMisi.get(sName).delete(i); tercapai++; }
+                            }
+                        }
+                        cId++;
+                    }
+                });
+            } else {
+                const startTotal = misi.startTotalAyat || 0;
+                const currentTotal = hitungProgresAlQuran(riwayat);
+                tercapai = currentTotal - startTotal;
+                if (tercapai < 0) tercapai = 0;
+            }
+
+            let persen = Math.floor((tercapai / target) * 100);
+            return persen > 100 ? 100 : persen;
+        }
 
         function setupCustomSelects() {
             const optSurahAwal = document.getElementById('options-surah-awal');
@@ -1722,7 +1923,6 @@
         };
 
         function mulaiListenData() {
-            // 1. Listen Global Config App (Settings Sekolah) DENGAN FALLBACK FAIL-SAFE
             const qSettings = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
             if (window.unsubscribeSettings) window.unsubscribeSettings();
             window.unsubscribeSettings = onSnapshot(qSettings, (docSnap) => {
@@ -1730,28 +1930,47 @@
                 if(docSnap.exists()) {
                     window.appSettings = { ...window.appSettings, ...docSnap.data() };
                 } else {
-                    // SAFETY NET (ANTI-ERROR): Jika yayasan ini sama sekali belum pernah berlangganan 
-                    // dan document "settings" belum ada di database, terapkan default state yang aman.
                     window.appSettings = {
+                        isTahfizhActive: true,
                         isSholatModuleActive: true,
                         isAbsensiQrActive: false,
+                        isPremiumAttendanceActive: false,
                         isTagihanAktif: true,
                         twibbonFrameUrl: null
                     };
                 }
 
-                // KENDALI TAMPILAN TOMBOL SCAN QR ABSENSI
+                // Render Scanner Cerdas Button
                 const qrContainer = document.getElementById('container-absensi-qr');
                 if (qrContainer) {
-                    qrContainer.style.display = window.appSettings.isAbsensiQrActive === true ? 'block' : 'none';
+                    if (window.appSettings.isPremiumAttendanceActive) {
+                        qrContainer.style.display = 'block';
+                        qrContainer.innerHTML = `
+                            <button class="btn btn-premium" onclick="window.bukaPreScan()" style="width: 100%; padding: 16px;">
+                                <i data-lucide="crown" style="width: 20px;"></i> Presensi Cerdas (Real-Time)
+                            </button>
+                        `;
+                    } else if (window.appSettings.isAbsensiQrActive) {
+                        qrContainer.style.display = 'block';
+                        qrContainer.innerHTML = `
+                            <button class="btn btn-primary" onclick="window.bukaPremiumLocked()" style="width: 100%; padding: 14px; background: #0F172A; border: none; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); font-weight: 700;">
+                                <i data-lucide="lock" style="width: 18px; color: var(--premium-gold);"></i> Presensi Cerdas Terkunci
+                            </button>
+                        `;
+                    } else {
+                        qrContainer.style.display = 'none';
+                    }
+                    if (window.lucide) window.lucide.createIcons();
                 }
                 
-                if(loggedInTeacher && document.getElementById('tab-rekap').classList.contains('active')) {
-                    window.renderTabelRekap(rekapSortMode);
+                if(loggedInTeacher) {
+                    window.renderListGuru();
+                    if(document.getElementById('tab-rekap').classList.contains('active')) {
+                        window.renderTabelRekap(rekapSortMode);
+                    }
                 }
             });
 
-            // 2. Listen Global Config SaaS (God Mode Developer Update & Maintenance Mode)
             const appLoadTime = Date.now();
             let isForceUpdateInitialized = false;
             
@@ -1760,7 +1979,6 @@
                 if (docSnap.exists()) {
                     const data = docSnap.data();
 
-                    // HANDLE MAINTENANCE MODE
                     const maintenanceOverlay = document.getElementById('maintenance-overlay');
                     if (data.maintenanceMode === true) {
                         if (maintenanceOverlay) maintenanceOverlay.classList.add('active');
@@ -1768,25 +1986,19 @@
                         if (maintenanceOverlay) maintenanceOverlay.classList.remove('active');
                     }
                     
-                    // HANDLE FORCE UPDATE
                     if (isForceUpdateInitialized && data.forceUpdateTimestamp && data.forceUpdateTimestamp > appLoadTime) {
-                        
                         const overlay = document.getElementById('system-update-overlay');
                         const overlayMsg = document.getElementById('system-update-msg');
                         if (overlay && overlayMsg) {
                             overlayMsg.innerHTML = `<strong>Versi ${data.version || 'Baru'}:</strong><br/>${data.updateMessage || 'Memuat pembaruan inti...'}`;
                             overlay.classList.add('active');
                         }
-
-                        setTimeout(() => {
-                            window.location.reload(true);
-                        }, 3500);
+                        setTimeout(() => { window.location.reload(true); }, 3500);
                     }
                     isForceUpdateInitialized = true;
                 }
             });
 
-            // 3. Listen Siswa
             if (window.unsubscribeSiswa) window.unsubscribeSiswa();
             window.unsubscribeSiswa = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'students')), (snapshot) => {
                 semuaSiswa = []; snapshot.forEach(doc => semuaSiswa.push({ docId: doc.id, ...doc.data() }));
@@ -1797,28 +2009,23 @@
                         siswaTerpilih = dataTerbaru; 
                         if (document.getElementById('modal-riwayat-setoran').classList.contains('active')) window.renderRiwayatCRUD(); 
                         if (document.getElementById('modal-diskusi-guru').classList.contains('active')) window.renderChatGuru();
+                        if (document.getElementById('modal-riwayat-kehadiran').classList.contains('active')) window.renderRiwayatKehadiran();
                     }
                 }
             });
 
-            // 4. Listen Kelas
             if (window.unsubscribeKelas) window.unsubscribeKelas();
             window.unsubscribeKelas = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'classes')), (snapshot) => {
                 semuaKelas = []; snapshot.forEach(doc => semuaKelas.push({ docId: doc.id, ...doc.data() }));
                 if(loggedInTeacher) populateDropdownKelas();
             });
 
-            // 5. Listen Guru
             if (window.unsubscribeGuru) window.unsubscribeGuru();
             window.unsubscribeGuru = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'teachers')), (snapshot) => {
                 semuaGuru = []; snapshot.forEach(doc => semuaGuru.push({ docId: doc.id, ...doc.data() }));
-                
-                if (window.autoLoginTeacherId) {
-                    prosesAutoLoginGuru();
-                }
+                if (window.autoLoginTeacherId) prosesAutoLoginGuru();
             });
 
-            // 6. Listen Sholat
             if (window.unsubscribeSholat) window.unsubscribeSholat();
             window.unsubscribeSholat = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'sholat_records')), (snapshot) => {
                 semuaSholat = []; 
@@ -1974,17 +2181,67 @@
             const sortedSiswa = [...siswaKelasIni].sort((a,b) => a.nama.localeCompare(b.nama));
             
             let totalUnreadClass = 0; 
+            const isTahfizhAktif = window.appSettings.isTahfizhActive !== false;
+            const isKehadiranAktif = window.appSettings.isPremiumAttendanceActive === true || window.appSettings.isAbsensiQrActive === true;
 
             sortedSiswa.forEach(siswa => {
-                const progressAyat = window.hitungProgresAlQuran(siswa.riwayat || []);
-                const persen = ((progressAyat / TOTAL_AYAT_ALQURAN) * 100).toFixed(1);
-
-                let progresMisi = 0;
-                if (siswa.misiAktif) progresMisi = window.hitungProgresMisi(siswa.riwayat, siswa.misiAktif);
-
+                // Notifikasi Diskusi
                 const unreadCount = (siswa.bukuPenghubung || []).filter(m => m.sender === 'ortu' && !m.read).length;
                 totalUnreadClass += unreadCount;
                 const chatBadge = unreadCount > 0 ? `<div class="badge-notif">${unreadCount}</div>` : '';
+
+                // HTML Khusus Tahfizh
+                let tahfizhUI_Top = '';
+                let tahfizhUI_Buttons = '';
+
+                if (isTahfizhAktif) {
+                    const progressAyat = hitungProgresAlQuran(siswa.riwayat || []);
+                    const persen = ((progressAyat / TOTAL_AYAT_ALQURAN) * 100).toFixed(1);
+
+                    let progresMisi = 0;
+                    if (siswa.misiAktif) progresMisi = hitungProgresMisi(siswa.riwayat, siswa.misiAktif);
+
+                    tahfizhUI_Top = `
+                        <div style="font-size: 13px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                            <span>Hafalan: <strong style="color: var(--primary);">${persen}%</strong> (${progressAyat} Ayat)</span>
+                        </div>
+                        <div class="mini-progress-track">
+                            <div class="mini-progress-fill" style="width: ${persen}%"></div>
+                        </div>
+                        ${siswa.misiAktif && !siswa.misiAktif.statusSelesai ? `<span class="badge" style="background: var(--primary-light); color: var(--primary); border: 1px solid var(--border-focus); margin-top: 10px; display: inline-flex; align-items: center; gap: 4px; width: max-content;"><i data-lucide="target" style="width: 12px;"></i> Misi: ${siswa.misiAktif.namaMisi} (${progresMisi}%)</span>` : ''}
+                        ${siswa.misiAktif && siswa.misiAktif.statusSelesai ? `<span class="badge" style="background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; margin-top: 10px; display: inline-flex; align-items: center; gap: 4px; width: max-content;"><i data-lucide="award" style="width: 12px;"></i> Lulus: ${siswa.misiAktif.namaMisi}</span>` : ''}
+                    `;
+
+                    let tombolValidasiMisi = '';
+                    if (siswa.misiAktif && !siswa.misiAktif.statusSelesai && progresMisi >= 100) {
+                        tombolValidasiMisi = `<button class="btn" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; border: none; flex: 1; padding: 10px;" onclick="window.validasiLulusMisi('${siswa.docId}')"><i data-lucide="award" style="width: 14px;"></i> Validasi Lulus</button>`;
+                    }
+
+                    tahfizhUI_Buttons = `
+                        <button class="btn btn-primary" onclick="window.bukaInputLangsung('${siswa.docId}')" style="flex: 2; padding: 10px;">
+                            <i data-lucide="mic" style="width: 14px;"></i> <span class="action-text">Evaluasi</span>
+                        </button>
+                        <button class="btn btn-outline" onclick="window.bukaRiwayatLangsung('${siswa.docId}')" style="flex: 1; padding: 10px;">
+                            <i data-lucide="history" style="width: 14px;"></i> <span class="action-text">Riwayat</span>
+                        </button>
+                        ${tombolValidasiMisi}
+                    `;
+                }
+
+                // HTML Khusus Kehadiran (Standalone)
+                let kehadiranUI_Button = '';
+                if (isKehadiranAktif) {
+                    kehadiranUI_Button = `
+                        <button class="btn" style="background: var(--success-bg); color: var(--success-text); border: 1px solid #A7F3D0; flex: 1; padding: 10px;" onclick="window.bukaRiwayatKehadiran('${siswa.docId}')">
+                            <i data-lucide="clock" style="width: 14px;"></i> <span class="action-text">Kehadiran</span>
+                        </button>
+                    `;
+                }
+
+                // Jika semua mati, berikan fallback tombol
+                if (!isTahfizhAktif && !isKehadiranAktif) {
+                    tahfizhUI_Buttons = `<button class="btn btn-outline" style="flex: 1; padding: 10px;" disabled>Tidak ada modul aktif</button>`;
+                }
 
                 const card = document.createElement('div');
                 card.className = 'card student-card';
@@ -2001,27 +2258,17 @@
                     <div class="student-header">
                         <div style="flex-grow: 1; width: 100%;">
                             <div class="student-name">${siswa.nama}</div>
-                            <div class="student-meta">
+                            <div class="student-meta" style="margin-bottom: ${isTahfizhAktif ? '0' : '8px'};">
                                 <span>ID: <strong style="color: var(--text-main);">${siswa.kodeSiswa}</strong></span>
-                                <span><strong style="color: var(--primary);">${persen}%</strong> (${progressAyat} Ayat)</span>
                             </div>
-                            <div class="mini-progress-track">
-                                <div class="mini-progress-fill" style="width: ${persen}%"></div>
-                            </div>
+                            ${tahfizhUI_Top}
                         </div>
-                        ${siswa.misiAktif && !siswa.misiAktif.statusSelesai ? `<span class="badge" style="background: var(--primary-light); color: var(--primary); border: 1px solid var(--border-focus); margin-top: 10px; display: inline-flex; align-items: center; gap: 4px; width: max-content;"><i data-lucide="target" style="width: 12px;"></i> Misi: ${siswa.misiAktif.namaMisi} (${progresMisi}%)</span>` : ''}
-                        ${siswa.misiAktif && siswa.misiAktif.statusSelesai ? `<span class="badge" style="background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; margin-top: 10px; display: inline-flex; align-items: center; gap: 4px; width: max-content;"><i data-lucide="award" style="width: 12px;"></i> Lulus: ${siswa.misiAktif.namaMisi}</span>` : ''}
                     </div>
 
                     <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: flex-end;">
                         <div class="card-primary-actions">
-                            <button class="btn btn-primary" onclick="window.bukaInputLangsung('${siswa.docId}')" style="flex: 2; padding: 10px;">
-                                <i data-lucide="mic" style="width: 14px;"></i> <span class="action-text">Evaluasi</span>
-                            </button>
-                            <button class="btn btn-outline" onclick="window.bukaRiwayatLangsung('${siswa.docId}')" style="flex: 1; padding: 10px;">
-                                <i data-lucide="history" style="width: 14px;"></i> <span class="action-text">Riwayat</span>
-                            </button>
-                            ${siswa.misiAktif && !siswa.misiAktif.statusSelesai && progresMisi >= 100 ? `<button class="btn" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; border: none; flex: 1; padding: 10px;" onclick="window.validasiLulusMisi('${siswa.docId}')"><i data-lucide="award" style="width: 14px;"></i> Validasi Lulus</button>` : ''}
+                            ${tahfizhUI_Buttons}
+                            ${kehadiranUI_Button}
                         </div>
                         <div class="card-secondary-actions">
                             <button class="btn btn-ghost" onclick="window.salinKode('${siswa.docId}')" style="flex: 1; padding: 6px; color: var(--text-muted);" title="Salin ID Santri"><i data-lucide="copy" style="width: 16px;"></i> <span class="action-text">ID</span></button>
@@ -2038,6 +2285,50 @@
             document.getElementById('nav-badge-chat').style.display = totalUnreadClass > 0 ? 'block' : 'none';
 
             if(window.lucide) window.lucide.createIcons();
+        };
+
+        window.bukaRiwayatKehadiran = function(docId) {
+            siswaTerpilih = semuaSiswa.find(s => s.docId === docId);
+            if(!siswaTerpilih) return;
+            window.renderRiwayatKehadiran();
+            window.bukaModal('modal-riwayat-kehadiran');
+        };
+
+        window.renderRiwayatKehadiran = function() {
+            const container = document.getElementById('list-riwayat-kehadiran');
+            const kehadiran = siswaTerpilih.kehadiran || [];
+            
+            if (kehadiran.length === 0) { 
+                container.innerHTML = '<div style="text-align: center; padding: 20px;"><p class="text-muted">Data presensi masih kosong.</p></div>'; 
+                return; 
+            }
+
+            const riwayatUrut = [...kehadiran].sort((a,b) => b.timestamp - a.timestamp);
+            
+            container.innerHTML = riwayatUrut.map(item => {
+                const tgl = new Date(item.timestamp).toLocaleString('id-ID', { day: 'numeric', month: 'short', year:'numeric', hour: '2-digit', minute: '2-digit' });
+                
+                let badgeClass = 'badge-hadir';
+                let iconName = 'check-circle';
+                if(item.kategori === 'Terlambat') { badgeClass = 'badge-terlambat'; iconName = 'clock'; }
+                if(item.kategori === 'Alpa' || item.kategori === 'Alpa / Sangat Terlambat' || item.kategori === 'Sangat Terlambat') { badgeClass = 'badge-alpa'; iconName = 'alert-triangle'; }
+
+                return `
+                    <div class="timeline-item">
+                        <div class="timeline-card" style="align-items: center;">
+                            <div style="flex-grow: 1;">
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
+                                    <span class="badge-kehadiran ${badgeClass}"><i data-lucide="${iconName}" style="width:12px;"></i>${item.kategori}</span>
+                                </div>
+                                <span class="timeline-date" style="font-size: 13px; color: var(--text-main); font-weight: 600;">Waktu Scan: ${item.jamScan}</span>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Tanggal: ${tgl} | Batas: ${item.jamBatas}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join(''); 
+            
+            if (window.lucide) window.lucide.createIcons();
         };
 
         window.bukaDiskusiLangsung = async function(docId) {
@@ -2183,9 +2474,9 @@
                 surahAwal: sAwal, ayatAwal: aAwal, surahAkhir: sAkhir, ayatAkhir: aAkhir, kelancaran: kelancaran, tajwid: tajwid
             };
 
-            const totalAyatBefore = window.hitungProgresAlQuran(siswaTerpilih.riwayat || []);
+            const totalAyatBefore = hitungProgresAlQuran(siswaTerpilih.riwayat || []);
             const riwayatBaru = [...(siswaTerpilih.riwayat || []), dataSetoranBaru];
-            const totalAyatAfter = window.hitungProgresAlQuran(riwayatBaru);
+            const totalAyatAfter = hitungProgresAlQuran(riwayatBaru);
 
             const milestones = [100, 500, 1000, 2000, 3000, 4000, 5000, 6236];
             let reachedMilestone = null;
@@ -2216,7 +2507,7 @@
                 const rentangSurah = sAwal === sAkhir ? `${sAwal} ayat ${aAwal}-${aAkhir}` : `${sAwal}:${aAwal} - ${sAkhir}:${aAkhir}`;
                 let pesanWA = `Assalamu'alaikum Ayah/Bunda yang dirahmati Allah,\n\nAlhamdulillah, hari ini evaluasi hafalan ananda *${siswaTerpilih.nama}* telah berhasil kami catat di sistem:\n\n📖 *Cakupan:* ${rentangSurah}\n📊 *Kelancaran:* ${kelancaran}\n🎯 *Tajwid:* ${tajwid}\n\n🌟 *Capaian Keseluruhan:* ${persen}% (${totalAyatAfter} dari 6236 Ayat)\n\n`;
                 if(catatanKhusus) pesanWA += `📝 *Pesan Akademik:* ${catatanKhusus}\n\n`;
-                if(!siswaTerpilih.pembayaranLunas) pesanWA += `⚠️ *Info Tagihan:* Administrasi sistem (Rp 5.000) belum lunas. Mohon selesaikan via Admin. 🙏\n\n`;
+                if(!siswaTerpilih.pembayaranLunas) pesanWA += `⚠️ *Info Tagihan:* Administrasi sistem belum lunas. Mohon selesaikan via Admin. 🙏\n\n`;
                 pesanWA += `Terima kasih banyak atas sinergi dan doa Ayah/Bunda di rumah. Semoga ananda senantiasa semangat menjaga hafalannya. Amin. 🙏`;
 
                 if(reachedMilestone) {
@@ -2235,6 +2526,16 @@
             siswaTerpilih = semuaSiswa.find(s => s.docId === docId);
             if(!siswaTerpilih) return;
             document.getElementById('lanjutan-nama-siswa').textContent = siswaTerpilih.nama;
+            
+            // Toggle label dan fitur Misi/Twibbon berdasarkan status modul Tahfizh
+            if (window.appSettings.isTahfizhActive === false) {
+                document.getElementById('label-edit-misi').textContent = "";
+                document.getElementById('btn-lanjut-twibbon').style.display = 'none';
+            } else {
+                document.getElementById('label-edit-misi').textContent = "& Misi";
+                document.getElementById('btn-lanjut-twibbon').style.display = 'flex';
+            }
+
             window.bukaModal('modal-opsi-lanjutan');
         };
 
@@ -2244,19 +2545,25 @@
             let waOrtu = siswaTerpilih.waOrtu || ''; if(waOrtu.startsWith('62')) waOrtu = '0' + waOrtu.substring(2);
             document.getElementById('edit-wa-ortu').value = waOrtu; 
 
-            if (siswaTerpilih.misiAktif && !siswaTerpilih.misiAktif.statusSelesai) {
-                 if (siswaTerpilih.misiAktif.isPreset) {
-                     resetCustomDropdown('cs-preset-misi', siswaTerpilih.misiAktif.presetId, siswaTerpilih.misiAktif.namaMisi);
-                     document.getElementById('custom-misi-area').style.display = 'none';
-                 } else {
-                     resetCustomDropdown('cs-preset-misi', 'custom', 'Misi Kustom (Manual)');
-                     document.getElementById('custom-misi-area').style.display = 'flex';
-                     document.getElementById('edit-misi-nama').value = siswaTerpilih.misiAktif.namaMisi;
-                     document.getElementById('edit-misi-target').value = siswaTerpilih.misiAktif.totalAyatTarget;
-                 }
+            // Jika tahfizh mati, sembunyikan section misi
+            if (window.appSettings.isTahfizhActive === false) {
+                document.getElementById('edit-misi-section').style.display = 'none';
             } else {
-                 resetCustomDropdown('cs-preset-misi', '', 'Tidak Ada Misi / Hapus Misi');
-                 document.getElementById('custom-misi-area').style.display = 'none';
+                document.getElementById('edit-misi-section').style.display = 'block';
+                if (siswaTerpilih.misiAktif && !siswaTerpilih.misiAktif.statusSelesai) {
+                     if (siswaTerpilih.misiAktif.isPreset) {
+                         resetCustomDropdown('cs-preset-misi', siswaTerpilih.misiAktif.presetId, siswaTerpilih.misiAktif.namaMisi);
+                         document.getElementById('custom-misi-area').style.display = 'none';
+                     } else {
+                         resetCustomDropdown('cs-preset-misi', 'custom', 'Misi Kustom (Manual)');
+                         document.getElementById('custom-misi-area').style.display = 'flex';
+                         document.getElementById('edit-misi-nama').value = siswaTerpilih.misiAktif.namaMisi;
+                         document.getElementById('edit-misi-target').value = siswaTerpilih.misiAktif.totalAyatTarget;
+                     }
+                } else {
+                     resetCustomDropdown('cs-preset-misi', '', 'Tidak Ada Misi / Hapus Misi');
+                     document.getElementById('custom-misi-area').style.display = 'none';
+                }
             }
 
             setTimeout(() => { window.bukaModal('modal-edit-siswa'); }, 200); 
@@ -2297,7 +2604,7 @@
 
             try {
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', docId), {
-                    id: docId, nama: nama, waOrtu: wa, kodeSiswa: kodeSiswa, kelas_id: activeClassId, riwayat: [], catatanSiswa: "", bukuPenghubung: [], pembayaranLunas: false, lencana: [], createdAt: Date.now()
+                    id: docId, nama: nama, waOrtu: wa, kodeSiswa: kodeSiswa, kelas_id: activeClassId, riwayat: [], kehadiran: [], catatanSiswa: "", bukuPenghubung: [], pembayaranLunas: false, lencana: [], createdAt: Date.now()
                 });
                 window.tampilkanToast("Profil santri berhasil didaftarkan ke kelas!"); window.tutupModal('modal-tambah-siswa');
                 document.getElementById('input-nama-siswa').value = ''; document.getElementById('input-wa-ortu').value = '';
@@ -2313,33 +2620,37 @@
             if (waBaru && waBaru.startsWith('0')) waBaru = '62' + waBaru.slice(1);
 
             let misiUpdate = siswaTerpilih.misiAktif || null;
-            if (selectedPresetMisi === '') {
-                misiUpdate = null; 
-            } else if (selectedPresetMisi === 'custom') {
-                const namaMisiC = document.getElementById('edit-misi-nama').value.trim();
-                const targetC = parseInt(document.getElementById('edit-misi-target').value);
-                if (namaMisiC && targetC > 0) {
-                    misiUpdate = {
-                        namaMisi: namaMisiC,
-                        totalAyatTarget: targetC,
-                        rentangAyat: [], 
-                        statusSelesai: false,
-                        isPreset: false,
-                        presetId: 'custom',
-                        startTotalAyat: window.hitungProgresAlQuran(siswaTerpilih.riwayat)
-                    };
-                }
-            } else {
-                const presetData = MisiPresets[selectedPresetMisi];
-                if (presetData) {
-                    misiUpdate = {
-                        namaMisi: presetData.namaMisi,
-                        totalAyatTarget: presetData.totalAyatTarget,
-                        rentangAyat: presetData.rentangAyat,
-                        statusSelesai: false,
-                        isPreset: true,
-                        presetId: selectedPresetMisi
-                    };
+            
+            // Evaluasi misi hanya jika modul Tahfizh aktif
+            if (window.appSettings.isTahfizhActive !== false) {
+                if (selectedPresetMisi === '') {
+                    misiUpdate = null; 
+                } else if (selectedPresetMisi === 'custom') {
+                    const namaMisiC = document.getElementById('edit-misi-nama').value.trim();
+                    const targetC = parseInt(document.getElementById('edit-misi-target').value);
+                    if (namaMisiC && targetC > 0) {
+                        misiUpdate = {
+                            namaMisi: namaMisiC,
+                            totalAyatTarget: targetC,
+                            rentangAyat: [], 
+                            statusSelesai: false,
+                            isPreset: false,
+                            presetId: 'custom',
+                            startTotalAyat: hitungProgresAlQuran(siswaTerpilih.riwayat)
+                        };
+                    }
+                } else {
+                    const presetData = MisiPresets[selectedPresetMisi];
+                    if (presetData) {
+                        misiUpdate = {
+                            namaMisi: presetData.namaMisi,
+                            totalAyatTarget: presetData.totalAyatTarget,
+                            rentangAyat: presetData.rentangAyat,
+                            statusSelesai: false,
+                            isPreset: true,
+                            presetId: selectedPresetMisi
+                        };
+                    }
                 }
             }
 
@@ -2416,7 +2727,7 @@
             const item = siswaTerpilih.riwayat.find(r => r.idSetoran === idSetoran);
             if (!item) return;
 
-            const totalAyat = window.hitungProgresAlQuran(siswaTerpilih.riwayat);
+            const totalAyat = hitungProgresAlQuran(siswaTerpilih.riwayat);
             const persen = ((totalAyat / TOTAL_AYAT_ALQURAN) * 100).toFixed(1);
             const rentangSurah = item.surahAwal === item.surahAkhir ? `${item.surahAwal} ayat ${item.ayatAwal}-${item.ayatAkhir}` : `${item.surahAwal}:${item.ayatAwal} - ${item.surahAkhir}:${item.ayatAkhir}`;
 
@@ -2426,7 +2737,7 @@
             let pesanWA = `Assalamu'alaikum Ayah/Bunda yang dirahmati Allah,\n\nBerikut adalah rekap/pengingat evaluasi hafalan ananda *${siswaTerpilih.nama}*:\n\n📖 *Cakupan:* ${rentangSurah}\n📊 *Kelancaran:* ${item.kelancaran}\n🎯 *Tajwid:* ${item.tajwid}\n\n🌟 *Capaian Keseluruhan:* ${persen}% (${totalAyat} dari 6236 Ayat)\n\n`;
 
             if(siswaTerpilih.catatanSiswa) pesanWA += `📝 *Pesan Akademik:* ${siswaTerpilih.catatanSiswa}\n\n`;
-            if(!siswaTerpilih.pembayaranLunas) pesanWA += `⚠️ *Info Tagihan:* Administrasi sistem (Rp 5.000) belum lunas. Mohon selesaikan via Admin. 🙏\n\n`;
+            if(!siswaTerpilih.pembayaranLunas) pesanWA += `⚠️ *Info Tagihan:* Administrasi sistem belum lunas. Mohon selesaikan via Admin. 🙏\n\n`;
             
             pesanWA += `Terima kasih atas sinergi dan doa Ayah/Bunda.`;
 
@@ -2529,33 +2840,48 @@
             }
 
             const isSholatAktif = window.appSettings && window.appSettings.isSholatModuleActive !== false;
+            const isTahfizhAktif = window.appSettings && window.appSettings.isTahfizhActive !== false;
 
+            // Handle Header Visibility Dynamically
             const thSholat = document.getElementById('th-disiplin-sholat');
             if (thSholat) thSholat.style.display = isSholatAktif ? 'table-cell' : 'none';
+            
+            document.getElementById('th-hafalan').style.display = isTahfizhAktif ? 'table-cell' : 'none';
+            document.getElementById('th-kelancaran').style.display = isTahfizhAktif ? 'table-cell' : 'none';
+            document.getElementById('th-tajwid').style.display = isTahfizhAktif ? 'table-cell' : 'none';
 
             const textKet = document.getElementById('keterangan-bobot-rekap');
             if (textKet) {
-                if (isSholatAktif) {
-                    textKet.innerHTML = '*Peringkat disusun berdasarkan Nilai Akhir tertinggi. Komposisi: <strong>Kelancaran (50%) + Tajwid (30%) + Disiplin Sholat (20%)</strong>.';
+                if (isTahfizhAktif && isSholatAktif) {
+                    textKet.innerHTML = '*Peringkat disusun berdasarkan Nilai Akhir. Komposisi: <strong>Hafalan (80%) + Disiplin Sholat (20%)</strong>.';
+                } else if (isTahfizhAktif && !isSholatAktif) {
+                    textKet.innerHTML = '*Peringkat disusun berdasarkan Nilai Akhir. Komposisi: <strong>Hafalan (Kelancaran 60% + Tajwid 40%)</strong>.';
+                } else if (!isTahfizhAktif && isSholatAktif) {
+                    textKet.innerHTML = '*Peringkat disusun berdasarkan Nilai Akhir. Komposisi: <strong>Disiplin Sholat (100%)</strong>.';
                 } else {
-                    textKet.innerHTML = '*Peringkat disusun berdasarkan Nilai Akhir tertinggi. Komposisi: <strong>Kelancaran (60%) + Tajwid (40%)</strong>.';
+                    textKet.innerHTML = '*Penilaian otomatis tidak tersedia karena seluruh modul akademik nonaktif.';
                 }
             }
 
             let rekapData = siswaKelasIni.map(siswa => {
-                const totalAyat = window.hitungProgresAlQuran(siswa.riwayat || []);
-                const skorObj = hitungSkorHafalan(siswa.riwayat || []);
+                let totalAyat = 0; let skorObj = { k: 0, t: 0 };
+                if (isTahfizhAktif) {
+                    totalAyat = hitungProgresAlQuran(siswa.riwayat || []);
+                    skorObj = hitungSkorHafalan(siswa.riwayat || []);
+                }
+                
                 const skorSholatValue = hitungSkorSholat(siswa.docId);
-
                 let valS = skorSholatValue !== '-' ? skorSholatValue : 0; 
                 let skorAkhirBaru = 0;
                 
-                if (skorObj.k > 0 || skorObj.t > 0) {
+                if (isTahfizhAktif && (skorObj.k > 0 || skorObj.t > 0)) {
                     if (isSholatAktif) {
                         skorAkhirBaru = Math.round((skorObj.k * 0.5) + (skorObj.t * 0.3) + (valS * 0.2));
                     } else {
                         skorAkhirBaru = Math.round((skorObj.k * 0.6) + (skorObj.t * 0.4));
                     }
+                } else if (!isTahfizhAktif && isSholatAktif) {
+                    skorAkhirBaru = valS; // 100% Sholat
                 }
 
                 return { ...siswa, totalAyat, skorAkhir: skorAkhirBaru, skorK: skorObj.k, skorT: skorObj.t, skorS: skorSholatValue };
@@ -2587,8 +2913,11 @@
                 }
 
                 let tdSholatHTML = isSholatAktif ? `<td>${badgeSholatVisual}</td>` : '';
+                
+                // TD Dinamis berdasarkan status Tahfizh
+                let tdTahfizhHTML = isTahfizhAktif ? `<td style="color: var(--text-muted);">${data.totalAyat}</td><td style="color: var(--text-muted); font-family: monospace;">${vLancar}</td><td style="color: var(--text-muted); font-family: monospace;">${vTajwid}</td>` : '';
 
-                tbody.innerHTML += `<tr><td style="text-align: center;">${rankBadge}</td><td style="font-weight: 600; color: var(--text-main);">${data.nama}</td><td style="color: var(--text-muted);">${data.totalAyat}</td><td style="color: var(--text-muted); font-family: monospace;">${vLancar}</td><td style="color: var(--text-muted); font-family: monospace;">${vTajwid}</td>${tdSholatHTML}<td style="font-weight: 700; color: var(--primary); font-family: monospace;">${vAkhir}</td><td>${statusPredikat}</td></tr>`;
+                tbody.innerHTML += `<tr><td style="text-align: center;">${rankBadge}</td><td style="font-weight: 600; color: var(--text-main);">${data.nama}</td>${tdTahfizhHTML}${tdSholatHTML}<td style="font-weight: 700; color: var(--primary); font-family: monospace;">${vAkhir}</td><td>${statusPredikat}</td></tr>`;
             });
             if(window.lucide) window.lucide.createIcons();
         };
@@ -2598,21 +2927,27 @@
             if (siswaKelasIni.length === 0) return window.tampilkanToast("Tidak ada data untuk disalin", true);
             
             const isSholatAktif = window.appSettings && window.appSettings.isSholatModuleActive !== false;
+            const isTahfizhAktif = window.appSettings && window.appSettings.isTahfizhActive !== false;
 
             let rekapData = siswaKelasIni.map(siswa => {
-                const totalAyat = window.hitungProgresAlQuran(siswa.riwayat || []);
-                const skorObj = hitungSkorHafalan(siswa.riwayat || []);
+                let totalAyat = 0; let skorObj = { k: 0, t: 0 };
+                if (isTahfizhAktif) {
+                    totalAyat = hitungProgresAlQuran(siswa.riwayat || []);
+                    skorObj = hitungSkorHafalan(siswa.riwayat || []);
+                }
+                
                 const skorSholatValue = hitungSkorSholat(siswa.docId);
-
                 let valS = skorSholatValue !== '-' ? skorSholatValue : 0; 
                 let skorAkhirBaru = 0;
                 
-                if (skorObj.k > 0 || skorObj.t > 0) {
+                if (isTahfizhAktif && (skorObj.k > 0 || skorObj.t > 0)) {
                     if (isSholatAktif) {
                         skorAkhirBaru = Math.round((skorObj.k * 0.5) + (skorObj.t * 0.3) + (valS * 0.2));
                     } else {
                         skorAkhirBaru = Math.round((skorObj.k * 0.6) + (skorObj.t * 0.4));
                     }
+                } else if (!isTahfizhAktif && isSholatAktif) {
+                    skorAkhirBaru = valS; 
                 }
                 
                 return { ...siswa, totalAyat, skorAkhir: skorAkhirBaru, skorK: skorObj.k, skorT: skorObj.t, skorS: skorSholatValue };
@@ -2624,7 +2959,8 @@
             if (rekapSortMode === 'name') { rekapData = dataWithRank.sort((a, b) => a.nama.localeCompare(b.nama)); } 
             else { rekapData = dataWithRank; }
 
-            let tsvText = "Peringkat\tNama Santri\tTotal Hafalan (Ayat)\tNilai Kelancaran\tNilai Tajwid";
+            let tsvText = "Peringkat\tNama Santri";
+            if (isTahfizhAktif) tsvText += "\tTotal Hafalan (Ayat)\tNilai Kelancaran\tNilai Tajwid";
             if (isSholatAktif) tsvText += "\tDisiplin Sholat (%)";
             tsvText += "\tNilai Akhir\tPredikat\n";
             
@@ -2633,7 +2969,8 @@
                 let sK = data.skorK > 0 ? data.skorK : '-'; let sT = data.skorT > 0 ? data.skorT : '-'; let sA = data.skorAkhir > 0 ? data.skorAkhir : '-'; let sP = data.skorAkhir > 0 ? predikat : '-';
                 let sholatExport = data.skorS !== '-' ? `${data.skorS}%` : '-';
                 
-                let row = `${data.rankAsli}\t${data.nama}\t${data.totalAyat}\t${sK}\t${sT}`;
+                let row = `${data.rankAsli}\t${data.nama}`;
+                if (isTahfizhAktif) row += `\t${data.totalAyat}\t${sK}\t${sT}`;
                 if (isSholatAktif) row += `\t${sholatExport}`;
                 row += `\t${sA}\t${sP}\n`;
                 tsvText += row;

@@ -12,14 +12,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="TahfizhPro Admin">
 
-    <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;600;800&family=Montserrat:wght@400;600;700;800&family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Pustaka PDF, QR Code, Fabric JS, dan Cropper JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
@@ -267,7 +265,6 @@
 </head>
 <body>
 
-    <!-- OVERLAY MAINTENANCE MODE -->
     <div id="maintenance-overlay" class="system-update-overlay" style="z-index: 100000; background: #0F172A;">
         <i data-lucide="wrench" style="width: 64px; height: 64px; color: var(--warning); margin-bottom: 24px;"></i>
         <h2 style="font-size: 28px; margin-bottom: 12px; font-weight: 800;">Peningkatan Sistem</h2>
@@ -283,7 +280,6 @@
         <p id="system-update-msg" style="color: var(--text-light); font-size: 14px; max-width: 400px; line-height: 1.5;">Menginisialisasi fitur baru dari Pusat Master Developer. Harap tunggu sebentar...</p>
     </div>
 
-    <!-- SAFETY NET UI (LOCK SCREEN) -->
     <div id="safety-net-screen" class="lock-screen-wrapper">
         <div class="lock-card" style="border-top: 4px solid var(--danger);">
             <div class="lock-icon" style="background: linear-gradient(135deg, var(--danger) 0%, #991B1B 100%); color: white; border: none; box-shadow: 0 8px 15px -3px rgba(239, 68, 68, 0.3);">
@@ -672,7 +668,7 @@
                             <div style="width: 40px; height: 40px; border-radius: 10px; background: var(--warning-bg); color: var(--warning); display: flex; align-items: center; justify-content: center;"><i data-lucide="settings"></i></div>
                             <div>
                                 <h3 style="font-size: 15px; margin-bottom: 2px;">Konfigurasi Sistem</h3>
-                                <p class="text-xs text-muted">Pengaturan fungsionalitas aplikasi wali murid.</p>
+                                <p class="text-xs text-muted">Pengaturan fungsionalitas & aturan main yayasan.</p>
                             </div>
                         </div>
 
@@ -709,11 +705,22 @@
                                 <input type="number" id="input-nominal-tagihan" class="form-control" placeholder="5000" autocomplete="off" min="0">
                             </div>
                             <div class="input-group" style="margin-bottom: 0;">
-                                <label>Denda Telat (Rp/Bln)</label>
+                                <label>Denda Telat (Rp)</label>
                                 <input type="number" id="input-nominal-denda" class="form-control" placeholder="2000" autocomplete="off" min="0">
                             </div>
                         </div>
-                        <button class="btn btn-outline" style="width: 100%; color: var(--warning); border-color: #FDE68A;" onclick="window.simpanKonfigurasiKeuangan()">Simpan Modifikasi Tarif</button>
+
+                        <!-- MODUL WAKTU PRESENSI -->
+                        <div class="input-group" style="margin-bottom: 16px; padding-top: 12px; border-top: 1px dashed var(--border-color);">
+                            <label style="display: flex; justify-content: space-between; align-items: center;">
+                                Jam Masuk (Batas Presensi)
+                                <span class="badge badge-success" style="font-size: 10px; padding: 4px 8px; border: none; background: var(--success); color: white; display: flex; align-items: center; gap: 4px;"><i data-lucide="clock" style="width: 12px; height: 12px;"></i> Auto-Status</span>
+                            </label>
+                            <input type="time" id="input-batas-presensi" class="form-control" value="07:00" autocomplete="off" style="font-size: 16px; font-weight: 700; font-family: 'Fira Code', monospace; text-align: center;">
+                            <p class="text-xs text-muted" style="margin-top: 8px;">Batas waktu santri dinyatakan Tepat Waktu. Lewat dari jam ini otomatis dihitung Terlambat oleh scanner guru.</p>
+                        </div>
+
+                        <button class="btn btn-outline" style="width: 100%; color: var(--warning); border-color: #FDE68A;" onclick="window.simpanKonfigurasiSistem()">Simpan Pengaturan</button>
                     </div>
 
                     <div class="ops-card" style="padding: 24px;">
@@ -755,7 +762,6 @@
         </main>
     </div>
 
-    <!-- MODALS -->
     <div id="modal-class" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -804,7 +810,6 @@
         </div>
     </div>
 
-    <!-- MODAL EDIT SANTRI DENGAN FITUR FOTO -->
     <div id="modal-student" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -988,7 +993,8 @@
         let globalSettings = { 
             periodeTagihan: "Bulan Ini", nominalTagihan: 5000, nominalDenda: 2000, 
             isSholatModuleActive: true, isAbsensiQrActive: false, isCetakKartuActive: false, 
-            adminPin: "admin123", idCardFrontJson: null, idCardBackJson: null 
+            adminPin: "admin123", idCardFrontJson: null, idCardBackJson: null,
+            batasJamMasuk: "07:00"
         };
         
         let confirmActionCallback = null;
@@ -1432,13 +1438,16 @@
             } catch (error) { window.showToast("Gagal menyimpan pengaturan fitur.", true); element.checked = !isChecked; }
         };
 
-        window.simpanKonfigurasiKeuangan = async function() {
+        window.simpanKonfigurasiSistem = async function() {
             const inputNominalEl = document.getElementById('input-nominal-tagihan');
             const inputDendaEl = document.getElementById('input-nominal-denda');
-            if(!inputNominalEl || !inputDendaEl) return;
+            const inputBatasPresensiEl = document.getElementById('input-batas-presensi');
+            
+            if(!inputNominalEl || !inputDendaEl || !inputBatasPresensiEl) return;
 
             const nominal = parseInt(inputNominalEl.value) || 0;
             const denda = parseInt(inputDendaEl.value) || 0;
+            const batasMasuk = inputBatasPresensiEl.value || "07:00";
 
             if (nominal < 0 || denda < 0) return window.showToast("Nominal tarif/denda tidak boleh minus!", true);
 
@@ -1446,7 +1455,7 @@
             const isPriceChanged = nominal !== oldNominal;
 
             try {
-                const payload = { nominalDenda: denda };
+                const payload = { nominalDenda: denda, batasJamMasuk: batasMasuk };
                 if (!isPriceChanged) { payload.nominalTagihan = nominal; }
 
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), payload, { merge: true });
@@ -1463,7 +1472,7 @@
                         requestedAt: Date.now()
                     });
                     
-                    window.showToast("Perubahan tarif menjadi Rp " + nominal.toLocaleString('id-ID') + " menunggu persetujuan Pusat.");
+                    window.showToast("Perubahan tarif menjadi Rp " + nominal.toLocaleString('id-ID') + " menunggu persetujuan Pusat. Pengaturan lain tersimpan.");
                     inputNominalEl.value = oldNominal;
                 } else {
                     window.showToast("Konfigurasi sistem berhasil diperbarui.");
@@ -1481,7 +1490,8 @@
             const printArea = document.getElementById('print-area');
             const qrImg = document.getElementById('print-qr-img');
             
-            let targetUrl = window.location.origin + '/portal-wali?sekolah=' + appId; 
+            // Perbaikan Privacy: Menghilangkan query parameter 'sekolah' atau 'appId' agar tidak diekspos
+            let targetUrl = window.location.origin + '/portal-wali'; 
             
             if(qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(targetUrl)}&color=0F172A&bgcolor=FFFFFF`;
             if(dashView) dashView.style.display = 'none'; 
@@ -1614,6 +1624,7 @@
                     const inputPeriode = document.getElementById('input-periode-tagihan');
                     const inputNominal = document.getElementById('input-nominal-tagihan');
                     const inputDenda = document.getElementById('input-nominal-denda');
+                    const inputBatasPresensi = document.getElementById('input-batas-presensi');
 
                     if (inputPeriode && data.periodeTagihan !== undefined) {
                         inputPeriode.value = data.periodeTagihan;
@@ -1622,6 +1633,7 @@
                     }
                     if (inputNominal && data.nominalTagihan !== undefined) { inputNominal.value = data.nominalTagihan; }
                     if (inputDenda && data.nominalDenda !== undefined) { inputDenda.value = data.nominalDenda; }
+                    if (inputBatasPresensi && data.batasJamMasuk !== undefined) { inputBatasPresensi.value = data.batasJamMasuk; }
 
                     const isCetakKartuActive = data.isCetakKartuActive === true;
                     const btnMassal = document.getElementById('btn-cetak-massal-id');
@@ -2516,7 +2528,14 @@
                                 replacePromises.push(new Promise((res) => {
                                     try {
                                         const qrCanvas = document.createElement('canvas');
-                                        new QRious({ element: qrCanvas, value: siswaObj.kodeSiswa || '000', size: 300, level: 'H' });
+                                        const baseUrl = window.location.origin;
+                                        const validasiId = encodeURIComponent(siswaObj.kodeSiswa || '000');
+                                        
+                                        // Perbaikan Privasi Data: 
+                                        // Menghapus parameter '&sekolah=appId' agar AppID Tenant bersifat rahasia dan tidak bocor di QR Scanner publik.
+                                        const verifyUrl = `${baseUrl}/VerifikasiSantri.html?id=${validasiId}`;
+                                        
+                                        new QRious({ element: qrCanvas, value: verifyUrl, size: 300, level: 'H' });
                                         
                                         fabric.Image.fromURL(qrCanvas.toDataURL(), (img) => {
                                             try {
