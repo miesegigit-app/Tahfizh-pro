@@ -1646,7 +1646,7 @@
                     labels: months,
                     datasets: [
                         { label: 'Hak Dev (Pendapatan)', data: dataRevenue, borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 3, pointBackgroundColor: '#3B82F6', tension: 0.4, fill: true },
-                        { label: 'Beban Operasional', data: dataCost, borderColor: '#EF4444', borderDash: [5, 5], borderWidth: 2, pointBackgroundColor: '#EF4444', tension: 0.4 },
+                        { label: 'Beban Operasional', data: dataCost, borderDash: [5, 5], borderColor: '#EF4444', borderWidth: 2, pointBackgroundColor: '#EF4444', tension: 0.4 },
                         { label: 'Net Profit', data: dataProfit, borderColor: '#10B981', type: 'bar', backgroundColor: 'rgba(16, 185, 129, 0.2)', borderWidth: 1, borderRadius: 4 }
                     ]
                 },
@@ -2009,6 +2009,36 @@
             return data.secure_url;
         }
 
+        window.openTenantTwibbonConfig = async function(tenantId, clientName) {
+            document.getElementById('twibbon-tenant-id').value = tenantId;
+            document.getElementById('twibbon-tenant-name').textContent = clientName;
+            document.getElementById('input-twibbon-file').value = '';
+            document.getElementById('twibbon-upload-text').textContent = "Klik untuk Pilih File Gambar";
+            
+            const btnSave = document.getElementById('btn-save-twibbon');
+            btnSave.disabled = true;
+            btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width:16px; height:16px;"></i> Memuat...';
+            if(window.lucide) window.lucide.createIcons();
+
+            window.openModal('modal-tenant-twibbon');
+
+            try {
+                const docSnap = await getDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global'));
+                if (docSnap.exists() && docSnap.data().twibbonFrameUrl) {
+                    document.getElementById('input-twibbon-url').value = docSnap.data().twibbonFrameUrl;
+                } else {
+                    document.getElementById('input-twibbon-url').value = '';
+                }
+                window.updateTwibbonPreview();
+            } catch(e) {
+                window.showToast("Gagal memuat data twibbon klien.", true);
+            } finally {
+                btnSave.disabled = false;
+                btnSave.innerHTML = '<i data-lucide="save" style="width:16px;"></i> Terapkan ke Yayasan';
+                if(window.lucide) window.lucide.createIcons();
+            }
+        };
+
         window.handleTwibbonUpload = async function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -2054,7 +2084,7 @@
             const url = document.getElementById('input-twibbon-url').value.trim();
             
             const btnSave = document.getElementById('btn-save-twibbon');
-            btnSave.disabled = true; btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Menyimpan...';
+            btnSave.disabled = true; btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width:16px; height:16px;"></i> Menyimpan...';
             if(window.lucide) window.lucide.createIcons();
             
             try {

@@ -1681,11 +1681,6 @@
             window.unsubscribeSaasMaster = onSnapshot(doc(db, 'saas_master', 'global_config'), (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    
-                    if(data.developerShare !== undefined) {
-                        globalSaaSSettings.developerShare = data.developerShare;
-                        updateStats();
-                    }
 
                     const maintenanceOverlay = document.getElementById('maintenance-overlay');
                     if (data.maintenanceMode === true) {
@@ -1712,6 +1707,9 @@
                 if (docSnap.exists()) {
                     totalDanaDisetorKePusat = docSnap.data().totalDisetor || 0;
                     window.tenantPhone = docSnap.data().phone || '';
+                    if (docSnap.data().developerShare !== undefined) {
+                        globalSaaSSettings.developerShare = docSnap.data().developerShare;
+                    }
                     updateStats();
                 }
             });
