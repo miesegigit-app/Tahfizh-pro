@@ -271,9 +271,9 @@
 
     <!-- Firebase SDK & Logika Aplikasi -->
     <script type="module">
-        // Import konfigurasi Firebase
-        import { db, appId } from './firebase-config.js';
-        import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Import koneksi Database saja (Tanpa memaksa App ID)
+        import { db } from './firebase-config.js';
+        import { collectionGroup, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // DOM Elements
         const stateLoading = document.getElementById('state-loading');
@@ -322,45 +322,54 @@
             const urlParams = new URLSearchParams(window.location.search);
             const santriId = urlParams.get('id');
 
-            // Jika QR Code di-scan tapi parameter ?id= hilang
+            // Jika QR Code di-scan tapi parameter ?id= hilang / orang mengakses secara manual tanpa ID
             if (!santriId) {
                 return setTimeout(() => {
                     triggerError(
                         "PARAMETER_ID_HILANG", 
-                        "Sistem tidak mendeteksi ID pada tautan. Pastikan Anda memindai QR Code resmi menggunakan pemindai QR atau kamera standar."
+                        "Sistem tidak mendeteksi Kode ID pada tautan URL. Pastikan Anda memindai QR Code resmi menggunakan aplikasi pemindai QR atau kamera ponsel."
                     );
                 }, 1000);
             }
 
             try {
-                // 2. Cari Data Santri di Database secara spesifik ke tenant (appId)
-                const studentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'students');
-                const studentsSnapshot = await getDocs(studentsRef);
+                // 2. PENCARIAN DATABASE GLOBAL (CROSS-TENANT)
+                // Sistem secara dinamis mencari ke SELURUH institusi yang terdaftar di database 
+                // untuk menemukan di mana siswa ini berada (tanpa butuh appId dari user).
+                const studentsGroupRef = collectionGroup(db, 'students');
+                const studentsSnapshot = await getDocs(studentsGroupRef);
                 
                 let validStudent = null;
+                let tenantIdFound = null; // Menyimpan ID Institusi yang berhasil direkayasa balik
 
-                // Memfilter di sisi klien untuk mencocokkan kodeSiswa atau Document ID
-                studentsSnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if (data.kodeSiswa === santriId || doc.id === santriId) {
-                        validStudent = { id: doc.id, ...data };
+                studentsSnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    if (data.kodeSiswa === santriId || docSnap.id === santriId) {
+                        validStudent = { id: docSnap.id, ...data };
+                        
+                        // Ekstrak ID Institusi (Tenant ID) dari struktur folder database-nya
+                        // Contoh path: artifacts/{sekolah_alam}/public/data/students/{id}
+                        const pathParts = docSnap.ref.path.split('/');
+                        if (pathParts.length >= 2 && pathParts[0] === 'artifacts') {
+                            tenantIdFound = pathParts[1];
+                        }
                     }
                 });
 
-                // Jika santri tidak ditemukan
+                // Jika santri sama sekali tidak ditemukan di institusi manapun
                 if (!validStudent) {
                     return setTimeout(() => {
                         triggerError(
                             "SANTRI_TIDAK_DITEMUKAN", 
-                            "Identitas dengan kode tersebut tidak ditemukan. Kemungkinan ID Card tidak resmi atau status santri telah dicabut oleh Administrator."
+                            "Identitas dengan kode tersebut tidak ditemukan di seluruh jaringan kami. Kemungkinan ID Card palsu atau status santri telah dicabut."
                         );
                     }, 1200);
                 }
 
-                // 3. Cari Nama Kelas
+                // 3. Cari Nama Kelas secara cerdas dengan menggunakan tenantId yang baru saja ditemukan
                 let namaKelas = "Tanpa Kelas";
-                if (validStudent.kelas_id) {
-                    const classDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', validStudent.kelas_id));
+                if (validStudent.kelas_id && tenantIdFound) {
+                    const classDoc = await getDoc(doc(db, 'artifacts', tenantIdFound, 'public', 'data', 'classes', validStudent.kelas_id));
                     if (classDoc.exists()) {
                         namaKelas = classDoc.data().nama_kelas || classDoc.data().name || "Tanpa Kelas";
                     }
@@ -371,9 +380,9 @@
                 document.getElementById('val-id').textContent = validStudent.kodeSiswa || "-";
                 document.getElementById('val-kelas').textContent = namaKelas;
                 
-                // Gunakan nama Institusi (mengambil dari string appId agar rapi)
-                const formatInstitusi = appId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                document.getElementById('val-institusi').textContent = formatInstitusi || "Sistem Internal Institusi";
+                // Rapikan nama Tenant/Institusi (Contoh: "sekolah_alam" menjadi "Sekolah Alam")
+                const formatInstitusi = tenantIdFound ? tenantIdFound.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : "Institusi Terdaftar";
+                document.getElementById('val-institusi').textContent = formatInstitusi;
 
                 // Atur Foto Profil & Hilangkan fallback
                 const imgEl = document.getElementById('val-foto');
@@ -389,7 +398,7 @@
                     fallbackEl.classList.remove('hidden');
                 }
 
-                // Tampilkan sukses dengan delay minimum agar animasi skeleton sempat terlihat (memberi kesan sistem bekerja secara mendalam)
+                // Tampilkan sukses dengan delay minimum agar animasi skeleton (Kesan Pro) sempat terlihat
                 setTimeout(() => {
                     showUI('state-success');
                 }, 1500); 
