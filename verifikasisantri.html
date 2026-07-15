@@ -125,8 +125,8 @@
                 
                 <div class="w-full h-16 rounded-xl skeleton"></div>
             </div>
-            <p class="text-sm font-semibold text-slate-500 animate-pulse flex items-center gap-2">
-                <i data-lucide="radio" class="w-4 h-4"></i> Memvalidasi Enkripsi QR...
+            <p id="loading-text" class="text-sm font-semibold text-slate-500 animate-pulse flex items-center gap-2">
+                <i data-lucide="radio" class="w-4 h-4"></i> Menyambungkan ke Server Aman...
             </p>
         </div>
 
@@ -271,9 +271,9 @@
 
     <!-- Firebase SDK & Logika Aplikasi -->
     <script type="module">
-        // PERHATIAN: KITA MENGIMPOR LANGSUNG FIREBASE APP & FIRESTORE
-        // Kita TIDAK mengimpor appId dari firebase-config.js untuk menghindari pemblokiran UI (Portal Terkunci)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // TAMBAHAN: Kita impor modul otentikasi Firebase agar siapapun bisa akses data publik dengan aman
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collectionGroup, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Konfigurasi Database Firebase Murni
@@ -287,12 +287,14 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app); // Inisialisasi Otentikasi
         const db = getFirestore(app);
 
         // DOM Elements
         const stateLoading = document.getElementById('state-loading');
         const stateSuccess = document.getElementById('state-success');
         const stateError = document.getElementById('state-error');
+        const loadingText = document.getElementById('loading-text');
 
         // Waktu Realtime
         function startRealtimeClock() {
@@ -347,6 +349,15 @@
             }
 
             try {
+                // LANGKAH KRUSIAL: Login sebagai Guest (Anonim) agar Firebase tidak memblokir koneksi
+                loadingText.innerHTML = '<i data-lucide="shield" class="w-4 h-4"></i> Mengamankan Sesi Akses...';
+                if(window.lucide) window.lucide.createIcons();
+                
+                await signInAnonymously(auth);
+
+                loadingText.innerHTML = '<i data-lucide="radio" class="w-4 h-4"></i> Memvalidasi Enkripsi QR...';
+                if(window.lucide) window.lucide.createIcons();
+
                 // 2. PENCARIAN DATABASE GLOBAL (CROSS-TENANT)
                 // Sistem mencari ke SELURUH institusi yang terdaftar di database 
                 // untuk menemukan di mana siswa ini berada. (Sangat Cerdas & Independen)
@@ -419,10 +430,19 @@
 
             } catch (error) {
                 console.error("Verification Error:", error);
-                triggerError(
-                    "KONEKSI_DATABASE_GAGAL", 
-                    "Terjadi kesalahan teknis saat menghubungi server keamanan kami. Silakan periksa koneksi internet Anda dan muat ulang halaman."
-                );
+                
+                // Cek jika errornya karena masalah izin (Permission Denied)
+                if (error.code === 'permission-denied') {
+                    triggerError(
+                        "AKSES_DITOLAK", 
+                        "Sistem Pangkalan Data mengamankan informasi ini. Pastikan pengaturan Rules Firebase Anda mengizinkan 'read' untuk publik."
+                    );
+                } else {
+                    triggerError(
+                        "KONEKSI_DATABASE_GAGAL", 
+                        "Terjadi kesalahan teknis saat menghubungi server keamanan kami. Silakan periksa koneksi internet Anda dan muat ulang halaman."
+                    );
+                }
             }
         }
 
