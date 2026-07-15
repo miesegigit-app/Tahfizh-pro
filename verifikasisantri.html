@@ -106,7 +106,7 @@
     <!-- Main Container -->
     <main class="w-full max-w-md px-4 py-8 flex-1 flex flex-col items-center z-10">
         
-        <!-- STATE 1: LOADING SKELETON (Lebih elegan) -->
+        <!-- STATE 1: LOADING SKELETON -->
         <div id="state-loading" class="w-full flex flex-col items-center justify-center">
             <div class="glass-card w-full rounded-3xl overflow-hidden border border-slate-200 p-8 flex flex-col items-center w-full mb-6 relative">
                 <!-- Aksen shimmer atas -->
@@ -271,9 +271,23 @@
 
     <!-- Firebase SDK & Logika Aplikasi -->
     <script type="module">
-        // Import koneksi Database saja (Tanpa memaksa App ID)
-        import { db } from './firebase-config.js';
-        import { collectionGroup, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // PERHATIAN: KITA MENGIMPOR LANGSUNG FIREBASE APP & FIRESTORE
+        // Kita TIDAK mengimpor appId dari firebase-config.js untuk menghindari pemblokiran UI (Portal Terkunci)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collectionGroup, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Konfigurasi Database Firebase Murni
+        const firebaseConfig = {
+            apiKey: "AIzaSyC4KBqM6yMA0Do9Zx64zYYrNMMYh0VA7Hc",
+            authDomain: "muthobaah.firebaseapp.com",
+            projectId: "muthobaah",
+            storageBucket: "muthobaah.firebasestorage.app",
+            messagingSenderId: "502582418252",
+            appId: "1:502582418252:web:088500cd149989fd69cde9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
         // DOM Elements
         const stateLoading = document.getElementById('state-loading');
@@ -334,8 +348,8 @@
 
             try {
                 // 2. PENCARIAN DATABASE GLOBAL (CROSS-TENANT)
-                // Sistem secara dinamis mencari ke SELURUH institusi yang terdaftar di database 
-                // untuk menemukan di mana siswa ini berada (tanpa butuh appId dari user).
+                // Sistem mencari ke SELURUH institusi yang terdaftar di database 
+                // untuk menemukan di mana siswa ini berada. (Sangat Cerdas & Independen)
                 const studentsGroupRef = collectionGroup(db, 'students');
                 const studentsSnapshot = await getDocs(studentsGroupRef);
                 
