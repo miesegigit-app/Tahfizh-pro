@@ -2533,7 +2533,7 @@
                                         
                                         // Perbaikan Privasi Data: 
                                         // Menghapus parameter '&sekolah=appId' agar AppID Tenant bersifat rahasia dan tidak bocor di QR Scanner publik.
-                                        const verifyUrl = `${baseUrl}/VerifikasiSantri?id=${validasiId}`;
+                                        const verifyUrl = `${baseUrl}/verifikasisantri?id=${validasiId}`;
                                         
                                         new QRious({ element: qrCanvas, value: verifyUrl, size: 300, level: 'H' });
                                         

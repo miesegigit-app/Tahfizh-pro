@@ -8,6 +8,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
 // 1. KONFIGURASI FIREBASE ANDA
+// TODO: Silakan ganti dengan kunci dari Firebase Console milik Anda
 const firebaseConfig = {
   apiKey: "AIzaSyC4KBqM6yMA0Do9Zx64zYYrNMMYh0VA7Hc",
   authDomain: "muthobaah.firebaseapp.com",
@@ -47,29 +48,14 @@ if (paramSekolah) {
     appId = localStorage.getItem('tahfizhpro_tenant_id');
 }
 
-// ==========================================
-// --- TAMBAHAN BARU: PENGECUALIAN HALAMAN PUBLIK (WHITELIST) ---
-// ==========================================
-// Deteksi apakah pengguna sedang berada di halaman yang sifatnya publik 
-// (seperti Verifikasi Santri). toLowerCase() digunakan agar kebal dari salah ketik URL.
-const currentPath = window.location.pathname.toLowerCase();
-const isPublicVerificationPage = currentPath.includes('verifikasisantri');
-
 // C. Sistem Pendeteksi Kehilangan Jejak (Untuk memicu UI "Safety Net" di HTML)
-// KITA UBAH DISINI: Halaman tidak akan dikunci jika ini adalah halaman publik!
-if (!appId && !isPublicVerificationPage) {
+if (!appId) {
     // Peringatan global bahwa pengguna belum punya kamar
     window.SAAS_TENANT_MISSING = true; 
     console.warn("[SaaS Router] Tenant ID tidak ditemukan. Memicu layar Safety Net...");
 } else {
-    // Aman! Buka gembok halaman
     window.SAAS_TENANT_MISSING = false;
-    
-    if (isPublicVerificationPage && !appId) {
-        console.log("[SaaS Router] Mode Publik Aktif: Bypass Tenant ID diizinkan untuk verifikasi.");
-    } else {
-        console.log(`[SaaS Router] Berhasil masuk ke Ruang Lingkup Klien: ${appId}`);
-    }
+    console.log(`[SaaS Router] Berhasil masuk ke Ruang Lingkup Klien: ${appId}`);
 }
 
 // 4. EKSPOR VARIABEL UNTUK DIGUNAKAN SELURUH APLIKASI
