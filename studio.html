@@ -188,7 +188,7 @@
             <p style="font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Riwayat Proyek Tersimpan (Lokal)</p>
             
             <div class="project-list" id="project-list-container">
-                <!-- List will be injected here -->
+                <!-- List will be injected here via Javascript -->
             </div>
         </div>
     </div>
@@ -737,25 +737,60 @@
                 }
             },
 
+            // PERBAIKAN: AUTO-COMPRESS GAMBAR JUMBO MENGGUNAKAN HTML5 CANVAS API
             handleUpload(e, type) {
-                const file = e.target.files[0]; if(!file) return;
+                const file = e.target.files[0]; 
+                if(!file) return;
+                
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    const base64Data = event.target.result;
-                    fabric.Image.fromURL(base64Data, (img) => {
-                        if(type === 'background') {
-                            const scale = Math.max(540 / img.width, 860 / img.height);
-                            img.set({ originX: 'center', originY: 'center', left: 270, top: 430, scaleX: scale, scaleY: scale, isAppBackground: true });
-                            this.canvas.add(img); img.sendToBack(); this.canvas.setActiveObject(img);
+                    const img = new Image();
+                    img.onload = () => {
+                        // Tentukan dimensi maksimal gambar yang diizinkan agar file JSON tetap kecil
+                        const MAX_WIDTH = type === 'background' ? 1080 : 600;
+                        const MAX_HEIGHT = type === 'background' ? 1080 : 600;
+                        
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Kalkulasi rasio asli
+                        if (width > height) {
+                            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
                         } else {
-                            img.scaleToWidth(150); img.set({ left: 270, top: 100, originX: 'center', originY: 'center' });
-                            this.canvas.add(img); this.canvas.setActiveObject(img);
+                            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
                         }
-                        this.saveHistoryAndState();
-                        showToast("Gambar masuk ke memori lokal.");
-                    });
+
+                        // Buat elemen canvas sementara (off-screen)
+                        const tempCanvas = document.createElement('canvas');
+                        tempCanvas.width = width;
+                        tempCanvas.height = height;
+                        const ctx = tempCanvas.getContext('2d');
+                        
+                        // Gambar ulang foto asli ke dalam dimensi baru (downscaling)
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Kompresi kualitas gambar (Jika JPEG berikan kualitas 85%, jika PNG otomatis lossless)
+                        const formatMime = file.type === 'image/jpeg' ? 'image/jpeg' : 'image/png';
+                        const compressedBase64 = tempCanvas.toDataURL(formatMime, 0.85);
+
+                        // Kirim data Base64 hasil kompresi ke Fabric.JS
+                        fabric.Image.fromURL(compressedBase64, (fabricImg) => {
+                            if(type === 'background') {
+                                const scale = Math.max(540 / fabricImg.width, 860 / fabricImg.height);
+                                fabricImg.set({ originX: 'center', originY: 'center', left: 270, top: 430, scaleX: scale, scaleY: scale, isAppBackground: true });
+                                this.canvas.add(fabricImg); fabricImg.sendToBack(); this.canvas.setActiveObject(fabricImg);
+                            } else {
+                                fabricImg.scaleToWidth(150); fabricImg.set({ left: 270, top: 100, originX: 'center', originY: 'center' });
+                                this.canvas.add(fabricImg); this.canvas.setActiveObject(fabricImg);
+                            }
+                            this.saveHistoryAndState();
+                            showToast("Gambar berhasil di-optimasi & masuk ke kanvas.");
+                        });
+                    };
+                    img.src = event.target.result;
                 };
-                reader.readAsDataURL(file); e.target.value = '';
+                reader.readAsDataURL(file); 
+                e.target.value = '';
             },
 
             applyMagicEraser() {
@@ -856,7 +891,41 @@
             sendBackward() { if(this.activeObject) { this.canvas.sendBackwards(this.activeObject); this.canvas.renderAll(); this.saveHistoryAndState(); } },
             deleteSelected() { if(this.activeObject) { this.canvas.remove(this.activeObject); this.hideProperties(); this.saveHistoryAndState(); } },
 
-            openProjectsModal() { this.renderProjectList(); document.getElementById('modal-projects').classList.add('active'); },
+            // PERBAIKAN: INJEKSI FUNGSI RENDER PROJECT LIST YANG HILANG
+            renderProjectList() {
+                const container = document.getElementById('project-list-container');
+                const projects = this.getProjects();
+                
+                if(projects.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 10px;">Belum ada proyek tersimpan.</p>';
+                    return;
+                }
+                
+                container.innerHTML = projects.map(p => `
+                    <div class="project-item">
+                        <div>
+                            <div style="font-weight: 700; font-size: 14px; color: white;">${p.name}</div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">${p.date}</div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-ghost" onclick="StudioApp.loadProject('${p.id}')" style="color: var(--primary);" title="Muat Proyek">
+                                <i data-lucide="folder-output" style="width: 18px;"></i>
+                            </button>
+                            <button class="btn-ghost" onclick="StudioApp.deleteProject('${p.id}')" style="color: var(--danger);" title="Hapus Proyek">
+                                <i data-lucide="trash-2" style="width: 18px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Render ulang icon SVG setelah disuntik ke DOM
+                if(window.lucide) window.lucide.createIcons();
+            },
+
+            openProjectsModal() { 
+                this.renderProjectList(); 
+                document.getElementById('modal-projects').classList.add('active'); 
+            },
             closeProjectsModal() { document.getElementById('modal-projects').classList.remove('active'); },
             getProjects() { return JSON.parse(localStorage.getItem('tahfizh_projects') || '[]'); },
             
