@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- CSP Sesuai Standar Enterprise -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; script-src 'self' https: 'unsafe-inline' 'unsafe-eval' type: module; style-src 'self' https: 'unsafe-inline'; font-src 'self' https: data:; connect-src 'self' https: wss:;">
+    
+    <title>TahfizhPro - Portal Guru Absensi</title>
+    <meta name="description" content="Portal khusus pengajar untuk manajemen presensi cerdas real-time.">
+    <meta name="theme-color" content="#f8fafc">
+
+    <link rel="icon" href="./logo.png" type="image/png">
+
+    <!-- Fonts Original -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Fira+Code:wght@600&display=swap" rel="stylesheet">
+    
+    <!-- Icons & QR Engine -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e',
+                        },
+                        status: {
+                            hadir: '#10B981', izin: '#3B82F6', sakit: '#F59E0B', alfa: '#EF4444'
+                        }
+                    },
+                    boxShadow: {
+                        'glass': '0 4px 30px rgba(0, 0, 0, 0.05)',
+                        'premium': '0 10px 25px -5px rgba(2, 132, 199, 0.15)',
+                        'card': '0 2px 10px -2px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Time / Calendar Custom Picker Styles */
+        .custom-calendar {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        /* Custom Dropdown Animation */
+        .dropdown-content {
+            transform-origin: top;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
+        }
+
+        /* Animation Keyframes Scanner */
+        @keyframes scanLaser {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        .laser-line {
+            animation: scanLaser 2s infinite ease-in-out;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3; border-top: 3px solid #0284c7;
+            border-radius: 50%; width: 24px; height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Custom Transition */
+        .view-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Bottom padding for safe area on mobile */
+        .pb-safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+        /* Toast Animation */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px) translateX(-50%); }
+            to { opacity: 1; transform: translateY(0) translateX(-50%); }
+        }
+
+        /* OVERRIDE CSS QR ENGINE */
+        #scanner-preview video {
+            object-fit: cover !important;
+            border-radius: 1rem !important; /* Menyamakan dengan border luar container */
+        }
+        
+        /* Menyembunyikan region transparan bawaan HTML5-QRCode */
+        #qr-shaded-region {
+            display: none !important;
+        }
+        
+        /* Menyembunyikan div pesan status bawaan html5qrcode (contoh: "QR Code detected") */
+        #scanner-preview__scan_region > div {
+            display: none !important; 
+        }
+
+    </style>
+</head>
+<body class="text-slate-800 antialiased h-screen flex flex-col overflow-hidden relative">
+
+    <!-- Global Toast Container -->
+    <div id="toast-container" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex flex-col gap-2 w-max max-w-[90vw]"></div>
+
+    <!-- OVERLAY SAFETY NET (Jika Tenant Missing) -->
+    <!-- PERBAIKAN: Menambahkan 'flex' agar tidak merapat ke kiri -->
+    <div id="safety-net-screen" class="fixed inset-0 bg-gradient-to-br from-slate-50 to-slate-200 z-[99999] hidden flex flex-col items-center justify-center p-6 text-center">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-rose-100 border-t-4 border-t-rose-500 relative overflow-hidden">
+            <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-rose-100 shadow-inner">
+                <i data-lucide="shield-alert" class="w-10 h-10 text-rose-500"></i>
+            </div>
+            <h2 class="text-xl font-heading font-black text-slate-900 mb-2">Akses Portal Terkunci</h2>
+            <p class="text-sm text-slate-600 mb-6 leading-relaxed">Sistem tidak dapat mengidentifikasi institusi Anda. Pastikan Anda mengakses URL dengan parameter App ID yang diberikan oleh Yayasan.</p>
+            <div class="bg-slate-50 p-4 rounded-xl border border-dashed border-slate-200 text-left">
+                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contoh Format URL:</p>
+                <code class="text-xs font-mono text-brand-600 font-bold bg-brand-50 px-2 py-1 rounded">domain.com/guru?sekolah=id_sekolah</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay Loading Global -->
+    <!-- PERBAIKAN: Menambahkan 'flex' agar popup presisi di tengah layar -->
+    <div id="global-loader" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden flex flex-col items-center justify-center transition-opacity duration-300">
+        <div class="bg-white p-8 rounded-2xl flex flex-col items-center text-center shadow-2xl max-w-xs">
+            <div class="loader mb-4 w-10 h-10 border-4 border-slate-200"></div>
+            <h2 class="text-lg font-heading font-bold text-slate-800">Menghubungkan Portal...</h2>
+            <p class="text-xs text-slate-500 mt-1">Mengunduh data absensi yayasan terbaru</p>
+        </div>
+    </div>
+
+    <!-- VIEW: LOGIN -->
+    <section id="view-login" class="view-transition fixed inset-0 z-50 bg-slate-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md p-8 rounded-3xl border border-slate-100 shadow-premium text-center space-y-6">
+            <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl mx-auto flex items-center justify-center shadow-inner">
+                <i data-lucide="briefcase" class="w-8 h-8"></i>
+            </div>
+            <div class="space-y-1">
+                <h1 class="text-2xl font-heading font-bold text-slate-900">Portal Pengajar</h1>
+                <p class="text-sm text-slate-500">Akses Masuk Manajemen Absensi Kelas</p>
+            </div>
+
+            <div class="space-y-4 text-left">
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Identitas Pengajar</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                        <input type="text" id="login-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all font-medium" placeholder="Ketik nama terdaftar..." autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">PIN Akses (6 Angka)</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                        <input type="password" id="login-pin" maxlength="6" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-12 py-3 text-sm font-mono font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all" placeholder="••••••">
+                        <button onclick="togglePinVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                            <i data-lucide="eye" id="pin-eye-icon" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="loginGuru()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2 active:scale-[0.98]">
+                Masuk Dasbor <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- VIEW: MAIN DASHBOARD -->
+    <div id="view-dashboard" class="hidden h-full flex flex-col relative">
+        <!-- Top App Bar -->
+        <header class="h-16 glass-panel flex items-center justify-between px-4 sm:px-6 z-20 flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/20">G</div>
+                <div>
+                    <h2 id="display-teacher-name" class="font-heading font-bold text-sm text-slate-800 leading-tight">Nama Pengajar</h2>
+                    <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider flex items-center gap-1 mt-0.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Sesi Aktif
+                    </p>
+                </div>
+            </div>
+            <button onclick="logoutGuru()" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors flex items-center gap-2 text-xs font-bold">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
+            </button>
+        </header>
+
+        <!-- Dynamic Context Area (Sticky Header) -->
+        <div class="bg-white border-b border-slate-200 p-4 space-y-3 z-10 shadow-sm relative">
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Custom Date Input Trigger -->
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tanggal Absen</label>
+                    <div onclick="openCustomDatePicker('attendance')" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-2.5 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
+                        <span id="display-selected-date" class="text-sm font-semibold text-slate-700 truncate">Hari Ini</span>
+                        <i data-lucide="calendar" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
+                    </div>
+                </div>
+                <!-- Custom Class Selector Trigger -->
+                <div class="space-y-1 relative">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kelas Binaan</label>
+                    <div id="class-select-trigger" onclick="toggleClassSelector()" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-2.5 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
+                        <span id="display-selected-class" class="text-sm font-semibold text-slate-700 truncate">Pilih Kelas...</span>
+                        <i data-lucide="chevron-down" id="class-chevron" class="w-4 h-4 text-slate-400 transition-transform flex-shrink-0"></i>
+                    </div>
+                    
+                    <!-- Dropdown List Custom (Enterprise UI) -->
+                    <div id="class-select-dropdown" class="dropdown-content absolute top-[calc(100%+6px)] left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-[100] max-h-56 overflow-y-auto scale-95 opacity-0 pointer-events-none">
+                        <!-- Items injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Container (Scrollable) -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-5 pb-24 bg-slate-50/50" id="main-scroll-content">
+            
+            <!-- TAB-VIEW 1: INPUT PRESENSI -->
+            <div id="tab-presensi-content" class="space-y-4 view-transition">
+                <!-- Action Tools -->
+                <div class="flex items-center gap-3">
+                    <button onclick="openQrScanner()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 text-sm transition-transform active:scale-[0.98]">
+                        <i data-lucide="qr-code" class="w-5 h-5"></i> Scanner Cerdas (Kamera)
+                    </button>
+                </div>
+
+                <!-- Live Quick Stats Mini Panel -->
+                <div class="grid grid-cols-4 gap-2 bg-slate-100/80 p-2 rounded-2xl border border-slate-200">
+                    <div class="bg-white rounded-xl p-2.5 text-center shadow-sm">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Hadir</p>
+                        <h4 id="quick-count-H" class="text-lg font-heading font-extrabold text-emerald-600 mt-0.5">0</h4>
+                    </div>
+                    <div class="bg-white rounded-xl p-2.5 text-center shadow-sm">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Izin</p>
+                        <h4 id="quick-count-I" class="text-lg font-heading font-extrabold text-blue-600 mt-0.5">0</h4>
+                    </div>
+                    <div class="bg-white rounded-xl p-2.5 text-center shadow-sm">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Sakit</p>
+                        <h4 id="quick-count-S" class="text-lg font-heading font-extrabold text-amber-600 mt-0.5">0</h4>
+                    </div>
+                    <div class="bg-white rounded-xl p-2.5 text-center shadow-sm">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Alfa</p>
+                        <h4 id="quick-count-A" class="text-lg font-heading font-extrabold text-rose-600 mt-0.5">0</h4>
+                    </div>
+                </div>
+
+                <!-- Student Presensi Card List -->
+                <div id="attendance-cards-list" class="space-y-3 mt-4">
+                    <!-- Cards will be injected dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB-VIEW 2: LAPORAN / REKAPITULASI -->
+            <div id="tab-laporan-content" class="hidden space-y-4 view-transition">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-card p-5 space-y-4">
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                        <div>
+                            <h3 class="font-heading font-bold text-slate-800 text-base">Persentase Kehadiran</h3>
+                            <p class="text-[11px] text-slate-400 font-medium mt-0.5">Berdasarkan total histori bulan ini</p>
+                        </div>
+                        <button onclick="copyRekapTsv()" class="bg-slate-50 hover:bg-slate-100 text-brand-600 border border-brand-100 font-bold text-xs px-3 py-2 rounded-lg flex items-center gap-1.5 transition-colors">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Salin (Excel)
+                        </button>
+                    </div>
+
+                    <!-- Rekap Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-100">
+                                    <th class="py-2.5 pr-2">Nama Santri</th>
+                                    <th class="py-2.5 px-2 text-center text-emerald-500">H</th>
+                                    <th class="py-2.5 px-2 text-center text-blue-500">I</th>
+                                    <th class="py-2.5 px-2 text-center text-amber-500">S</th>
+                                    <th class="py-2.5 px-2 text-center text-rose-500">A</th>
+                                    <th class="py-2.5 pl-2 text-right">Rasio</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-rekap" class="divide-y divide-slate-50 font-medium text-slate-700">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB-VIEW 3: DELEGASI AKSES -->
+            <div id="tab-delegasi-content" class="hidden space-y-4 view-transition">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-card p-5 space-y-4">
+                    <div>
+                        <h3 class="font-heading font-bold text-slate-800 text-base">Delegasi Kelas Sementara</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed mt-1">Berikan otorisasi kepada pengajar lain untuk mengisi absensi kelas ini jika Anda berhalangan hadir. (Otomatis tercabut saat batas waktu habis).</p>
+                    </div>
+                    
+                    <div class="space-y-4 pt-2 border-t border-slate-100">
+                        <!-- Custom Select Guru -->
+                        <div class="space-y-1.5 relative z-20">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Pilih Guru Pengganti</label>
+                            <div id="delegate-select-trigger" onclick="toggleDelegateSelector()" class="flex items-center justify-between border border-slate-200 rounded-xl px-4 py-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
+                                <span id="display-selected-delegate" class="text-sm font-semibold text-slate-700">Pilih Guru...</span>
+                                <i data-lucide="chevron-down" id="delegate-chevron" class="w-4 h-4 text-slate-400 transition-transform"></i>
+                            </div>
+                            <!-- Custom Dropdown Delegasi -->
+                            <div id="delegate-select-dropdown" class="dropdown-content absolute top-[calc(100%+6px)] left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-[100] max-h-48 overflow-y-auto scale-95 opacity-0 pointer-events-none">
+                                <!-- Options injected -->
+                            </div>
+                        </div>
+
+                        <!-- Date range parameters using Custom Modal -->
+                        <div class="grid grid-cols-2 gap-3 relative z-10">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tgl Mulai</label>
+                                <div onclick="openCustomDatePicker('start')" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
+                                    <span id="display-delegate-start" class="text-xs font-semibold text-slate-700 truncate" data-val="">Pilih...</span>
+                                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tgl Selesai</label>
+                                <div onclick="openCustomDatePicker('end')" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
+                                    <span id="display-delegate-end" class="text-xs font-semibold text-slate-700 truncate" data-val="">Pilih...</span>
+                                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="saveDelegasi()" id="btn-save-delegasi" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md text-sm flex items-center justify-center gap-2 mt-2">
+                            <i data-lucide="user-check" class="w-4 h-4"></i> Delegasikan Akses
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-card p-5 space-y-4">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Delegasi Aktif Saat Ini</h4>
+                    <div id="active-delegates-list" class="space-y-3">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Responsive Bottom Navigation Bar -->
+        <nav class="absolute bottom-0 left-0 right-0 h-[72px] bg-white/95 backdrop-blur-lg border-t border-slate-200 flex justify-around items-center z-40 pb-safe-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
+            <button onclick="switchTab('presensi')" id="btn-tab-presensi" class="flex flex-col items-center justify-center text-brand-600 font-bold text-[10px] gap-1.5 flex-1 transition-colors">
+                <div class="p-1.5 rounded-xl bg-brand-50"><i data-lucide="user-check" class="w-5 h-5"></i></div>
+                Presensi
+            </button>
+            <button onclick="switchTab('laporan')" id="btn-tab-laporan" class="flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 font-semibold text-[10px] gap-1.5 flex-1 transition-colors">
+                <div class="p-1.5 rounded-xl"><i data-lucide="file-text" class="w-5 h-5"></i></div>
+                Laporan
+            </button>
+            <button onclick="switchTab('delegasi')" id="btn-tab-delegasi" class="flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 font-semibold text-[10px] gap-1.5 flex-1 transition-colors">
+                <div class="p-1.5 rounded-xl"><i data-lucide="user-plus" class="w-5 h-5"></i></div>
+                Delegasi
+            </button>
+        </nav>
+    </div>
+
+    <!-- MODAL: CUSTOM DATEPICKER POPUP -->
+    <div id="modal-datepicker" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-datepicker-content">
+            <div class="px-5 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-heading font-bold text-slate-800 text-sm">Pilih Tanggal</h3>
+                <button onclick="closeModal('modal-datepicker')" class="text-slate-400 hover:text-slate-600 bg-white p-1 rounded-md shadow-sm border border-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div class="custom-calendar">
+                    <!-- Calendar Header -->
+                    <div class="flex justify-between items-center p-3 border-b border-slate-100 bg-slate-50/50">
+                        <button onclick="changeMonth(-1)" class="p-1.5 hover:bg-white bg-slate-100 border border-slate-200 rounded-lg text-slate-500 shadow-sm transition-all"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                        <span id="calendar-title" class="text-sm font-bold text-slate-800">Month Year</span>
+                        <button onclick="changeMonth(1)" class="p-1.5 hover:bg-white bg-slate-100 border border-slate-200 rounded-lg text-slate-500 shadow-sm transition-all"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    </div>
+                    <!-- Calendar Days Grid -->
+                    <div class="p-3 grid grid-cols-7 gap-1 text-center text-[11px] font-bold uppercase tracking-wide">
+                        <div class="text-rose-400 py-1">Min</div><div class="text-slate-400 py-1">Sen</div><div class="text-slate-400 py-1">Sel</div>
+                        <div class="text-slate-400 py-1">Rab</div><div class="text-slate-400 py-1">Kam</div><div class="text-slate-400 py-1">Jum</div>
+                        <div class="text-brand-400 py-1">Sab</div>
+                        <!-- Date Days Injected Here -->
+                        <div id="calendar-days-grid" class="contents"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                <button onclick="closeModal('modal-datepicker')" class="px-4 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
+                <button onclick="confirmSelectedDate()" class="px-5 py-2.5 text-sm font-bold bg-brand-600 text-white rounded-xl shadow-md shadow-brand-500/20 hover:bg-brand-700 transition-colors">Terapkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SMART QR SCANNER -->
+    <div id="modal-qr-scanner" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md z-[110] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[90vh]" id="modal-qr-scanner-content">
+            <div class="px-5 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-heading font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="scan" class="w-4 h-4 text-brand-600"></i> Scanner Cerdas</h3>
+                <button onclick="closeQrScanner()" class="text-slate-400 hover:text-rose-500 bg-white p-1 rounded-md shadow-sm border border-slate-100 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <div class="p-6 flex-1 flex flex-col items-center justify-center space-y-6">
+                <p class="text-xs text-slate-500 text-center font-medium px-4">Arahkan kamera ke QR Code ID Santri untuk mencatat kehadiran <strong class="text-emerald-600">Hadir</strong> secara otomatis.</p>
+                
+                <!-- Interactive Camera Container -->
+                <div class="relative w-full aspect-square bg-slate-900 rounded-2xl overflow-hidden shadow-inner border-[6px] border-slate-100">
+                    <div id="scanner-preview" class="w-full h-full object-cover"></div>
+                    <!-- Frame Overlay (Corners) -->
+                    <div class="absolute top-4 left-4 w-8 h-8 border-t-4 border-l-4 border-brand-500 rounded-tl-lg pointer-events-none z-10"></div>
+                    <div class="absolute top-4 right-4 w-8 h-8 border-t-4 border-r-4 border-brand-500 rounded-tr-lg pointer-events-none z-10"></div>
+                    <div class="absolute bottom-4 left-4 w-8 h-8 border-b-4 border-l-4 border-brand-500 rounded-bl-lg pointer-events-none z-10"></div>
+                    <div class="absolute bottom-4 right-4 w-8 h-8 border-b-4 border-r-4 border-brand-500 rounded-br-lg pointer-events-none z-10"></div>
+                    
+                    <!-- Animated Laser Line -->
+                    <div class="laser-line absolute left-0 right-0 h-0.5 bg-brand-400 shadow-[0_0_12px_rgba(56,189,248,1)] z-10"></div>
+                </div>
+
+                <!-- Last Scanned Student Flash Overlay -->
+                <div id="scanner-feedback" class="hidden w-full bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center gap-3 animate-[slideUpFade_0.3s_ease-out]">
+                    <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-inner flex-shrink-0"><i data-lucide="check" class="w-6 h-6"></i></div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider mb-0.5">Berhasil (Hadir)</p>
+                        <h4 id="scanner-feedback-name" class="font-bold text-slate-800 text-sm truncate">Nama Santri</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="px-5 py-4 bg-slate-50 border-t border-slate-100">
+                <button onclick="closeQrScanner()" class="w-full py-3.5 bg-slate-800 text-white hover:bg-slate-900 font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                    <i data-lucide="power-off" class="w-4 h-4"></i> Matikan Kamera
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business & Database Logic Script (Enterprise Grade) -->
+    <script type="module">
+        import { db, appId, auth } from './firebase-config.js';
+        import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { collection, doc, setDoc, getDoc, updateDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // === 1. GLOBAL VARIABLES & STATE ===
+        const state = {
+            students: [],
+            teachers: [],
+            attendance: [],
+            classes: []
+        };
+
+        const localUiState = {
+            selectedClass: null,
+            selectedDate: new Date(), 
+            calendarActiveDate: new Date(), 
+            datepickerContext: 'attendance', // 'attendance', 'start', 'end'
+            selectedDelegateTeacher: null
+        };
+
+        let loggedInTeacher = null;
+
+        // Utilities
+        const dateToYmdString = (d) => {
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        };
+
+        const getMonthYearDisplay = (d) => {
+            const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            return months[d.getMonth()] + " " + d.getFullYear();
+        };
+
+        function playSuccessBeep() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const audioCtx = new AudioContext();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); 
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.15);
+            } catch(e) {}
+        }
+
+        window.showToast = function(message, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `animate-[slideUpFade_0.3s_ease-out_forwards] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl backdrop-blur-md border text-sm font-semibold pointer-events-auto ${
+                isError ? 'bg-rose-50/95 border-rose-200 text-rose-800' : 'bg-slate-800/95 border-slate-700 text-white'
+            }`;
+            toast.innerHTML = `
+                <i data-lucide="${isError ? 'alert-triangle' : 'check-circle'}" class="w-5 h-5 ${isError ? 'text-rose-500' : 'text-emerald-400'}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            if(window.lucide) window.lucide.createIcons();
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px) translateX(-50%)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        };
+
+        // Navigation
+        window.switchTab = function(tabName) {
+            ['presensi', 'laporan', 'delegasi'].forEach(t => {
+                document.getElementById(`tab-${t}-content`).classList.add('hidden');
+                const btn = document.getElementById(`btn-tab-${t}`);
+                btn.className = "flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 font-semibold text-[10px] gap-1.5 flex-1 transition-colors";
+                btn.querySelector('div').className = "p-1.5 rounded-xl";
+            });
+
+            document.getElementById(`tab-${tabName}-content`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-tab-${tabName}`);
+            activeBtn.className = "flex flex-col items-center justify-center text-brand-600 font-bold text-[10px] gap-1.5 flex-1 transition-colors";
+            activeBtn.querySelector('div').className = "p-1.5 rounded-xl bg-brand-50";
+
+            if (tabName === 'presensi') renderAttendanceCards();
+            if (tabName === 'laporan') renderLaporanData();
+            if (tabName === 'delegasi') renderDelegasiUI();
+            
+            document.getElementById('main-scroll-content').scrollTo({top: 0, behavior: 'smooth'});
+        };
+
+        window.togglePinVisibility = function() {
+            const pin = document.getElementById('login-pin');
+            const eye = document.getElementById('pin-eye-icon');
+            if(pin.type === 'password') {
+                pin.type = 'text'; eye.setAttribute('data-lucide', 'eye-off');
+            } else {
+                pin.type = 'password'; eye.setAttribute('data-lucide', 'eye');
+            }
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        // Custom Modals
+        window.openModal = function(id) {
+            const el = document.getElementById(id);
+            const content = document.getElementById(id + '-content');
+            el.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        };
+
+        window.closeModal = function(id) {
+            const el = document.getElementById(id);
+            const content = document.getElementById(id + '-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => el.classList.add('hidden'), 300);
+        };
+
+        window.openCustomDatePicker = function(context) {
+            localUiState.datepickerContext = context;
+            
+            let targetDate = new Date();
+            if (context === 'attendance') targetDate = localUiState.selectedDate;
+            else if (context === 'start') {
+                const val = document.getElementById('display-delegate-start').dataset.val;
+                if(val) targetDate = new Date(parseInt(val));
+            } else if (context === 'end') {
+                const val = document.getElementById('display-delegate-end').dataset.val;
+                if(val) targetDate = new Date(parseInt(val));
+            }
+            
+            localUiState.calendarActiveDate = new Date(targetDate.getTime());
+            renderCalendarDays(targetDate);
+            openModal('modal-datepicker');
+        };
+
+        window.changeMonth = function(dir) {
+            localUiState.calendarActiveDate.setMonth(localUiState.calendarActiveDate.getMonth() + dir);
+            renderCalendarDays(localUiState.calendarActiveDate);
+        };
+
+        window.pilihHariCalendar = function(day) {
+            localUiState.calendarActiveDate.setDate(day);
+            renderCalendarDays(localUiState.calendarActiveDate);
+        };
+
+        function renderCalendarDays(highlightDate) {
+            const container = document.getElementById('calendar-days-grid');
+            const title = document.getElementById('calendar-title');
+            container.innerHTML = '';
+            
+            const activeDate = localUiState.calendarActiveDate;
+            title.innerText = getMonthYearDisplay(activeDate);
+
+            const firstDayIndex = new Date(activeDate.getFullYear(), activeDate.getMonth(), 1).getDay();
+            const totalDays = new Date(activeDate.getFullYear(), activeDate.getMonth() + 1, 0).getDate();
+
+            for(let i=0; i < firstDayIndex; i++) {
+                container.innerHTML += `<div class="py-2"></div>`;
+            }
+
+            for(let day = 1; day <= totalDays; day++) {
+                const isSelected = (activeDate.getDate() === day && activeDate.getMonth() === highlightDate.getMonth() && activeDate.getFullYear() === highlightDate.getFullYear());
+                const selectedClasses = isSelected 
+                    ? 'bg-brand-600 text-white font-extrabold rounded-lg shadow-md shadow-brand-500/30' 
+                    : 'hover:bg-slate-100 rounded-lg text-slate-700 bg-white border border-slate-50 shadow-sm';
+                
+                container.innerHTML += `<button onclick="window.pilihHariCalendar(${day})" class="py-2.5 text-xs font-semibold ${selectedClasses} transition-all active:scale-95">${day}</button>`;
+            }
+        }
+
+        window.confirmSelectedDate = function() {
+            const finalDate = localUiState.calendarActiveDate;
+            
+            if (localUiState.datepickerContext === 'attendance') {
+                localUiState.selectedDate = new Date(finalDate.getTime());
+                const formatOpts = { day: 'numeric', month: 'long', year: 'numeric' };
+                const todayStr = new Date().toLocaleDateString('id-ID', formatOpts);
+                const selStr = finalDate.toLocaleDateString('id-ID', formatOpts);
+                
+                document.getElementById('display-selected-date').innerText = (todayStr === selStr) ? 'Hari Ini' : selStr;
+                renderAttendanceCards();
+            } else if (localUiState.datepickerContext === 'start') {
+                document.getElementById('display-delegate-start').innerText = finalDate.toLocaleDateString('id-ID');
+                document.getElementById('display-delegate-start').dataset.val = finalDate.getTime();
+            } else if (localUiState.datepickerContext === 'end') {
+                document.getElementById('display-delegate-end').innerText = finalDate.toLocaleDateString('id-ID');
+                document.getElementById('display-delegate-end').dataset.val = finalDate.getTime();
+            }
+            closeModal('modal-datepicker');
+        };
+
+        // Custom Selects Logic
+        document.addEventListener('click', (e) => {
+            if(!e.target.closest('#class-select-trigger') && !e.target.closest('#class-select-dropdown')) {
+                const drop = document.getElementById('class-select-dropdown');
+                const chev = document.getElementById('class-chevron');
+                if(drop && !drop.classList.contains('pointer-events-none')) {
+                    drop.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                    chev.classList.remove('rotate-180', 'text-brand-500');
+                }
+            }
+            if(!e.target.closest('#delegate-select-trigger') && !e.target.closest('#delegate-select-dropdown')) {
+                const drop = document.getElementById('delegate-select-dropdown');
+                const chev = document.getElementById('delegate-chevron');
+                if(drop && !drop.classList.contains('pointer-events-none')) {
+                    drop.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                    chev.classList.remove('rotate-180', 'text-brand-500');
+                }
+            }
+        });
+
+        window.toggleClassSelector = function() {
+            const drop = document.getElementById('class-select-dropdown');
+            const chev = document.getElementById('class-chevron');
+            if (drop.classList.contains('pointer-events-none')) {
+                drop.classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
+                chev.classList.add('rotate-180', 'text-brand-500');
+            } else {
+                drop.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                chev.classList.remove('rotate-180', 'text-brand-500');
+            }
+        };
+
+        window.toggleDelegateSelector = function() {
+            const drop = document.getElementById('delegate-select-dropdown');
+            const chev = document.getElementById('delegate-chevron');
+            if (drop.classList.contains('pointer-events-none')) {
+                drop.classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
+                chev.classList.add('rotate-180', 'text-brand-500');
+            } else {
+                drop.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                chev.classList.remove('rotate-180', 'text-brand-500');
+            }
+        };
+
+        window.selectClass = function(classId, className) {
+            localUiState.selectedClass = classId;
+            document.getElementById('display-selected-class').innerText = className;
+            window.toggleClassSelector(); 
+            renderAttendanceCards();
+            renderLaporanData();
+        };
+
+        window.selectDelegateTeacher = function(teacherId, name) {
+            localUiState.selectedDelegateTeacher = teacherId;
+            document.getElementById('display-selected-delegate').innerText = name;
+            window.toggleDelegateSelector(); 
+        };
+
+        function buildClassList() {
+            const dropdown = document.getElementById('class-select-dropdown');
+            dropdown.innerHTML = '';
+            
+            if(!loggedInTeacher) return;
+
+            const now = Date.now();
+            const myClasses = state.classes.filter(k => {
+                const isMyClass = (loggedInTeacher.kelas_ids || []).includes(k.id) || (loggedInTeacher.kelas === k.nama_kelas);
+                const isActiveDelegate = (k.delegations || []).some(d => d.teacherId === loggedInTeacher.id && now >= d.start && now <= d.end);
+                return isMyClass || isActiveDelegate;
+            });
+            
+            if(myClasses.length === 0) {
+                dropdown.innerHTML = `<div class="px-4 py-4 text-xs font-semibold text-slate-400 text-center">Tidak ada kelas otorisasi</div>`;
+                localUiState.selectedClass = null;
+                document.getElementById('display-selected-class').innerText = "Belum Ada Kelas";
+                renderAttendanceCards();
+                return;
+            }
+
+            if(!localUiState.selectedClass || !myClasses.find(c => c.id === localUiState.selectedClass)) {
+                localUiState.selectedClass = myClasses[0].id;
+                document.getElementById('display-selected-class').innerText = myClasses[0].nama_kelas || myClasses[0].name;
+            }
+
+            myClasses.forEach(c => {
+                const isSel = localUiState.selectedClass === c.id;
+                const nama = c.nama_kelas || c.name;
+                dropdown.innerHTML += `
+                    <div onclick="window.selectClass('${c.id}', '${nama}')" class="px-4 py-3 text-sm cursor-pointer font-semibold border-b border-slate-50 last:border-none transition-colors flex items-center justify-between ${isSel ? 'bg-brand-50 text-brand-700' : 'text-slate-700 hover:bg-slate-50'}">
+                        ${nama}
+                        ${isSel ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}
+                    </div>
+                `;
+            });
+            if(window.lucide) window.lucide.createIcons();
+            renderAttendanceCards();
+            renderLaporanData();
+        }
+
+        // === 2. FIREBASE INIT & SYNC ===
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) window.lucide.createIcons();
+            
+            if (window.SAAS_TENANT_MISSING) {
+                document.getElementById('safety-net-screen').style.display = 'flex';
+                document.getElementById('view-login').style.display = 'none';
+                return;
+            }
+
+            initFirebaseData();
+        });
+
+        async function initFirebaseData() {
+            try {
+                document.getElementById('global-loader').classList.remove('hidden');
+                
+                await signInAnonymously(auth);
+
+                const refs = {
+                    students: collection(db, 'artifacts', appId, 'public', 'data', 'students'),
+                    teachers: collection(db, 'artifacts', appId, 'public', 'data', 'teachers'),
+                    attendance: collection(db, 'artifacts', appId, 'public', 'data', 'attendance'),
+                    classes: collection(db, 'artifacts', appId, 'public', 'data', 'classes')
+                };
+
+                let loadCount = 0;
+                const completeLoad = () => {
+                    loadCount++;
+                    if(loadCount >= 4) {
+                        document.getElementById('global-loader').classList.add('opacity-0');
+                        setTimeout(() => document.getElementById('global-loader').classList.add('hidden'), 300);
+
+                        // Auto Login Check
+                        const savedTeacherId = localStorage.getItem('tahfizh_saved_teacher_id');
+                        if (savedTeacherId) {
+                            const restored = state.teachers.find(t => t.id === savedTeacherId);
+                            if (restored) {
+                                loggedInTeacher = restored;
+                                document.getElementById('display-teacher-name').innerText = restored.nama;
+                                buildClassList();
+                                document.getElementById('view-login').classList.add('hidden');
+                                document.getElementById('view-dashboard').classList.remove('hidden');
+                                switchTab('presensi');
+                            }
+                        }
+                    }
+                };
+
+                onSnapshot(refs.students, (snap) => {
+                    state.students = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
+                    completeLoad();
+                    if(loggedInTeacher) renderAttendanceCards();
+                });
+
+                onSnapshot(refs.teachers, (snap) => {
+                    state.teachers = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
+                    completeLoad();
+                });
+
+                onSnapshot(refs.attendance, (snap) => {
+                    state.attendance = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                    completeLoad();
+                    if(loggedInTeacher && !document.getElementById('view-dashboard').classList.contains('hidden')) {
+                        renderAttendanceCards();
+                        renderLaporanData();
+                    }
+                });
+
+                onSnapshot(refs.classes, (snap) => {
+                    state.classes = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                    completeLoad();
+                    if(loggedInTeacher) {
+                        buildClassList();
+                        renderDelegasiUI();
+                    }
+                });
+
+            } catch(e) {
+                window.showToast("Gagal koneksi pangkalan data.", true);
+            }
+        }
+
+        window.loginGuru = function() {
+            const nameInput = document.getElementById('login-name').value.trim();
+            const pinInput = document.getElementById('login-pin').value.trim();
+
+            if (!nameInput || !pinInput) return window.showToast("Nama dan PIN wajib diisi!", true);
+
+            const found = state.teachers.find(t => t.nama.toLowerCase() === nameInput.toLowerCase() && t.pin === pinInput);
+            if (found) {
+                loggedInTeacher = found;
+                localStorage.setItem('tahfizh_saved_teacher_id', found.id);
+                document.getElementById('display-teacher-name').innerText = found.nama;
+                
+                buildClassList();
+                
+                document.getElementById('view-login').classList.add('hidden');
+                document.getElementById('view-dashboard').classList.remove('hidden');
+                switchTab('presensi');
+            } else {
+                window.showToast("Kredensial tidak valid. Silakan coba kembali.", true);
+            }
+        };
+
+        window.logoutGuru = function() {
+            loggedInTeacher = null;
+            localStorage.removeItem('tahfizh_saved_teacher_id');
+            document.getElementById('login-name').value = '';
+            document.getElementById('login-pin').value = '';
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-login').classList.remove('hidden');
+        };
+
+        function renderAttendanceCards() {
+            const container = document.getElementById('attendance-cards-list');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if(!localUiState.selectedClass) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm text-center">
+                        <i data-lucide="layout-grid" class="w-10 h-10 text-slate-300 mx-auto mb-3"></i>
+                        <p class="text-slate-500 font-semibold text-sm">Pilih kelas binaan terlebih dahulu.</p>
+                    </div>`;
+                if(window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            const studentsInClass = state.students.filter(s => s.kelas_id === localUiState.selectedClass || s.kelas === localUiState.selectedClass);
+            
+            if (studentsInClass.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm text-center">
+                        <i data-lucide="users" class="w-10 h-10 text-slate-300 mx-auto mb-3"></i>
+                        <p class="text-slate-500 font-semibold text-sm">Tidak ada santri di kelas ini.</p>
+                    </div>`;
+                if(window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            const YmdDateString = dateToYmdString(localUiState.selectedDate);
+            const todaysRecords = state.attendance.filter(a => a.date === YmdDateString);
+
+            let countH = 0, countI = 0, countS = 0, countA = 0;
+
+            studentsInClass.forEach((student, index) => {
+                const rec = todaysRecords.find(a => a.studentId === student.id);
+                const currentStatus = rec ? rec.status : null;
+
+                if (currentStatus === 'H') countH++;
+                if (currentStatus === 'I') countI++;
+                if (currentStatus === 'S') countS++;
+                if (currentStatus === 'A') countA++;
+
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-2xl border border-slate-100 shadow-card space-y-4 transition-all";
+                
+                const activeStyle = (st) => {
+                    const baseClass = "flex-1 py-2.5 rounded-xl text-center text-[13px] font-bold transition-all border outline-none focus:ring-2 ";
+                    if (st === 'H') return currentStatus === 'H' ? baseClass + "bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-500/30" : baseClass + "bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+                    if (st === 'I') return currentStatus === 'I' ? baseClass + "bg-blue-500 text-white border-blue-500 shadow-md shadow-blue-500/30" : baseClass + "bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+                    if (st === 'S') return currentStatus === 'S' ? baseClass + "bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/30" : baseClass + "bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+                    if (st === 'A') return currentStatus === 'A' ? baseClass + "bg-rose-500 text-white border-rose-500 shadow-md shadow-rose-500/30" : baseClass + "bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+                };
+
+                const checkedIndicator = currentStatus ? `<span class="absolute top-4 right-4 text-emerald-500"><i data-lucide="check-circle-2" class="w-5 h-5"></i></span>` : '';
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between relative">
+                        ${checkedIndicator}
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-slate-50 text-slate-500 flex items-center justify-center font-extrabold text-sm border border-slate-100 flex-shrink-0">${index+1}</div>
+                            <div class="pr-6">
+                                <h4 class="font-bold text-slate-800 text-[15px] leading-snug">${student.nama}</h4>
+                                <p class="text-[10px] text-slate-400 font-semibold font-mono uppercase tracking-wide mt-0.5">ID: ${student.kodeSiswa || student.id}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2 w-full pt-1">
+                        <button onclick="window.writeAttendanceDirect('${student.id}', 'H')" class="${activeStyle('H')}">Hadir</button>
+                        <button onclick="window.writeAttendanceDirect('${student.id}', 'I')" class="${activeStyle('I')}">Izin</button>
+                        <button onclick="window.writeAttendanceDirect('${student.id}', 'S')" class="${activeStyle('S')}">Sakit</button>
+                        <button onclick="window.writeAttendanceDirect('${student.id}', 'A')" class="${activeStyle('A')}">Alfa</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            const updateCount = (id, val) => {
+                const el = document.getElementById(id);
+                if (el.innerText !== String(val)) {
+                    el.innerText = val;
+                    el.classList.add('scale-110');
+                    setTimeout(() => el.classList.remove('scale-110'), 200);
+                }
+            };
+            
+            updateCount('quick-count-H', countH);
+            updateCount('quick-count-I', countI);
+            updateCount('quick-count-S', countS);
+            updateCount('quick-count-A', countA);
+            
+            if(window.lucide) window.lucide.createIcons();
+        }
+
+        window.writeAttendanceDirect = async function(studentId, status) {
+            if(!loggedInTeacher) return;
+            const dateStr = dateToYmdString(localUiState.selectedDate);
+            const student = state.students.find(s => s.id === studentId);
+            if(!student) return;
+
+            const docId = `${studentId}_${dateStr}`;
+            const attRef = doc(db, 'artifacts', appId, 'public', 'data', 'attendance', docId);
+
+            const payload = {
+                studentId: studentId,
+                date: dateStr,
+                classId: localUiState.selectedClass,
+                status: status,
+                timestamp: Date.now(),
+                recordedBy: loggedInTeacher.id
+            };
+
+            try {
+                await setDoc(attRef, payload);
+            } catch(e) { window.showToast("Gagal merekam absensi. Cek koneksi.", true); }
+        };
+
+        function renderLaporanData() {
+            const tbody = document.getElementById('tbody-rekap');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            if(!localUiState.selectedClass) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400 font-medium">Pilih kelas terlebih dahulu.</td></tr>`;
+                return;
+            }
+
+            const studentsInClass = state.students.filter(s => s.kelas_id === localUiState.selectedClass || s.kelas === localUiState.selectedClass);
+            if(studentsInClass.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400 font-medium">Tidak ada data santri.</td></tr>`;
+                return;
+            }
+
+            const currentMonthPrefix = dateToYmdString(localUiState.selectedDate).slice(0, 7);
+
+            studentsInClass.forEach(student => {
+                const attList = state.attendance.filter(a => a.studentId === student.id && a.date.startsWith(currentMonthPrefix));
+                let countH = 0, countI = 0, countS = 0, countA = 0;
+
+                attList.forEach(a => {
+                    if (a.status === 'H') countH++;
+                    if (a.status === 'I') countI++;
+                    if (a.status === 'S') countS++;
+                    if (a.status === 'A') countA++;
+                });
+
+                const totalAtt = countH + countI + countS + countA;
+                const ratio = totalAtt > 0 ? Math.round((countH / totalAtt) * 100) : 0;
+                const ratioColor = ratio >= 80 ? 'text-emerald-600' : (ratio >= 50 ? 'text-amber-600' : 'text-rose-600');
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="py-3 pr-2 font-bold text-slate-800 text-[13px] leading-tight">${student.nama}</td>
+                        <td class="py-3 px-2 text-center text-emerald-600 font-bold">${countH}</td>
+                        <td class="py-3 px-2 text-center text-blue-600 font-bold">${countI}</td>
+                        <td class="py-3 px-2 text-center text-amber-600 font-bold">${countS}</td>
+                        <td class="py-3 px-2 text-center text-rose-600 font-bold">${countA}</td>
+                        <td class="py-3 pl-2 text-right ${ratioColor} font-extrabold font-mono">${ratio}%</td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.copyRekapTsv = function() {
+            if(!localUiState.selectedClass) return window.showToast("Pilih kelas terlebih dahulu.", true);
+            
+            const studentsInClass = state.students.filter(s => s.kelas_id === localUiState.selectedClass || s.kelas === localUiState.selectedClass);
+            if(studentsInClass.length === 0) return;
+
+            const currentMonthPrefix = dateToYmdString(localUiState.selectedDate).slice(0, 7);
+            const classObj = state.classes.find(c => c.id === localUiState.selectedClass);
+            const className = classObj ? (classObj.nama_kelas || classObj.name) : localUiState.selectedClass;
+
+            let tsv = `Rekap Kehadiran Bulan: ${currentMonthPrefix}\nKelas: ${className}\n\n`;
+            tsv += "Nama Lengkap\tHadir\tIzin\tSakit\tAlfa\tRasio Kehadiran\n";
+            
+            studentsInClass.forEach(student => {
+                const attList = state.attendance.filter(a => a.studentId === student.id && a.date.startsWith(currentMonthPrefix));
+                let countH = 0, countI = 0, countS = 0, countA = 0;
+                attList.forEach(a => {
+                    if (a.status === 'H') countH++;
+                    if (a.status === 'I') countI++;
+                    if (a.status === 'S') countS++;
+                    if (a.status === 'A') countA++;
+                });
+
+                const totalAtt = countH + countI + countS + countA;
+                const ratio = totalAtt > 0 ? Math.round((countH / totalAtt) * 100) : 0;
+                tsv += `${student.nama}\t${countH}\t${countI}\t${countS}\t${countA}\t${ratio}%\n`;
+            });
+
+            const tempInput = document.createElement("textarea");
+            tempInput.value = tsv; document.body.appendChild(tempInput); tempInput.select();
+            try { document.execCommand('copy'); window.showToast("Data disalin ke papan klip! Silakan tempel di Excel."); } 
+            catch (err) { window.showToast("Gagal menyalin data.", true); }
+            document.body.removeChild(tempInput);
+        };
+
+        // Delegasi Logic
+        function renderDelegasiUI() {
+            const dropdown = document.getElementById('delegate-select-dropdown');
+            dropdown.innerHTML = '';
+            
+            if(state.teachers.length <= 1) {
+                dropdown.innerHTML = `<div class="px-4 py-4 text-xs font-semibold text-slate-400 text-center">Tidak ada pengajar lain</div>`;
+            } else {
+                state.teachers.forEach(t => {
+                    if (loggedInTeacher && t.id !== loggedInTeacher.id) {
+                        const isSel = localUiState.selectedDelegateTeacher === t.id;
+                        dropdown.innerHTML += `
+                            <div onclick="window.selectDelegateTeacher('${t.id}', '${t.nama}')" class="px-4 py-3 text-sm cursor-pointer font-semibold border-b border-slate-50 last:border-none transition-colors flex items-center justify-between ${isSel ? 'bg-brand-50 text-brand-700' : 'text-slate-700 hover:bg-slate-50'}">
+                                ${t.nama}
+                                ${isSel ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}
+                            </div>
+                        `;
+                    }
+                });
+            }
+
+            const listCont = document.getElementById('active-delegates-list');
+            if(!localUiState.selectedClass) {
+                listCont.innerHTML = `<p class="text-xs text-slate-400 text-center py-4 font-medium border border-dashed border-slate-200 rounded-xl bg-slate-50">Pilih kelas terlebih dahulu.</p>`;
+                return;
+            }
+
+            const klsObj = state.classes.find(k => k.id === localUiState.selectedClass);
+            if(!klsObj || !klsObj.delegations || klsObj.delegations.length === 0) {
+                listCont.innerHTML = `<p class="text-xs text-slate-400 text-center py-4 font-medium border border-dashed border-slate-200 rounded-xl bg-slate-50">Belum ada delegasi aktif.</p>`;
+                return;
+            }
+
+            const now = Date.now(); let htmlStr = '';
+            klsObj.delegations.forEach(del => {
+                const sDate = new Date(del.start).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+                const eDate = new Date(del.end).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+                const isExpired = now > del.end;
+                htmlStr += `<div class="p-3 border border-slate-200 rounded-xl ${isExpired ? 'bg-slate-50' : 'bg-white'} flex justify-between items-center shadow-sm mb-2"><div><div class="font-bold text-sm ${isExpired ? 'text-slate-400' : 'text-slate-800'}">${del.teacherName}</div><div class="text-[10px] text-slate-500 mt-1">${sDate} - ${eDate}</div>${isExpired ? '<span class="text-[9px] text-rose-500 font-bold uppercase tracking-wider mt-1 block">Kedaluwarsa</span>' : '<span class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider mt-1 block">Aktif</span>'}</div><button onclick="window.batalDelegasi('${del.id}')" class="p-2 text-rose-400 hover:bg-rose-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+            });
+            listCont.innerHTML = htmlStr;
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        window.saveDelegasi = async function() {
+            if(!localUiState.selectedClass) return window.showToast("Pilih kelas binaan terlebih dahulu!", true);
+            if(!localUiState.selectedDelegateTeacher) return window.showToast("Pilih guru pengganti!", true);
+            
+            const startVal = document.getElementById('display-delegate-start').dataset.val;
+            const endVal = document.getElementById('display-delegate-end').dataset.val;
+
+            if(!startVal || !endVal) return window.showToast("Pilih rentang tanggal delegasi!", true);
+
+            const startTs = parseInt(startVal);
+            const endTs = parseInt(endVal);
+            if(endTs <= startTs) return window.showToast("Waktu akhir harus lebih besar dari mulai!", true);
+
+            const btn = document.getElementById('btn-save-delegasi');
+            btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Memproses...';
+
+            const guruTarget = state.teachers.find(g => g.id === localUiState.selectedDelegateTeacher);
+            const newDel = { id: `del_${Date.now()}`, teacherId: guruTarget.id, teacherName: guruTarget.nama, start: startTs, end: endTs };
+
+            try {
+                const klsObj = state.classes.find(k => k.id === localUiState.selectedClass);
+                const currentDels = klsObj.delegations || [];
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', localUiState.selectedClass), { delegations: [...currentDels, newDel] });
+                window.showToast(`Akses kelas diberikan kepada ${guruTarget.nama}.`);
+                
+                // Reset form
+                document.getElementById('display-delegate-start').innerText = 'Pilih...';
+                document.getElementById('display-delegate-start').dataset.val = '';
+                document.getElementById('display-delegate-end').innerText = 'Pilih...';
+                document.getElementById('display-delegate-end').dataset.val = '';
+                document.getElementById('display-selected-delegate').innerText = 'Pilih Guru...';
+                localUiState.selectedDelegateTeacher = null;
+            } catch(e) { window.showToast("Gagal mengatur delegasi. Cek koneksi.", true); }
+            finally {
+                btn.disabled = false; btn.innerHTML = '<i data-lucide="user-check" class="w-4 h-4"></i> Delegasikan Akses';
+                if(window.lucide) window.lucide.createIcons();
+            }
+        };
+
+        window.batalDelegasi = async function(delId) {
+            try {
+                const klsObj = state.classes.find(k => k.id === localUiState.selectedClass);
+                const filteredDels = (klsObj.delegations || []).filter(d => d.id !== delId);
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', localUiState.selectedClass), { delegations: filteredDels });
+                window.showToast("Akses delegasi dicabut.");
+            } catch(e) { window.showToast("Gagal mencabut akses.", true); }
+        };
+
+        // Smart Scanner
+        let scannerEngine = null;
+        let isProcessingScan = false;
+
+        window.openQrScanner = function() {
+            if(!localUiState.selectedClass) return window.showToast("Pilih kelas binaan terlebih dahulu!", true);
+            
+            openModal('modal-qr-scanner');
+            document.getElementById('scanner-feedback').classList.add('hidden');
+            isProcessingScan = false;
+
+            if(!scannerEngine) {
+                scannerEngine = new Html5Qrcode("scanner-preview");
+                const config = { fps: 10, qrbox: {width: 250, height: 250}, aspectRatio: 1.0 };
+                scannerEngine.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+                .catch(err => { window.showToast("Kamera tidak diizinkan atau tidak ditemukan.", true); });
+            }
+        };
+
+        window.closeQrScanner = function() {
+            if(scannerEngine) {
+                scannerEngine.stop().then(() => {
+                    scannerEngine.clear(); scannerEngine = null; closeModal('modal-qr-scanner');
+                }).catch(err => console.error(err));
+            } else { closeModal('modal-qr-scanner'); }
+        };
+
+        async function onScanSuccess(decodedText) {
+            if(isProcessingScan) return;
+            isProcessingScan = true;
+
+            const student = state.students.find(s => (s.id === decodedText || s.kodeSiswa === decodedText) && (s.kelas_id === localUiState.selectedClass || s.kelas === localUiState.selectedClass));
+            
+            if(student) {
+                playSuccessBeep();
+                await window.writeAttendanceDirect(student.id, 'H');
+
+                const fb = document.getElementById('scanner-feedback');
+                document.getElementById('scanner-feedback-name').innerText = student.nama;
+                fb.classList.remove('hidden');
+
+                setTimeout(() => { fb.classList.add('hidden'); isProcessingScan = false; }, 1500);
+            } else {
+                const outOfClass = state.students.find(s => s.id === decodedText || s.kodeSiswa === decodedText);
+                if(outOfClass) window.showToast(`Santri "${outOfClass.nama}" bukan di kelas ini.`, true);
+                else window.showToast("QR Code tidak dikenali dalam sistem.", true);
+                setTimeout(() => { isProcessingScan = false; }, 2000);
+            }
+        }
+        function onScanFailure(error) {}
+
+    </script>
+</body>
+</html>

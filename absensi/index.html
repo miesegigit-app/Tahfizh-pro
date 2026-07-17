@@ -1,1 +1,982 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- CSP Sesuai Standar Enterprise -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; script-src 'self' https: 'unsafe-inline' 'unsafe-eval' type: module; style-src 'self' https: 'unsafe-inline'; font-src 'self' https: data:; connect-src 'self' https: wss:; frame-src 'self' https://app.sandbox.midtrans.com https://app.midtrans.com https://snap-assets.sandbox.midtrans.com https://snap-assets.midtrans.com;">
+    
+    <title>Portal Wali Murid - Presensi & Administrasi</title>
+    
+    <!-- Meta Tags & OG Image Setup -->
+    <meta name="description" content="Portal pemantauan absensi santri dan tagihan khusus wali murid">
+    <meta property="og:title" content="Portal Wali Murid - TahfizhPro">
+    <meta property="og:description" content="Portal pemantauan absensi santri dan tagihan khusus wali murid">
+    <meta property="og:image" content="https://i.ibb.co.com/Tq2dVMHm/Desain-tanpa-judul-4.png">
+    <meta property="og:type" content="website">
+    
+    <meta name="theme-color" content="#F8FAFC">
+    <link rel="icon" href="./logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="./logo.png">
+    <link rel="manifest" href=""> <!-- Diinjeksi dinamis via JS -->
 
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Fira+Code:wght@600&display=swap" rel="stylesheet">
+    
+    <!-- Icons, Tailwind, & Midtrans -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Midtrans Snap JS (Sandbox) -->
+    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-YOUR_CLIENT_KEY_HERE"></script>
+
+    <!-- Tailwind Config Customization -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a',
+                        },
+                        status: {
+                            hadir: '#10B981', izin: '#3B82F6', sakit: '#F59E0B', alfa: '#EF4444'
+                        }
+                    },
+                    boxShadow: {
+                        'card': '0 0 0 1px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.04)',
+                        'float': '0 10px 30px -5px rgba(37, 99, 235, 0.15)',
+                        'danger': '0 10px 25px -5px rgba(239, 68, 68, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F8FAFC;
+            -webkit-tap-highlight-color: transparent;
+            background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Glassmorphism Header */
+        .glass-header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Timeline Styles */
+        .timeline-item { position: relative; padding-left: 2rem; padding-bottom: 1.5rem; }
+        .timeline-item::before { content: ''; position: absolute; left: 0.45rem; top: 0.5rem; bottom: -0.5rem; width: 2px; background-color: #E2E8F0; }
+        .timeline-item:last-child::before { display: none; }
+        .timeline-dot { position: absolute; left: 0; top: 0.25rem; width: 1rem; height: 1rem; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 1px #E2E8F0; }
+
+        /* Toast Animation */
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .toast-enter { animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #2563eb; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Custom Dropdown Styling */
+        .custom-dropdown-options::-webkit-scrollbar { width: 6px; }
+        .custom-dropdown-options::-webkit-scrollbar-track { background: transparent; }
+        .custom-dropdown-options::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        .custom-dropdown-options::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; opacity: 0; transition: opacity 0.25s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-container { background: white; width: 100%; max-width: 360px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid #E2E8F0; overflow: hidden; transform: scale(0.95); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; flex-direction: column; text-align: center; }
+        .modal-overlay.active .modal-container { transform: scale(1); }
+
+        .sibling-selector-wrapper { display: none; animation: fadeIn 0.4s ease-out; }
+        .sibling-chips-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+        .sibling-chips-scroll::-webkit-scrollbar { display: none; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- GLOBAL UPDATE MODAL (Receiver Sinyal Deploy Master) -->
+    <div id="global-update-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[999999] hidden flex-col items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border border-brand-100">
+            <div class="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-5 border-4 border-brand-100">
+                <i data-lucide="rocket" class="w-10 h-10 text-brand-600 animate-bounce"></i>
+            </div>
+            <h3 class="font-heading font-black text-xl text-slate-900 mb-2">Pembaruan Sistem <span id="update-version-badge" class="text-[10px] bg-brand-600 text-white px-2.5 py-1 rounded-full align-top ml-1 uppercase tracking-widest font-bold"></span></h3>
+            <p id="update-message-text" class="text-sm text-slate-600 mb-6 leading-relaxed">Pembaruan fitur terbaru telah diterapkan. Sistem akan dimuat ulang secara otomatis.</p>
+            <div class="loader mx-auto w-8 h-8 border-4 border-brand-100 border-t-brand-600"></div>
+        </div>
+    </div>
+
+    <!-- PWA INSTALL BANNER -->
+    <div id="pwa-install-banner" class="fixed top-0 left-0 right-0 bg-brand-600 text-white p-4 z-[99999] hidden items-center justify-between shadow-lg transform transition-transform -translate-y-full">
+        <div class="flex items-center gap-3">
+            <img src="./logo.png" class="w-10 h-10 rounded-xl bg-white p-1" alt="App Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGI0YThhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01ek0yIDE3bDEwIDUgMTAtNSBNMiAxMmwxMCA1IDEwLTUiLz48L3N2Zz4='">
+            <div>
+                <p class="font-bold text-sm">Instal TahfizhPro</p>
+                <p class="text-[11px] text-brand-100">Akses lebih cepat & mudah dari layar utama</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="window.dismissPwaBanner()" class="p-2 text-brand-200 hover:text-white transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <button onclick="window.installPwa()" class="bg-white text-brand-600 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-brand-50 transition-colors">Instal</button>
+        </div>
+    </div>
+
+    <!-- Global Toast Container -->
+    <div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex flex-col gap-2 w-max max-w-[90vw]"></div>
+
+    <!-- OVERLAY SAFETY NET (Jika Tenant Missing) -->
+    <div id="safety-net-screen" class="fixed inset-0 bg-gradient-to-br from-slate-50 to-slate-200 z-[99999] hidden flex-col items-center justify-center p-6 text-center">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-rose-100 border-t-4 border-t-rose-500 relative overflow-hidden">
+            <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-rose-100 shadow-inner">
+                <i data-lucide="shield-alert" class="w-10 h-10 text-rose-500"></i>
+            </div>
+            <h2 class="text-xl font-heading font-black text-slate-900 mb-2">Akses Portal Terkunci</h2>
+            <p class="text-sm text-slate-600 mb-6 leading-relaxed">Sistem tidak dapat mengidentifikasi sekolah/yayasan Anda. Pastikan Anda membuka tautan resmi yang diberikan oleh pihak sekolah.</p>
+            <div class="bg-slate-50 p-4 rounded-xl border border-dashed border-slate-200 text-left">
+                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contoh Format Tautan:</p>
+                <code class="text-xs font-mono text-brand-600 font-bold bg-brand-50 px-2 py-1 rounded">domain.com/?sekolah=id_sekolah</code>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-100">
+                <p class="text-[11px] text-slate-400">© 2026 TahfizhPro Enterprise</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay Loading Global -->
+    <div id="global-loader" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[100] hidden flex flex-col items-center justify-center transition-opacity duration-300">
+        <div class="loader mb-4 w-12 h-12 border-4 text-brand-600"></div>
+        <h2 class="text-xl font-heading font-bold text-slate-800">Menyiapkan Portal...</h2>
+        <p class="text-sm text-slate-500 mt-2">Menghubungkan ke Pangkalan Data Yayasan</p>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="glass-header sticky top-0 z-40 w-full px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/30">
+                <i data-lucide="shield-check" class="text-white w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="font-heading font-bold text-lg leading-tight">Portal Wali Murid</h1>
+                <p class="text-[11px] text-slate-500 font-medium tracking-wide">Pemantauan Mutaba'ah & Administrasi</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Application Layout -->
+    <main class="flex-1 w-full max-w-md mx-auto p-4 sm:p-6 pb-20">
+        
+        <!-- VIEW: LOGIN (Cari Santri) -->
+        <section id="view-login" class="space-y-6 pt-6">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+                    <i data-lucide="search" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-heading font-black text-slate-800 tracking-tight">Cek Data Ananda</h2>
+                <p class="text-slate-500 text-sm px-4">Masukkan ID Santri untuk memantau rekam jejak absensi dan informasi tagihan.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl shadow-float border border-slate-100 space-y-5 relative z-10">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Identitas / ID Santri</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                        <input type="text" id="input-student-id" placeholder="Masukkan 6 Digit ID..." class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl pl-12 pr-4 py-3.5 outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white font-mono font-bold tracking-widest text-center transition-all" autocomplete="off" onkeypress="if(event.key === 'Enter') window.loginStudent()">
+                    </div>
+                </div>
+                <button onclick="window.loginStudent()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl shadow-md shadow-brand-500/30 transition-all flex items-center justify-center gap-2 active:scale-95">
+                    Akses Portal <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+
+                <!-- PORTAL SWITCHER: Navigasi Pegawai -->
+                <div class="mt-6 pt-6 border-t border-slate-100">
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center mb-3">Akses Pengajar</p>
+                    <div class="flex gap-3">
+                        <button onclick="window.switchPortal('guru')" class="w-full bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 text-slate-600 hover:text-brand-600 font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
+                            <i data-lucide="graduation-cap" class="w-4 h-4"></i> Masuk Portal Guru
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center bg-slate-100 border border-slate-200 p-4 rounded-2xl">
+                <p class="text-xs text-slate-500 font-medium leading-relaxed"><i data-lucide="info" class="w-3.5 h-3.5 inline-block -mt-0.5 text-brand-500"></i> ID Santri adalah kode rahasia unik. Jika Anda lupa, silakan tanyakan kepada ustadz/ustadzah wali kelas.</p>
+            </div>
+        </section>
+
+        <!-- VIEW: DASHBOARD & HISTORY -->
+        <section id="view-dashboard" class="hidden space-y-6 animate-[slideUpFade_0.4s_ease-out_forwards]">
+            
+            <!-- Sibling Selector -->
+            <div id="multi-child-selector" class="sibling-selector-wrapper bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-1.5"><i data-lucide="users" class="w-3.5 h-3.5 text-brand-500"></i> Pilih Profil Ananda</p>
+                <div class="sibling-chips-scroll" id="sibling-chips-container">
+                    <!-- Chip Anak akan diinjeksi via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Student Profile Card -->
+            <div class="bg-slate-900 rounded-3xl p-6 shadow-float text-white relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-32 h-32 bg-brand-500/20 rounded-full blur-2xl"></div>
+                <div class="absolute -left-4 -bottom-4 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl"></div>
+                
+                <div class="relative z-10 flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Profil Santri Aktif</p>
+                        <h2 id="profile-name" class="font-heading font-extrabold text-2xl mb-1 tracking-tight">Nama Santri</h2>
+                        <div class="flex items-center gap-2 mt-3">
+                            <span id="profile-class" class="text-xs font-semibold bg-white/10 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10 flex items-center gap-1.5"><i data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-300"></i> --</span>
+                            <span id="profile-id" class="text-xs font-bold font-mono bg-white/10 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10 text-brand-300 tracking-wider">--</span>
+                        </div>
+                    </div>
+                    <button onclick="window.logout()" class="p-2 bg-rose-500/20 hover:bg-rose-500/40 rounded-xl backdrop-blur-sm transition-colors text-rose-300 text-xs font-bold flex items-center justify-center w-10 h-10 border border-rose-500/20" title="Keluar">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Banner Tagihan Dinamis -->
+            <div id="billing-banner" class="hidden bg-gradient-to-br from-rose-50 to-white border border-rose-200 border-l-4 border-l-rose-500 rounded-2xl p-5 shadow-danger relative overflow-hidden animate-[slideUpFade_0.4s_ease-out_forwards]">
+                <div class="absolute -right-6 -bottom-6 opacity-5"><i data-lucide="wallet" class="w-32 h-32 text-rose-600"></i></div>
+                <div class="relative z-10">
+                    <div class="flex items-start gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center flex-shrink-0 border border-rose-200">
+                            <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-heading font-bold text-rose-800 text-sm">Pemberitahuan Tagihan</h3>
+                            <p id="teks-periode-tagihan" class="text-xs text-rose-600 mt-0.5 font-medium leading-relaxed">Administrasi SPP belum diselesaikan.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-rose-100 flex justify-between items-center mb-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Pembayaran</span>
+                        <span id="nominal-tunggakan-teks" class="text-lg font-mono font-black text-rose-700">Rp 0</span>
+                    </div>
+                    <button id="btn-bayar-midtrans" onclick="window.inisiasiPembayaranMidtrans()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl transition-all shadow-md shadow-rose-500/20 flex items-center justify-center gap-2 text-sm active:scale-95">
+                        <i data-lucide="credit-card" class="w-4 h-4"></i> Bayar Sekarang (Gateway Aman)
+                    </button>
+                    <p class="text-[10px] text-rose-400 text-center mt-3 font-medium flex items-center justify-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Dilindungi oleh Midtrans</p>
+                </div>
+            </div>
+
+            <!-- Rekap Bulan Ini dengan Custom Dropdown -->
+            <div>
+                <div class="flex justify-between items-end mb-4 px-1 relative">
+                    <h3 class="font-heading font-bold text-slate-800 text-lg">Rekap Kehadiran</h3>
+                    
+                    <!-- CUSTOM DROPDOWN -->
+                    <div class="relative w-40" id="dropdown-month-filter">
+                        <div class="border border-slate-200 bg-white shadow-sm text-xs font-bold text-brand-700 rounded-xl px-3 py-2 flex justify-between items-center cursor-pointer transition-all hover:border-brand-300" onclick="window.toggleMonthDropdown()">
+                            <span id="dropdown-selected-month-text">Memuat...</span>
+                            <i data-lucide="chevron-down" class="dropdown-arrow w-4 h-4 text-slate-400 transition-transform duration-200"></i>
+                        </div>
+                        
+                        <div class="custom-dropdown-options absolute right-0 top-[calc(100%+4px)] bg-white border border-slate-200 rounded-xl shadow-lg w-48 z-50 hidden opacity-0 transform -translate-y-2 transition-all duration-200 max-h-60 overflow-y-auto" id="dropdown-options-month">
+                            <!-- Options injected by JS -->
+                        </div>
+                        <input type="hidden" id="filter-month" value="">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white p-4 rounded-2xl shadow-card border border-emerald-100 flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-1">Hadir</div>
+                            <div class="font-mono font-black text-3xl text-slate-800" id="rekap-hadir">0</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500"><i data-lucide="check-circle-2" class="w-5 h-5"></i></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-card border border-blue-100 flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">Izin</div>
+                            <div class="font-mono font-black text-3xl text-slate-800" id="rekap-izin">0</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500"><i data-lucide="mail" class="w-5 h-5"></i></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-card border border-amber-100 flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1">Sakit</div>
+                            <div class="font-mono font-black text-3xl text-slate-800" id="rekap-sakit">0</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-500"><i data-lucide="thermometer" class="w-5 h-5"></i></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-card border border-rose-100 flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold text-rose-600 uppercase tracking-widest mb-1">Alfa</div>
+                            <div class="font-mono font-black text-3xl text-slate-800" id="rekap-alfa">0</div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500"><i data-lucide="x-circle" class="w-5 h-5"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kalender Kehadiran (BARU) -->
+            <div class="bg-white rounded-3xl p-6 shadow-card border border-slate-100 mt-6">
+                <h3 class="font-heading font-bold text-slate-800 text-base mb-4 flex items-center gap-2"><i data-lucide="calendar-days" class="w-5 h-5 text-brand-500"></i> Kalender Mutaba'ah</h3>
+                <div id="calendar-wrapper">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <!-- Riwayat Harian -->
+            <div class="bg-white rounded-3xl p-6 shadow-card border border-slate-100">
+                <h3 class="font-heading font-bold text-slate-800 text-base mb-5 flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-brand-500"></i> Histori Presensi Harian</h3>
+                
+                <div id="timeline-container" class="space-y-0 mt-2">
+                    <!-- Timeline Items Injected Here -->
+                </div>
+
+                <div id="empty-state-history" class="hidden py-8 flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-3 border border-slate-100">
+                        <i data-lucide="calendar-x" class="w-8 h-8 text-slate-300"></i>
+                    </div>
+                    <p class="text-slate-500 font-medium text-sm">Belum ada riwayat absensi<br>tercatat di periode ini.</p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- MODAL STATUS PEMBAYARAN MIDTRANS -->
+    <div id="modal-status-pembayaran" class="modal-overlay">
+        <div class="modal-container">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                <h3 class="font-heading font-bold text-slate-800 text-sm">Status Transaksi</h3>
+                <button onclick="window.tutupModalPembayaran(false)" class="text-slate-400 hover:text-slate-600 bg-white p-1 rounded-md shadow-sm border border-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <div class="p-8" id="konten-status-pembayaran">
+                <!-- Konten Dinamis -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Setup & Logic (Enterprise Grade) -->
+    <script type="module">
+        import { db, appId, auth } from './firebase-config.js';
+        import { signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { collection, doc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // === 1. GLOBAL VARIABLES ===
+        const state = {
+            students: [],
+            attendance: [],
+            classes: [], // Ditambahkan untuk menyimpan data referensi kelas
+            settings: { nominalTagihan: 5000, nominalDenda: 0, periodeTagihan: "Bulan Ini", isTagihanAktif: true },
+            currentStudent: null,
+            currentMonthFilter: null // Menyimpan nilai bulan dari custom dropdown
+        };
+
+        // Utility: Date Format
+        const formatTglIndo = (dateStr) => {
+            if(!dateStr) return '';
+            return new Date(dateStr).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        };
+
+        const getMonthYearString = (dateObj) => {
+            return dateObj.getFullYear() + '-' + String(dateObj.getMonth() + 1).padStart(2, '0');
+        };
+
+        // Utility: Toast
+        window.showToast = function(message, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast-enter flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl backdrop-blur-md border text-sm font-semibold pointer-events-auto ${
+                isError ? 'bg-rose-50/95 border-rose-200 text-rose-800' : 'bg-slate-800/95 border-slate-700 text-white'
+            }`;
+            toast.innerHTML = `<i data-lucide="${isError ? 'alert-triangle' : 'check-circle'}" class="w-5 h-5 ${isError ? 'text-rose-500' : 'text-emerald-400'}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            if(window.lucide) window.lucide.createIcons();
+            
+            setTimeout(() => { 
+                toast.style.opacity = '0'; 
+                toast.style.transform = 'translateY(10px)'; 
+                toast.style.transition = 'all 0.3s ease'; 
+                setTimeout(() => toast.remove(), 300); 
+            }, 4000);
+        };
+
+        // ==========================================
+        // SWITCHER PORTAL PEGAWAI LOGIC (Clean URL)
+        // ==========================================
+        window.switchPortal = function(targetPath) {
+            // Memastikan query URL (e.g., ?sekolah=yayasan_x) ikut terbawa
+            const currentSearch = window.location.search;
+            window.location.href = targetPath + currentSearch;
+        };
+
+        // UI Generation for Custom Month Dropdown
+        function populateMonthFilter() {
+            const optionsContainer = document.getElementById('dropdown-options-month');
+            let html = ''; const now = new Date();
+            let firstVal = ''; let firstLabel = '';
+            
+            for(let i = 0; i < 6; i++) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const val = getMonthYearString(d);
+                const label = d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+                
+                if(i === 0) { firstVal = val; firstLabel = label; }
+                
+                html += `<div class="px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-brand-50 hover:text-brand-600 cursor-pointer transition-colors" onclick="window.selectMonthOption('${val}', '${label}')">${label}</div>`;
+            }
+            optionsContainer.innerHTML = html;
+            
+            // Set default value
+            if(!document.getElementById('filter-month').value) {
+                document.getElementById('filter-month').value = firstVal;
+                state.currentMonthFilter = firstVal;
+                document.getElementById('dropdown-selected-month-text').textContent = firstLabel;
+            }
+        }
+
+        // Custom Dropdown Handlers
+        window.toggleMonthDropdown = function() {
+            const dropdown = document.getElementById('dropdown-month-filter');
+            const options = document.getElementById('dropdown-options-month');
+            const arrow = dropdown.querySelector('.dropdown-arrow');
+            
+            if (options.classList.contains('hidden')) {
+                options.classList.remove('hidden');
+                setTimeout(() => {
+                    options.classList.remove('opacity-0', '-translate-y-2');
+                    options.classList.add('opacity-100', 'translate-y-0');
+                    arrow.classList.add('rotate-180');
+                }, 10);
+            } else {
+                options.classList.remove('opacity-100', 'translate-y-0');
+                options.classList.add('opacity-0', '-translate-y-2');
+                arrow.classList.remove('rotate-180');
+                setTimeout(() => options.classList.add('hidden'), 200);
+            }
+        };
+
+        window.selectMonthOption = function(val, text) {
+            document.getElementById('filter-month').value = val;
+            state.currentMonthFilter = val;
+            document.getElementById('dropdown-selected-month-text').textContent = text;
+            window.toggleMonthDropdown();
+            window.renderDashboard();
+        };
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('dropdown-month-filter');
+            if (dropdown && !dropdown.contains(e.target)) {
+                const options = document.getElementById('dropdown-options-month');
+                const arrow = dropdown.querySelector('.dropdown-arrow');
+                if (!options.classList.contains('hidden')) {
+                    options.classList.remove('opacity-100', 'translate-y-0');
+                    options.classList.add('opacity-0', '-translate-y-2');
+                    arrow.classList.remove('rotate-180');
+                    setTimeout(() => options.classList.add('hidden'), 200);
+                }
+            }
+        });
+
+        // Helper: Menerjemahkan Kelas ID ke Nama Kelas
+        function getClassName(idOrName) {
+            if(!idOrName) return '<span class="text-slate-400">Belum Ada Kelas</span>';
+            const cls = state.classes.find(c => c.id === idOrName || c.nama_kelas === idOrName || c.name === idOrName);
+            return cls ? (cls.nama_kelas || cls.name) : idOrName;
+        }
+
+        // ==========================================
+        // PWA DYNAMIC INJECTION & EVENT LISTENERS
+        // ==========================================
+        const manifestData = {
+            "name": "TahfizhPro Portal",
+            "short_name": "TahfizhPro",
+            "start_url": window.location.pathname + window.location.search,
+            "display": "standalone",
+            "background_color": "#f8fafc",
+            "theme_color": "#3b82f6",
+            "icons": [
+                { "src": "./logo.png", "sizes": "192x192", "type": "image/png" },
+                { "src": "./logo.png", "sizes": "512x512", "type": "image/png" }
+            ]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+        const manifestUrl = URL.createObjectURL(manifestBlob);
+        document.querySelector('link[rel="manifest"]').setAttribute('href', manifestUrl);
+
+        const swLogic = `
+            self.addEventListener('install', (e) => self.skipWaiting());
+            self.addEventListener('activate', (e) => self.clients.claim());
+            self.addEventListener('fetch', (e) => {});
+        `;
+        const swBlob = new Blob([swLogic], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(swBlob);
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(swUrl).catch((err) => console.log('SW Registration failed: ', err));
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if(!localStorage.getItem('pwa_banner_dismissed')) {
+                const banner = document.getElementById('pwa-install-banner');
+                banner.classList.remove('hidden', '-translate-y-full');
+                banner.classList.add('flex');
+            }
+        });
+
+        window.installPwa = async function() {
+            const banner = document.getElementById('pwa-install-banner');
+            banner.classList.add('hidden');
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+            }
+        };
+
+        window.dismissPwaBanner = function() {
+            localStorage.setItem('pwa_banner_dismissed', 'true');
+            const banner = document.getElementById('pwa-install-banner');
+            banner.classList.add('-translate-y-full');
+            setTimeout(() => banner.classList.add('hidden'), 500);
+        };
+
+
+        // === 2. FIREBASE INIT (SaaS Router) ===
+        document.addEventListener('DOMContentLoaded', () => {
+            if(window.lucide) window.lucide.createIcons();
+            
+            if (window.SAAS_TENANT_MISSING) {
+                document.getElementById('safety-net-screen').style.display = 'flex';
+                document.getElementById('view-login').style.display = 'none';
+                return;
+            }
+            initApp();
+        });
+
+        async function initApp() {
+            try {
+                const loader = document.getElementById('global-loader');
+                loader.classList.remove('hidden');
+                
+                await signInAnonymously(auth);
+
+                // ==========================================
+                // GLOBAL DEPLOY RECEIVER (Force Reload)
+                // ==========================================
+                let currentVersionTimestamp = null;
+                const globalSettingsRef = doc(db, 'saas_master', 'global_config');
+                onSnapshot(globalSettingsRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (currentVersionTimestamp === null) {
+                            currentVersionTimestamp = data.forceUpdateTimestamp || 0;
+                        } else if (data.forceUpdateTimestamp && data.forceUpdateTimestamp > currentVersionTimestamp) {
+                            const modal = document.getElementById('global-update-modal');
+                            const badge = document.getElementById('update-version-badge');
+                            const msg = document.getElementById('update-message-text');
+                            
+                            if (badge) badge.innerText = data.version || 'Update';
+                            if (msg) msg.innerText = data.updateMessage || 'Memuat pembaruan sistem...';
+                            
+                            modal.classList.remove('hidden');
+                            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+                            
+                            setTimeout(() => { window.location.reload(true); }, 4000);
+                        }
+                    }
+                });
+
+                // Listen to Global Settings
+                const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
+                onSnapshot(settingsRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        state.settings = { ...state.settings, ...docSnap.data() };
+                        if(state.currentStudent) renderDashboard();
+                    }
+                });
+
+                // Fetch Collections
+                let loadCount = 0;
+                const completeLoad = () => {
+                    loadCount++;
+                    // Menunggu 3 koleksi: students, attendance, classes
+                    if (loadCount >= 3) {
+                        populateMonthFilter();
+                        loader.classList.add('opacity-0');
+                        setTimeout(() => { loader.classList.add('hidden'); }, 300);
+
+                        const savedId = localStorage.getItem('tahfizh_saved_student_id');
+                        if (savedId) { document.getElementById('input-student-id').value = savedId; window.loginStudent(); }
+                    }
+                };
+
+                // Ambil Data Kelas (Agar nama kelas bisa di-resolve)
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'classes'), (snap) => {
+                    state.classes = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                    completeLoad();
+                    if(state.currentStudent) renderDashboard();
+                }, (err) => console.error(err));
+
+                // Ambil Data Santri
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'students'), (snap) => {
+                    state.students = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                    completeLoad();
+                    if(state.currentStudent) {
+                        state.currentStudent = state.students.find(s => s.id === state.currentStudent.id);
+                        renderDashboard();
+                    }
+                }, (err) => console.error(err));
+
+                // Ambil Data Absensi
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'attendance'), (snap) => {
+                    state.attendance = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                    completeLoad();
+                    if(state.currentStudent) renderDashboard();
+                }, (err) => console.error(err));
+
+            } catch (error) {
+                document.getElementById('global-loader').innerHTML = `<div class="bg-white p-8 rounded-2xl flex flex-col items-center text-center shadow-2xl max-w-xs"><div class="text-rose-500 mb-4"><i data-lucide="x-circle" class="w-16 h-16"></i></div><h2 class="text-xl font-bold text-slate-800">Koneksi Terputus</h2><p class="text-sm text-slate-500 mt-2">Gagal menghubungi server Yayasan.</p></div>`;
+                if(window.lucide) window.lucide.createIcons();
+            }
+        }
+
+        // === 3. LOGIN & RENDER LOGIC ===
+        window.loginStudent = function() {
+            const inputId = document.getElementById('input-student-id').value.trim();
+            if(!inputId) return window.showToast("Masukkan 6 Digit ID Santri terlebih dahulu", true);
+
+            const foundStudent = state.students.find(s => s.kodeSiswa === inputId || s.id === inputId);
+            
+            if(foundStudent) {
+                state.currentStudent = foundStudent;
+                localStorage.setItem('tahfizh_saved_student_id', foundStudent.id);
+                
+                document.getElementById('view-login').classList.add('hidden');
+                document.getElementById('view-dashboard').classList.remove('hidden');
+                
+                renderDashboard();
+            } else {
+                window.showToast("Data santri tidak ditemukan. Periksa kembali ID.", true);
+            }
+        };
+
+        window.logout = function() {
+            state.currentStudent = null;
+            localStorage.removeItem('tahfizh_saved_student_id');
+            document.getElementById('input-student-id').value = '';
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-login').classList.remove('hidden');
+        };
+
+        // Fungsi Ganti Profil Saudara / Anak Lain
+        window.switchSibling = function(id) {
+            const sibling = state.students.find(s => s.id === id);
+            if(sibling) {
+                state.currentStudent = sibling;
+                localStorage.setItem('tahfizh_saved_student_id', sibling.id);
+                renderDashboard();
+                window.showToast("Berpindah ke profil " + sibling.nama.split(' ')[0]);
+            }
+        };
+
+        function renderSiblingSelector() {
+            const selectorWrapper = document.getElementById('multi-child-selector');
+            const chipsContainer = document.getElementById('sibling-chips-container');
+            
+            if (!state.currentStudent || !state.currentStudent.waOrtu) {
+                selectorWrapper.style.display = 'none'; return;
+            }
+
+            const siblings = state.students.filter(s => s.waOrtu === state.currentStudent.waOrtu);
+            if (siblings.length <= 1) {
+                selectorWrapper.style.display = 'none'; return;
+            }
+
+            selectorWrapper.style.display = 'block';
+            chipsContainer.innerHTML = siblings.map(s => {
+                const isActive = s.id === state.currentStudent.id;
+                const btnClass = isActive ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/30' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 font-semibold';
+                const namaPendek = s.nama.split(' ')[0]; 
+                return `<button class="${btnClass} flex-shrink-0 px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5" onclick="window.switchSibling('${s.id}')"><i data-lucide="user" class="w-3.5 h-3.5"></i> ${namaPendek}</button>`;
+            }).join('');
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        function calculateBilling(student) {
+            const nomTagihan = state.settings.nominalTagihan || 5000;
+            let bulanTertunggak = 1; let totalDenda = 0;
+            if (student.bulanTunggakan && parseInt(student.bulanTunggakan) > 1) {
+                bulanTertunggak = parseInt(student.bulanTunggakan);
+                totalDenda = (bulanTertunggak - 1) * (state.settings.nominalDenda || 0);
+            }
+            return {
+                total: (bulanTertunggak * nomTagihan) + totalDenda,
+                bulan: bulanTertunggak,
+                periode: state.settings.periodeTagihan || "Bulan Ini"
+            };
+        }
+
+        // ==========================================
+        // FUNGSI RENDER KALENDER (BARU)
+        // ==========================================
+        function renderCalendar(monthVal, studentAtt) {
+            if (!monthVal) return;
+            const [year, month] = monthVal.split('-');
+            const date = new Date(year, month - 1, 1);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const firstDayIndex = date.getDay(); // 0 (Sun) to 6 (Sat)
+            
+            // Map attendance by date
+            const attMap = {};
+            studentAtt.forEach(a => {
+                if (a.date) {
+                    const day = parseInt(a.date.split('-')[2], 10);
+                    attMap[day] = a; // Jika ada mutiple, ambil yang paling akhir termuat
+                }
+            });
+
+            const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            let html = '<div class="grid grid-cols-7 gap-1 sm:gap-2 text-center mb-2">';
+            dayNames.forEach(d => {
+                html += `<div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest py-2">${d}</div>`;
+            });
+            html += '</div><div class="grid grid-cols-7 gap-1 sm:gap-2">';
+
+            // Fill empty days
+            for(let i=0; i<firstDayIndex; i++) {
+                html += `<div class="aspect-square rounded-xl bg-transparent"></div>`;
+            }
+
+            const today = new Date();
+            const isCurrentMonth = today.getFullYear() == parseInt(year) && today.getMonth() == (parseInt(month) - 1);
+
+            for(let d=1; d<=daysInMonth; d++) {
+                const rec = attMap[d];
+                let bgClass = 'bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100';
+                let indicator = '';
+                let textClass = 'font-semibold';
+
+                if (rec) {
+                    if(rec.status === 'H') { bgClass = 'bg-emerald-50 border-emerald-200 text-emerald-700'; indicator = '<div class="w-1.5 h-1.5 rounded-full bg-emerald-500 mx-auto mt-0.5"></div>'; }
+                    else if(rec.status === 'I') { bgClass = 'bg-blue-50 border-blue-200 text-blue-700'; indicator = '<div class="w-1.5 h-1.5 rounded-full bg-blue-500 mx-auto mt-0.5"></div>'; }
+                    else if(rec.status === 'S') { bgClass = 'bg-amber-50 border-amber-200 text-amber-700'; indicator = '<div class="w-1.5 h-1.5 rounded-full bg-amber-500 mx-auto mt-0.5"></div>'; }
+                    else if(rec.status === 'A') { bgClass = 'bg-rose-50 border-rose-200 text-rose-700'; indicator = '<div class="w-1.5 h-1.5 rounded-full bg-rose-500 mx-auto mt-0.5"></div>'; }
+                }
+
+                const isToday = isCurrentMonth && today.getDate() === d;
+                if(isToday) {
+                    bgClass = 'bg-brand-600 text-white border-brand-600 shadow-md shadow-brand-500/30';
+                    textClass = 'font-bold';
+                    if (rec) {
+                         // Simplify indicator to white for high contrast on active day
+                         indicator = '<div class="w-1.5 h-1.5 rounded-full bg-white mx-auto mt-0.5 shadow-sm"></div>';
+                    }
+                }
+
+                html += `
+                <div class="aspect-square flex flex-col items-center justify-center rounded-xl border ${bgClass} transition-all cursor-default">
+                    <span class="text-sm ${textClass}">${d}</span>
+                    ${indicator}
+                </div>`;
+            }
+
+            html += '</div>';
+            
+            // Legend Panel
+            html += `
+                <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-5 mt-5 pt-5 border-t border-slate-100">
+                    <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/30"></div><span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Hadir</span></div>
+                    <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-blue-500 shadow-sm shadow-blue-500/30"></div><span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Izin</span></div>
+                    <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-amber-500 shadow-sm shadow-amber-500/30"></div><span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Sakit</span></div>
+                    <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-rose-500 shadow-sm shadow-rose-500/30"></div><span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Alfa</span></div>
+                </div>
+            `;
+
+            document.getElementById('calendar-wrapper').innerHTML = html;
+        }
+
+        window.renderDashboard = function() {
+            if(!state.currentStudent) return;
+            const stu = state.currentStudent;
+            
+            renderSiblingSelector();
+
+            // Set Profile menggunakan nama kelas asli dari helper
+            const classNameDisplay = getClassName(stu.kelas_id || stu.kelas);
+            document.getElementById('profile-name').innerText = stu.nama;
+            document.getElementById('profile-class').innerHTML = `<i data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-300"></i> ${classNameDisplay}`;
+            document.getElementById('profile-id').innerText = stu.kodeSiswa || '-';
+
+            // Billing Banner Logic
+            const banner = document.getElementById('billing-banner');
+            if (state.settings.isTagihanAktif !== false && stu.pembayaranLunas === false) {
+                const billingInfo = calculateBilling(stu);
+                document.getElementById('nominal-tunggakan-teks').innerText = `Rp ${billingInfo.total.toLocaleString('id-ID')}`;
+                document.getElementById('teks-periode-tagihan').innerHTML = billingInfo.bulan > 1 ? `Administrasi SPP tertunggak selama <strong>${billingInfo.bulan} Bulan</strong> (Hingga ${billingInfo.periode}).` : `Administrasi SPP periode <strong>${billingInfo.periode}</strong> belum diselesaikan.`;
+                banner.classList.remove('hidden');
+                
+                // Disable button if payment is locked via Midtrans
+                const btnPay = document.getElementById('btn-bayar-midtrans');
+                if (stu.metodePembayaran === 'midtrans' || stu.metodePembayaran === 'gateway') {
+                    btnPay.disabled = true;
+                    btnPay.className = "w-full bg-slate-200 text-slate-500 font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-sm cursor-not-allowed border border-slate-300";
+                    btnPay.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i> Transaksi Sedang Diproses (Pending)';
+                } else {
+                    btnPay.disabled = false;
+                    btnPay.className = "w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl transition-all shadow-md shadow-rose-500/20 flex items-center justify-center gap-2 text-sm active:scale-95";
+                    btnPay.innerHTML = '<i data-lucide="credit-card" class="w-4 h-4"></i> Bayar Sekarang (Gateway Aman)';
+                }
+            } else {
+                banner.classList.add('hidden');
+            }
+            
+            // Attendance Filter & Render
+            const filterMonth = document.getElementById('filter-month').value || state.currentMonthFilter; 
+            const studentAtt = state.attendance.filter(a => a.studentId === stu.id && a.date && a.date.startsWith(filterMonth));
+            
+            let cH = 0, cI = 0, cS = 0, cA = 0;
+            studentAtt.forEach(a => {
+                if(a.status === 'H') cH++; else if(a.status === 'I') cI++; else if(a.status === 'S') cS++; else if(a.status === 'A') cA++;
+            });
+
+            document.getElementById('rekap-hadir').innerText = cH;
+            document.getElementById('rekap-izin').innerText = cI;
+            document.getElementById('rekap-sakit').innerText = cS;
+            document.getElementById('rekap-alfa').innerText = cA;
+
+            // Memanggil fungsi Kalender
+            renderCalendar(filterMonth, studentAtt);
+
+            const timelineContainer = document.getElementById('timeline-container');
+            const emptyState = document.getElementById('empty-state-history');
+            
+            studentAtt.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if(studentAtt.length === 0) {
+                timelineContainer.innerHTML = ''; emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden'); let html = '';
+                studentAtt.forEach(rec => {
+                    let dotColor = '', badgeStr = '';
+                    if(rec.status === 'H') { dotColor = '#10B981'; badgeStr = '<span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-md uppercase tracking-wider">Hadir</span>'; }
+                    if(rec.status === 'I') { dotColor = '#3B82F6'; badgeStr = '<span class="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-1 rounded-md uppercase tracking-wider">Izin</span>'; }
+                    if(rec.status === 'S') { dotColor = '#F59E0B'; badgeStr = '<span class="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-1 rounded-md uppercase tracking-wider">Sakit</span>'; }
+                    if(rec.status === 'A') { dotColor = '#EF4444'; badgeStr = '<span class="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-1 rounded-md uppercase tracking-wider">Alfa</span>'; }
+
+                    const tglIndo = formatTglIndo(rec.date);
+                    
+                    // Advanced detail for Smart Scanner
+                    let detailStr = '';
+                    if (rec.kategori && rec.jamScan) {
+                        let iconClock = rec.kategori === 'Tepat Waktu' ? 'text-emerald-500' : (rec.kategori === 'Terlambat' ? 'text-amber-500' : 'text-rose-500');
+                        detailStr = `<div class="bg-slate-50 border border-slate-100 rounded-lg p-2 mt-2 flex items-center justify-between"><div class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 ${iconClock}"></i><span class="text-xs font-semibold text-slate-700">${rec.jamScan} WIB</span></div><span class="text-[10px] font-bold text-slate-500">${rec.kategori}</span></div>`;
+                    } else if (rec.timestamp) {
+                        detailStr = `<p class="text-[11px] text-slate-500 mt-1 flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"></i> Direkam manual oleh guru</p>`;
+                    }
+
+                    html += `
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background-color: ${dotColor}"></div>
+                        <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-bold text-slate-800 text-[13px]">${tglIndo}</p>
+                                </div>
+                                <div>${badgeStr}</div>
+                            </div>
+                            ${detailStr}
+                        </div>
+                    </div>`;
+                });
+                timelineContainer.innerHTML = html;
+            }
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        // ==========================================
+        // MIDTRANS BILLING LOGIC
+        // ==========================================
+        window.bukaModalPembayaran = function(status, data = null) {
+            const modal = document.getElementById('modal-status-pembayaran');
+            const konten = document.getElementById('konten-status-pembayaran');
+            modal.classList.add('active');
+            
+            if (status === 'loading') {
+                konten.innerHTML = `<div class="loader mx-auto mb-4 border-slate-200 border-t-brand-500"></div><h3 class="font-heading font-bold text-lg text-slate-800 mb-1">Memproses Data...</h3><p class="text-sm text-slate-500">Menghubungkan ke server pembayaran aman Midtrans.</p>`;
+            } else if (status === 'success') {
+                konten.innerHTML = `<div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100"><i data-lucide="check-circle-2" class="w-8 h-8"></i></div><h3 class="font-heading font-bold text-xl text-emerald-600 mb-2">Alhamdulillah, Berhasil!</h3><p class="text-sm text-slate-600 mb-6">Pembayaran tagihan telah diterima sistem.</p><button onclick="window.tutupModalPembayaran(true)" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl">Tutup</button>`;
+            } else if (status === 'pending') {
+                konten.innerHTML = `<div class="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-amber-100"><i data-lucide="clock" class="w-8 h-8"></i></div><h3 class="font-heading font-bold text-xl text-amber-600 mb-2">Menunggu Pembayaran</h3><p class="text-sm text-slate-600 mb-6">Selesaikan instruksi pembayaran. Transaksi akan terverifikasi otomatis.</p><button onclick="window.tutupModalPembayaran(false)" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl">Mengerti</button>`;
+            } else if (status === 'error') {
+                const errorMsg = data && data.status_message ? data.status_message : "Gagal menginisiasi jalur pembayaran.";
+                konten.innerHTML = `<div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-rose-100"><i data-lucide="x-circle" class="w-8 h-8"></i></div><h3 class="font-heading font-bold text-xl text-rose-600 mb-2">Pemberitahuan Sistem</h3><p class="text-sm text-slate-600 mb-4">${errorMsg}</p><div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-left mb-6"><span class="text-xs font-bold text-brand-600 block mb-1">Informasi Admin:</span><span class="text-[11px] text-slate-500 leading-relaxed">Sistem membutuhkan Backend Endpoint untuk keamanan Token Midtrans. Hubungi admin yayasan untuk mengaktifkan fitur ini.</span></div><button onclick="window.tutupModalPembayaran(false)" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl border border-slate-200 transition-colors">Tutup Kembali</button>`;
+            }
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        window.tutupModalPembayaran = function(reloadUi = false) {
+            document.getElementById('modal-status-pembayaran').classList.remove('active');
+            if(reloadUi && state.currentStudent) renderDashboard();
+        };
+
+        window.inisiasiPembayaranMidtrans = async function() {
+            if (!state.currentStudent) return;
+            const stu = state.currentStudent;
+            const infoTagihan = calculateBilling(stu);
+
+            if (infoTagihan.total <= 0) return window.showToast("Tidak ada tagihan yang perlu dibayar.", false);
+
+            window.bukaModalPembayaran('loading');
+
+            try {
+                // Cloud Function Integration Path
+                const backendEndpointUrl = 'https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/createMidtransTransaction';
+                
+                const payload = {
+                    siswaId: stu.id,
+                    nama: stu.nama,
+                    jumlahTagihan: infoTagihan.total,
+                    periode: infoTagihan.periode
+                };
+
+                const response = await fetch(backendEndpointUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("Sistem belum siap menerima pembayaran otomatis.");
+
+                const data = await response.json();
+                const snapToken = data.token; 
+
+                document.getElementById('modal-status-pembayaran').classList.remove('active');
+
+                window.snap.pay(snapToken, {
+                    onSuccess: function(result){ window.bukaModalPembayaran('success', result); },
+                    onPending: function(result){ window.bukaModalPembayaran('pending', result); },
+                    onError: function(result){ window.bukaModalPembayaran('error', result); },
+                    onClose: function(){ window.showToast("Jendela pembayaran ditutup tanpa menyelesaikan transaksi.", true); }
+                });
+
+            } catch (error) {
+                window.bukaModalPembayaran('error', { status_message: error.message + " Pastikan Endpoint Cloud Function telah di-deploy oleh pihak Yayasan." });
+            }
+        };
+
+    </script>
+</body>
+</html>
