@@ -372,7 +372,7 @@
                         <table class="w-full text-left text-sm whitespace-nowrap">
                             <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold text-xs uppercase tracking-wider">
                                 <tr>
-                                    <th class="py-4 px-6">Nama Pengajar</th>
+                                    <th class="py-4 px-6">Identitas Pengajar</th>
                                     <th class="py-4 px-6">Otorisasi Kelas</th>
                                     <th class="py-4 px-6">PIN Akses</th>
                                     <th class="py-4 px-6 text-right">Aksi Master</th>
@@ -393,7 +393,7 @@
             <!-- VIEW: KEUANGAN -->
             <div id="view-keuangan" class="hidden space-y-6 view-transition">
                 
-                <!-- Transparansi Hak Developer Card (Kontras Diperbaiki) -->
+                <!-- Transparansi Hak Developer Card -->
                 <div id="dev-transparency-card" class="bg-slate-900 rounded-3xl p-6 shadow-lg relative overflow-hidden hidden border border-slate-800">
                     <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
                         <i data-lucide="shield-check" class="w-40 h-40 text-white"></i>
@@ -557,7 +557,6 @@
                     <input type="text" id="form-santri-nis" class="w-full border border-slate-200 bg-slate-100 text-slate-500 rounded-xl px-4 py-3 text-sm font-mono tracking-wider font-bold" placeholder="Auto-generate" disabled>
                 </div>
                 
-                <!-- IMPLEMENTASI CUSTOM DROPDOWN (No Native Select) -->
                 <div class="space-y-1.5">
                     <label class="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Kelas Binaan</label>
                     <div class="custom-select-wrapper" id="dropdown-santri-kelas">
@@ -591,14 +590,23 @@
             </div>
             <div class="p-8 space-y-5 flex-1 overflow-y-auto">
                 <input type="hidden" id="form-guru-id">
+                
                 <div class="space-y-1.5">
                     <label class="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Nama Pengajar</label>
                     <input type="text" id="form-guru-nama" class="w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all font-medium" placeholder="Masukkan nama ustadz/ustadzah" autocomplete="off">
                 </div>
+                
+                <!-- NEW: Kode Unik Pengajar -->
                 <div class="space-y-1.5">
-                    <label class="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">PIN Akses Rahasia (6 Angka)</label>
+                    <label class="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">ID / Kode Unik (Otomatis)</label>
+                    <input type="text" id="form-guru-kode" class="w-full border border-slate-200 bg-slate-100 text-slate-500 rounded-xl px-4 py-3 text-sm font-mono tracking-wider font-bold" placeholder="Auto-generate" disabled>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">PIN Akses Rahasia (Aplikasi)</label>
                     <input type="text" id="form-guru-pin" maxlength="6" class="w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all font-mono font-bold tracking-widest" placeholder="123456" autocomplete="off">
                 </div>
+
                 <div class="space-y-1.5">
                     <label class="block text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Otorisasi Kelas (Bisa Pilih Banyak)</label>
                     <div id="form-guru-checkbox-classes" class="bg-slate-50 border border-slate-200 rounded-xl p-4 max-h-48 overflow-y-auto space-y-3">
@@ -638,7 +646,7 @@
             clientMeta: null,
             financeFilter: 'all',
             siswaTerpilihCetak: null,
-            tipeCetak: 'student', // Flag pembeda rendering ID Card ('student' atau 'teacher')
+            tipeCetak: 'student', 
             tenantPhone: ''
         };
 
@@ -679,8 +687,6 @@
         // ==========================================
         // PWA DYNAMIC INJECTION & EVENT LISTENERS
         // ==========================================
-        
-        // 1. Inject PWA Manifest dynamically (To comply with Single-File Mandate)
         const manifestData = {
             "name": "TahfizhPro Admin",
             "short_name": "AdminPro",
@@ -697,13 +703,10 @@
         const manifestUrl = URL.createObjectURL(manifestBlob);
         document.querySelector('link[rel="manifest"]').setAttribute('href', manifestUrl);
 
-        // 2. Inject Service Worker dynamically
         const swLogic = `
             self.addEventListener('install', (e) => self.skipWaiting());
             self.addEventListener('activate', (e) => self.clients.claim());
-            self.addEventListener('fetch', (e) => {
-                // Simple pass-through worker
-            });
+            self.addEventListener('fetch', (e) => {});
         `;
         const swBlob = new Blob([swLogic], { type: 'application/javascript' });
         const swUrl = URL.createObjectURL(swBlob);
@@ -711,7 +714,6 @@
             navigator.serviceWorker.register(swUrl).catch((err) => console.log('SW Registration failed: ', err));
         }
 
-        // 3. PWA Install Prompt Logic
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -739,7 +741,6 @@
             banner.classList.add('-translate-y-full');
             setTimeout(() => banner.classList.add('hidden'), 500);
         };
-
 
         document.addEventListener('DOMContentLoaded', () => {
             if(window.lucide) window.lucide.createIcons();
@@ -902,7 +903,6 @@
             try {
                 await signInAnonymously(auth);
 
-                // Mendapatkan Metadata Client (Porsi Bagi Hasil & Total Disetor) dari SaaS Master
                 const clientRef = doc(db, 'saas_master', 'clients', 'list', appId);
                 onSnapshot(clientRef, (docSnap) => {
                     if (docSnap.exists()) {
@@ -912,7 +912,6 @@
                     }
                 });
 
-                // Sinkronisasi Pengaturan Global (Termasuk Layout ID Card & Pending Withdrawal OTP)
                 const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
                 onSnapshot(settingsRef, (docSnap) => {
                     if (docSnap.exists()) {
@@ -920,7 +919,6 @@
                         
                         const isCetak = state.settings.isCetakKartuActive === true;
                         
-                        // Toggle Visibilitas Tombol Cetak Massal (Keduanya)
                         const btnCetakMassalSantri = document.getElementById('btn-cetak-massal-id');
                         if (btnCetakMassalSantri) btnCetakMassalSantri.style.display = isCetak ? 'flex' : 'none';
                         
@@ -936,7 +934,6 @@
                     }
                 });
 
-                // Sinkronisasi Kelas
                 const clsRef = collection(db, 'artifacts', appId, 'public', 'data', 'classes');
                 onSnapshot(query(clsRef), (snap) => {
                     state.classes = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -950,7 +947,6 @@
                     updateDropdownKelasModal();
                 });
 
-                // Sinkronisasi Santri
                 const stuRef = collection(db, 'artifacts', appId, 'public', 'data', 'students');
                 onSnapshot(query(stuRef), (snap) => {
                     state.students = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
@@ -961,7 +957,6 @@
                     if(!document.getElementById('view-keuangan').classList.contains('hidden')) window.renderKeuangan();
                 });
 
-                // Sinkronisasi Guru
                 const tchRef = collection(db, 'artifacts', appId, 'public', 'data', 'teachers');
                 onSnapshot(query(tchRef), (snap) => {
                     state.teachers = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
@@ -969,7 +964,6 @@
                     if(!document.getElementById('view-guru').classList.contains('hidden')) window.renderGuru();
                 });
 
-                // Receiver Global Deploy Force Reload
                 let currentVersionTimestamp = null;
                 const globalSettingsRef = doc(db, 'saas_master', 'global_config');
                 onSnapshot(globalSettingsRef, (docSnap) => {
@@ -999,7 +993,6 @@
             }
         }
 
-        // Helper: Menerjemahkan Kelas ID ke Nama Kelas
         function getClassName(idOrName) {
             if(!idOrName) return '<span class="text-rose-500 font-semibold">Tanpa Kelas</span>';
             const cls = state.classes.find(c => c.id === idOrName || c.nama_kelas === idOrName || c.name === idOrName);
@@ -1035,19 +1028,16 @@
                 return window.showToast("Kode OTP tidak valid atau salah!", true);
             }
             
-            // Proses Pembayaran Lunas (Sync ke Developer)
             try {
                 window.showToast("Memverifikasi Kode OTP ke Server...", false);
                 const currentDisetor = state.clientMeta.totalDisetor || 0;
                 const amountToPay = pending.amount;
                 
-                // 1. Update ke Master DB (Tercatat sebagai Disetor)
                 await updateDoc(doc(db, 'saas_master', 'clients', 'list', appId), {
                     totalDisetor: currentDisetor + amountToPay,
                     hasPendingWithdrawal: false
                 });
                 
-                // 2. Clear status penarikan di Settings Klien
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), {
                     pendingWithdrawal: null
                 });
@@ -1060,7 +1050,6 @@
         };
 
         function updateDropdownKelasModal() {
-            // Update Custom Dropdown Form Santri
             const optionsContainer = document.getElementById('dropdown-options-kelas');
             if(optionsContainer) {
                 let opts = `<div class="custom-select-option" onclick="window.selectSantriKelasOption('', '-- Pilih Kelas Binaan --')">-- Pilih Kelas Binaan --</div>`;
@@ -1072,7 +1061,6 @@
                 optionsContainer.innerHTML = opts;
             }
 
-            // Update Checkbox Form Guru
             const checkGuru = document.getElementById('form-guru-checkbox-classes');
             if(checkGuru) {
                 if(state.classes.length === 0) {
@@ -1111,7 +1099,6 @@
             if(elTunggak) elTunggak.innerText = `Rp ${tunggakan.toLocaleString('id-ID')}`;
         }
 
-        // GLOBAL CONFIRMATION WRAPPERS (TO PREVENT STRING QUOTING BUGS ON BUTTONS)
         window.confirmHapusKelas = function(id) {
             const cls = state.classes.find(c => c.id === id);
             if(!cls) return;
@@ -1161,6 +1148,7 @@
             window.confirmAksi('Cabut Akses Pengajar', `Yakin mencabut akun <strong>${escName}</strong>? Akun ini tidak akan bisa login kembali.`, () => window.hapusData('teachers', id));
         };
 
+        // NEW: Update function Edit Guru to handle Kode Guru
         window.editGuru = function(id) {
             const data = state.teachers.find(x => x.id === id);
             if(!data) return;
@@ -1168,6 +1156,7 @@
             document.getElementById('form-guru-id').value = data.id;
             document.getElementById('form-guru-nama').value = data.nama;
             document.getElementById('form-guru-pin').value = data.pin || '';
+            document.getElementById('form-guru-kode').value = data.kodeGuru || data.id; // Inject Kode Guru
             
             const assigned = data.kelas_ids || [];
             document.querySelectorAll('input[name="guru_assign_class"]').forEach(cb => {
@@ -1395,7 +1384,6 @@
             if(tbody) {
                 tbody.innerHTML = filtered.map(t => {
                     let strKelas = '-';
-                    // Resolusi Kelas Multipel untuk Guru
                     if(t.kelas_ids && Array.isArray(t.kelas_ids) && t.kelas_ids.length > 0) {
                         strKelas = t.kelas_ids.map(cid => getClassName(cid)).join(', ');
                     } else if(t.kelas) {
@@ -1406,7 +1394,10 @@
 
                     return `
                     <tr class="table-row-hover group transition-colors">
-                        <td class="py-4 px-6 font-bold text-slate-800 text-[15px]">${t.nama}</td>
+                        <td class="py-4 px-6">
+                            <p class="font-bold text-slate-800 text-[15px] mb-0.5">${t.nama}</p>
+                            <p class="text-xs text-slate-500 font-mono font-medium tracking-wide">ID: ${t.kodeGuru || t.id}</p>
+                        </td>
                         <td class="py-4 px-6 text-sm text-slate-600 font-medium">${strKelas}</td>
                         <td class="py-4 px-6"><span class="font-mono text-sm font-bold bg-slate-100 text-brand-600 px-3 py-1.5 rounded-lg border border-slate-200 tracking-[0.2em]">${t.pin || '******'}</span></td>
                         <td class="py-4 px-6 text-right">
@@ -1424,6 +1415,7 @@
             document.getElementById('modal-guru-title').innerText = 'Tambah Pengajar Baru';
             document.getElementById('form-guru-id').value = '';
             document.getElementById('form-guru-nama').value = '';
+            document.getElementById('form-guru-kode').value = ''; // Reset Form Kode Guru
             document.getElementById('form-guru-pin').value = '';
             
             document.querySelectorAll('input[name="guru_assign_class"]').forEach(cb => cb.checked = false);
@@ -1447,6 +1439,8 @@
             if(window.lucide) window.lucide.createIcons();
 
             const docId = id || `teacher_${Date.now()}`;
+            // NEW: Generate Kode Guru jika membuat baru
+            const kodeGuru = document.getElementById('form-guru-kode').value || Math.floor(100000 + Math.random() * 900000).toString();
 
             const payload = {
                 nama: nama, pin: pin, kelas_ids: arrKelasId,
@@ -1454,7 +1448,11 @@
             };
 
             try {
-                if(!id) { payload.id = docId; payload.createdAt = Date.now(); }
+                if(!id) { 
+                    payload.id = docId; 
+                    payload.kodeGuru = kodeGuru; // Simpan Kode Guru ke DB
+                    payload.createdAt = Date.now(); 
+                }
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teachers', docId), payload, { merge: true });
                 window.showToast("Kredensial pengajar berhasil diaktifkan!");
                 window.closeModal('modal-guru');
@@ -1571,8 +1569,10 @@
                         const canvas = document.createElement('canvas');
                         canvas.width = img.width; canvas.height = img.height;
                         const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
                         ctx.drawImage(img, 0, 0);
-                        resolve(canvas.toDataURL('image/jpeg', 0.9)); 
+                        resolve(canvas.toDataURL('image/jpeg', 0.95)); 
                     } catch(e) { resolve(null); }
                 };
                 img.onerror = () => { resolve(null); };
@@ -1620,7 +1620,8 @@
                             if (pType === 'NAMA') {
                                 obj.set('text', (personObj.nama || personObj.name || 'TANPA NAMA').toUpperCase());
                             } else if (pType === 'ID' || pType === 'NIS') {
-                                const idText = type === 'teacher' ? (personObj.pin || personObj.id) : (personObj.kodeSiswa || personObj.id);
+                                // NEW FIX: Gunakan kodeGuru (bukan PIN) untuk Text ID Card Pengajar
+                                const idText = type === 'teacher' ? (personObj.kodeGuru || personObj.id) : (personObj.kodeSiswa || personObj.id);
                                 obj.set('text', 'ID: ' + (idText || '---'));
                             } else if (pType === 'KELAS') {
                                 let clsName = "PENGAJAR";
@@ -1698,7 +1699,8 @@
                                     try {
                                         const qrCanvas = document.createElement('canvas');
                                         const baseUrl = window.location.origin;
-                                        const validasiId = encodeURIComponent(personObj.kodeSiswa || personObj.pin || personObj.id || '000');
+                                        // NEW FIX: Gunakan kodeSiswa ATAU kodeGuru (bukan PIN) untuk validasi QR Code
+                                        const validasiId = encodeURIComponent(personObj.kodeSiswa || personObj.kodeGuru || personObj.id || '000');
                                         
                                         const verifyUrl = `${baseUrl}/verifikasisantri?id=${validasiId}`;
                                         
@@ -1751,7 +1753,6 @@
 
                         await Promise.all(replacePromises);
 
-                        // MASKING SUDUT MENGELINGKAR TAHAN BANTING
                         const r = 35; const w = 540; const h = 860; const cornerColor = '#ffffff'; 
                         const tl = new fabric.Path(`M 0 0 L ${r} 0 A ${r} ${r} 0 0 0 0 ${r} Z`, { fill: cornerColor, selectable: false, evented: false });
                         const tr = new fabric.Path(`M ${w} 0 L ${w} ${r} A ${r} ${r} 0 0 0 ${w-r} 0 Z`, { fill: cornerColor, selectable: false, evented: false });
@@ -1838,9 +1839,11 @@
             }
             
             try {
+                await new Promise(r => setTimeout(r, 100));
+
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('p', 'mm', 'a4'); 
-                const cardW = 54; const cardH = 86; // CR80 standard
+                const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true }); 
+                const cardW = 54; const cardH = 86; 
                 let hasDrawn = false;
                 let canvasFront = null, canvasBack = null;
                 const type = state.tipeCetak || 'student';
@@ -1848,7 +1851,7 @@
                 if (state.settings.idCardFrontJson) {
                     canvasFront = await renderIdCardToCanvas(state.settings.idCardFrontJson, state.siswaTerpilihCetak, type);
                     if(canvasFront) {
-                        doc.addImage(canvasFront.toDataURL({format: 'png', multiplier: 3}), 'PNG', 40, 20, cardW, cardH);
+                        doc.addImage(canvasFront.toDataURL({format: 'jpeg', quality: 0.95, multiplier: 2.2}), 'JPEG', 40, 20, cardW, cardH, undefined, 'FAST');
                         doc.setDrawColor(200, 200, 200); doc.setLineWidth(0.1); 
                         doc.roundedRect(40, 20, cardW, cardH, 3.5, 3.5, 'S');
                         hasDrawn = true;
@@ -1858,7 +1861,7 @@
                 if (state.settings.idCardBackJson) {
                     canvasBack = await renderIdCardToCanvas(state.settings.idCardBackJson, state.siswaTerpilihCetak, type);
                     if(canvasBack) {
-                        doc.addImage(canvasBack.toDataURL({format: 'png', multiplier: 3}), 'PNG', 110, 20, cardW, cardH);
+                        doc.addImage(canvasBack.toDataURL({format: 'jpeg', quality: 0.95, multiplier: 2.2}), 'JPEG', 110, 20, cardW, cardH, undefined, 'FAST');
                         doc.setDrawColor(200, 200, 200); doc.setLineWidth(0.1); 
                         doc.roundedRect(110, 20, cardW, cardH, 3.5, 3.5, 'S');
                         hasDrawn = true;
@@ -1911,8 +1914,10 @@
             window.showToast("Menyusun PDF Massal Resolusi Tinggi... Mohon menunggu beberapa saat.", false);
             
             try {
+                await new Promise(r => setTimeout(r, 150));
+
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('p', 'mm', 'a4'); 
+                const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true }); 
                 const cardW = 54; const cardH = 86;
                 
                 const sortedData = [...dataDicetak].sort((a,b) => {
@@ -1922,16 +1927,18 @@
                 const cardsPerPage = 3; 
                 
                 for(let i = 0; i < sortedData.length; i++) {
+                    await new Promise(r => setTimeout(r, 60));
+
                     if (i > 0 && i % cardsPerPage === 0) doc.addPage();
                     const rowIndex = i % cardsPerPage;
-                    const yPos = 12 + (rowIndex * 92); // Spacing layout A4
+                    const yPos = 12 + (rowIndex * 92); 
                     
                     const person = sortedData[i];
 
                     if (state.settings.idCardFrontJson) {
                         const canvas = await renderIdCardToCanvas(state.settings.idCardFrontJson, person, type);
                         if(canvas) {
-                            doc.addImage(canvas.toDataURL({format: 'png', multiplier: 3}), 'PNG', 40, yPos, cardW, cardH);
+                            doc.addImage(canvas.toDataURL({format: 'jpeg', quality: 0.95, multiplier: 2.2}), 'JPEG', 40, yPos, cardW, cardH, undefined, 'FAST');
                             doc.setDrawColor(200, 200, 200); doc.setLineWidth(0.1); doc.roundedRect(40, yPos, cardW, cardH, 3.5, 3.5, 'S');
                             canvas.dispose();
                         }
@@ -1940,19 +1947,20 @@
                     if (state.settings.idCardBackJson) {
                         const canvas = await renderIdCardToCanvas(state.settings.idCardBackJson, person, type);
                         if(canvas) {
-                            doc.addImage(canvas.toDataURL({format: 'png', multiplier: 3}), 'PNG', 110, yPos, cardW, cardH);
+                            doc.addImage(canvas.toDataURL({format: 'jpeg', quality: 0.95, multiplier: 2.2}), 'JPEG', 110, yPos, cardW, cardH, undefined, 'FAST');
                             doc.setDrawColor(200, 200, 200); doc.setLineWidth(0.1); doc.roundedRect(110, yPos, cardW, cardH, 3.5, 3.5, 'S');
                             canvas.dispose();
                         }
                     }
 
-                    // Draw cutting line guides
                     if (state.settings.idCardFrontJson && state.settings.idCardBackJson) {
                         doc.setDrawColor(150, 150, 150); doc.setLineDashPattern([2, 2], 0); doc.setLineWidth(0.2);
                         doc.line(102, yPos - 3, 102, yPos + cardH + 3); doc.setLineDashPattern([], 0);
                     }
                 }
                 
+                await new Promise(r => setTimeout(r, 100));
+
                 const roleLabel = type === 'teacher' ? 'Pengajar' : 'Santri';
                 doc.save(`TahfizhPro_IDCards_${sortedData.length}_${roleLabel}_HD.pdf`);
                 window.showToast("Berhasil mengunduh PDF Massal Resolusi Tinggi!");
@@ -1968,7 +1976,6 @@
             }
         };
 
-        // GLOBAL CONFIRMATION & DELETE ENGINE
         window.confirmAksi = function(title, desc, callback) {
             document.getElementById('confirm-title').innerText = title;
             document.getElementById('confirm-desc').innerHTML = desc;

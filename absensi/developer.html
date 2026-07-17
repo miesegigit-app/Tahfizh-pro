@@ -870,7 +870,7 @@
             
             <div class="modal-body">
                 <p class="text-sm text-muted" style="margin-bottom: 24px; line-height: 1.5;">
-                    Unggah file konfigurasi (<code>.json</code>) dari <strong>Mini Studio</strong>. Sistem otomatis mendeteksi dan mengunggah gambar resolusi tinggi (Base64) di dalamnya ke Cloudinary untuk menghemat memori Firestore.
+                    Unggah file konfigurasi (<code>.json</code>) dari <strong>Mini Studio</strong>. Sistem otomatis mendeteksi, mengecilkan ukuran resolusi, mengompres, dan mengunggah gambar ke Cloudinary untuk menghemat memori Firestore.
                 </p>
 
                 <input type="hidden" id="idcard-tenant-id">
@@ -882,7 +882,7 @@
                     <label for="upload-json-template" class="file-drop-zone" id="drop-zone-json" style="border-color: var(--primary); background: rgba(59, 130, 246, 0.05);">
                         <i data-lucide="file-json-2" style="width: 40px; height: 40px; color: var(--primary); margin-bottom: 16px; display: inline-block;"></i>
                         <div id="json-upload-text" style="font-size: 14px; font-weight: 700; color: white;">Klik untuk Pilih File JSON</div>
-                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Sistem sanggup memproses file > 1MB.</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Sistem sanggup memproses file > 1MB dengan kompresi bawaan.</div>
                     </label>
                 </div>
 
@@ -918,7 +918,7 @@
                 <button class="btn-ghost" onclick="window.closeModal('modal-tenant-twibbon')" style="color: var(--accent);"><i data-lucide="x"></i></button>
             </div>
             <div class="modal-body">
-                <p class="text-sm text-muted" style="margin-bottom: 24px; line-height: 1.5;">Atur bingkai (frame) Twibbon khusus untuk Yayasan <strong><span id="twibbon-tenant-name" style="color:white;"></span></strong>. Gambar akan langsung diunggah ke *Cloudinary Storage* Anda.</p>
+                <p class="text-sm text-muted" style="margin-bottom: 24px; line-height: 1.5;">Atur bingkai (frame) Twibbon khusus untuk Yayasan <strong><span id="twibbon-tenant-name" style="color:white;"></span></strong>. Gambar akan otomatis di-downscale (Max 1080px) dan diunggah ke *Cloudinary Storage* Anda.</p>
                 <input type="hidden" id="twibbon-tenant-id">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;" id="twibbon-grid-layout">
                     <div>
@@ -928,7 +928,7 @@
                             <label for="input-twibbon-file" class="file-drop-zone">
                                 <i data-lucide="image-plus" style="width: 32px; height: 32px; color: var(--accent); margin-bottom: 12px; display: inline-block;"></i>
                                 <div id="twibbon-upload-text" style="font-size: 13px; font-weight: 600; color: white;">Klik untuk Pilih File Gambar</div>
-                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Maksimal 2MB. Resolusi disarankan 1:1.</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Wajib Format PNG Transparan.</div>
                             </label>
                         </div>
                         <div class="input-group" style="margin-top: 16px;">
@@ -2123,20 +2123,85 @@
             if(window.lucide) window.lucide.createIcons();
         }
 
-        async function executeCloudinaryUpload(file) {
+        // ==========================================
+        // COMPRESSION ENGINE
+        // ==========================================
+
+        async function compressImageBase64(base64Str, isBackground = false) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    // Maksimal dimensi gambar (Pixel)
+                    const MAX_WIDTH = isBackground ? 1080 : 600;
+                    const MAX_HEIGHT = isBackground ? 1080 : 600;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Wajib latar belakang putih agar transparan tidak jadi blok hitam
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    resolve(canvas.toDataURL('image/jpeg', 0.85)); // Kualitas 85%
+                };
+                img.onerror = () => resolve(base64Str); // Fallback ke asli jika gagal parse
+                img.src = base64Str;
+            });
+        }
+
+        async function compressTwibbon(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const MAX_SIZE = 1080;
+                        let width = img.width; let height = img.height;
+
+                        if (width > height && width > MAX_SIZE) {
+                            height *= MAX_SIZE / width; width = MAX_SIZE;
+                        } else if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height; height = MAX_SIZE;
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // MUST BE PNG for transparency (Bolongan foto wajah)
+                        resolve(canvas.toDataURL('image/png'));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function uploadBase64ToCloudinary(base64Data) {
             const cloudName = globalSaaSSettings.cloudinaryCloudName || 'dpbo6ogyp';
             const uploadPreset = globalSaaSSettings.cloudinaryUploadPreset || 'TahfizhPro';
 
-            if (!cloudName || !uploadPreset) throw new Error("Konfigurasi Cloudinary belum disetel! Harap ke menu Pengaturan.");
-            if (file.size > 5 * 1024 * 1024) throw new Error("Tolak: Ukuran maksimal file adalah 5MB!");
+            if (!cloudName || !uploadPreset) throw new Error("Konfigurasi Cloudinary belum disetel! Harap isi di menu Pengaturan Sistem.");
 
             const formData = new FormData();
-            formData.append('file', file); 
+            formData.append('file', base64Data);
             formData.append('upload_preset', uploadPreset);
 
             const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method: 'POST', body: formData });
-            if (!response.ok) throw new Error("Cloudinary menolak upload. Periksa preset Anda.");
-
+            if (!response.ok) throw new Error("Cloudinary menolak upload otomatis.");
+            
             const data = await response.json();
             return data.secure_url;
         }
@@ -2180,12 +2245,18 @@
             const uploadText = document.getElementById('twibbon-upload-text');
             const btnSave = document.getElementById('btn-save-twibbon');
             
-            uploadText.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width:14px; height:14px;"></i> Sedang Mengunggah...';
+            uploadText.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width:14px; height:14px;"></i> Sedang Mengompresi...';
             btnSave.disabled = true;
             if(window.lucide) window.lucide.createIcons();
             
             try {
-                const secureUrl = await executeCloudinaryUpload(file);
+                // Gunakan Canvas Compression (Menjaga PNG Transparan)
+                const compressedB64 = await compressTwibbon(file);
+                
+                uploadText.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width:14px; height:14px;"></i> Mengunggah ke Cloud...';
+                
+                const secureUrl = await uploadBase64ToCloudinary(compressedB64);
+                
                 document.getElementById('input-twibbon-url').value = secureUrl;
                 window.updateTwibbonPreview();
                 window.showToast("Upload Twibbon Selesai! Klik Terapkan untuk menyimpan.");
@@ -2298,23 +2369,6 @@
             reader.readAsText(file);
         };
 
-        async function uploadBase64ToCloudinary(base64Data) {
-            const cloudName = globalSaaSSettings.cloudinaryCloudName || 'dpbo6ogyp';
-            const uploadPreset = globalSaaSSettings.cloudinaryUploadPreset || 'TahfizhPro';
-
-            if (!cloudName || !uploadPreset) throw new Error("Konfigurasi Cloudinary belum disetel! Harap isi di menu Pengaturan Sistem.");
-
-            const formData = new FormData();
-            formData.append('file', base64Data);
-            formData.append('upload_preset', uploadPreset);
-
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method: 'POST', body: formData });
-            if (!response.ok) throw new Error("Cloudinary menolak upload otomatis.");
-            
-            const data = await response.json();
-            return data.secure_url;
-        }
-
         async function optimizeJsonImages(jsonString) {
             if (!jsonString) return null;
             try {
@@ -2323,12 +2377,29 @@
                     for (let i = 0; i < jsonObj.objects.length; i++) {
                         let obj = jsonObj.objects[i];
                         if (obj.type === 'image' && obj.src && obj.src.startsWith('data:image/') && !obj.placeholderType) {
-                            obj.src = await uploadBase64ToCloudinary(obj.src);
+                            
+                            // 1. DOWNSCALE & COMPRESS FIRST
+                            const compressedB64 = await compressImageBase64(obj.src, obj.isAppBackground);
+                            
+                            // 2. ATTEMPT CLOUDINARY UPLOAD
+                            try {
+                                obj.src = await uploadBase64ToCloudinary(compressedB64);
+                            } catch(cloudErr) {
+                                console.warn("Cloudinary upload failed, falling back to compressed Base64", cloudErr);
+                                obj.src = compressedB64; // Fallback to compressed image (safe for Firestore)
+                            }
+                            
                         } else if (obj.type === 'group' && obj.objects) {
                             for(let j=0; j < obj.objects.length; j++) {
                                 let sub = obj.objects[j];
                                 if(sub.type === 'image' && sub.src && sub.src.startsWith('data:image/') && !sub.placeholderType) {
-                                    sub.src = await uploadBase64ToCloudinary(sub.src);
+                                    
+                                    const compressedB64 = await compressImageBase64(sub.src, sub.isAppBackground);
+                                    try {
+                                        sub.src = await uploadBase64ToCloudinary(compressedB64);
+                                    } catch(cloudErr) {
+                                        sub.src = compressedB64;
+                                    }
                                 }
                             }
                         }
@@ -2337,7 +2408,7 @@
                 return JSON.stringify(jsonObj);
             } catch(e) {
                 console.error("Gagal optimasi JSON:", e);
-                throw new Error("Struktur JSON rusak atau pengunggahan gambar ke Cloudinary gagal.");
+                throw new Error("Struktur JSON rusak atau pemrosesan gambar gagal.");
             }
         }
 
@@ -2364,7 +2435,7 @@
                 }
 
                 const currentSize = new Blob([frontJson || '', backJson || '']).size;
-                if (currentSize > 900000) {
+                if (currentSize > 950000) {
                     throw new Error("Setelah kompresi, JSON masih > 1MB. Kurangi detail kerumitan gambar di Studio Anda.");
                 }
 
