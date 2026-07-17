@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Verifikasi Santri - TahfizhPro</title>
-    <meta name="description" content="Portal Verifikasi Validitas Santri TahfizhPro Enterprise">
+    <title>Verifikasi Presensi - TahfizhPro</title>
+    <meta name="description" content="Portal Verifikasi Validitas Kartu Presensi Santri dan Pengajar Enterprise">
     <meta name="theme-color" content="#F8FAFC">
+
+    <!-- Meta Tags & OG Image Setup (Konsisten) -->
+    <meta property="og:title" content="Verifikasi Digital - TahfizhPro">
+    <meta property="og:description" content="Sistem Validasi Identitas Pintar untuk Santri dan Pengajar.">
+    <meta property="og:image" content="https://i.ibb.co.com/Tq2dVMHm/Desain-tanpa-judul-4.png">
+    <meta property="og:type" content="website">
+
+    <!-- Ikon Aplikasi -->
+    <link rel="icon" href="./logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="./logo.png">
 
     <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +59,7 @@
             100% { width: 160px; height: 160px; opacity: 0; border: 2px solid rgba(16, 185, 129, 0); }
         }
 
-        /* Animasi Efek Pulse Khusus untuk Foto Santri */
+        /* Animasi Efek Pulse Khusus untuk Foto Entity */
         @keyframes photo-pulse-glow {
             0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
             70% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
@@ -108,7 +118,7 @@
         
         <!-- STATE 1: LOADING SKELETON -->
         <div id="state-loading" class="w-full flex flex-col items-center justify-center">
-            <div class="glass-card w-full rounded-3xl overflow-hidden border border-slate-200 p-8 flex flex-col items-center w-full mb-6 relative">
+            <div class="glass-card w-full rounded-3xl overflow-hidden border border-slate-200 p-8 flex flex-col items-center mb-6 relative">
                 <!-- Aksen shimmer atas -->
                 <div class="absolute top-0 left-0 right-0 h-2 skeleton"></div>
                 
@@ -126,7 +136,7 @@
                 <div class="w-full h-16 rounded-xl skeleton"></div>
             </div>
             <p id="loading-text" class="text-sm font-semibold text-slate-500 animate-pulse flex items-center gap-2">
-                <i data-lucide="radio" class="w-4 h-4"></i> Menyambungkan ke Server Aman...
+                <i data-lucide="radio" class="w-4 h-4"></i> Memvalidasi Identitas...
             </p>
         </div>
 
@@ -147,9 +157,11 @@
                         </div>
                     </div>
 
-                    <h2 class="text-[22px] font-black text-slate-900 mb-1 text-center tracking-tight">STATUS VALID</h2>
-                    <p class="text-xs text-emerald-600 font-bold tracking-widest uppercase mb-8 flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
-                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Santri Diakui
+                    <h2 class="text-[22px] font-black text-slate-900 mb-1 text-center tracking-tight">KARTU VALID</h2>
+                    
+                    <!-- Dynamic Role Badge -->
+                    <p id="val-role-badge" class="text-xs text-emerald-600 font-bold tracking-widest uppercase mb-8 flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Identitas Diakui
                     </p>
 
                     <!-- Foto Profil dengan Efek Pulse Glow Premium -->
@@ -159,7 +171,7 @@
                         
                         <!-- Actual Photo Frame -->
                         <div class="relative w-full h-full rounded-full border-[5px] border-white shadow-xl overflow-hidden bg-slate-50 z-10 flex items-center justify-center">
-                            <img id="val-foto" src="" alt="Foto Santri" class="w-full h-full object-cover hidden">
+                            <img id="val-foto" src="" alt="Foto Entitas" class="w-full h-full object-cover hidden">
                             <div id="val-foto-fallback" class="w-full h-full flex flex-col items-center justify-center text-slate-300">
                                 <i data-lucide="user" class="w-12 h-12 mb-1"></i>
                             </div>
@@ -171,17 +183,22 @@
                         </div>
                     </div>
 
-                    <!-- Data Santri -->
-                    <h3 id="val-nama" class="text-2xl font-extrabold text-slate-800 text-center mb-3 tracking-tight">Nama Santri</h3>
+                    <!-- Data Utama -->
+                    <h3 id="val-nama" class="text-2xl font-extrabold text-slate-800 text-center mb-3 tracking-tight">Memuat Nama...</h3>
                     
                     <div class="flex flex-wrap justify-center items-center gap-2 mb-8">
-                        <div class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold border border-slate-200">
-                            <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-400"></i>
-                            <span id="val-kelas">Kelas</span>
+                        <div class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold border border-slate-200 text-center max-w-[200px] truncate">
+                            <i id="icon-kelas" data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+                            <span id="val-kelas" class="truncate">Memuat...</span>
                         </div>
                         <div class="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-100 font-mono tracking-wide">
-                            <i data-lucide="fingerprint" class="w-3.5 h-3.5 text-blue-400"></i>
+                            <i data-lucide="fingerprint" class="w-3.5 h-3.5 text-blue-400 flex-shrink-0"></i>
                             <span id="val-id">ID</span>
+                        </div>
+                        <!-- Dynamic Status Badge for Teachers -->
+                        <div id="val-status-wrapper" class="hidden items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-100 uppercase tracking-widest">
+                            <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-500"></i>
+                            <span id="val-status">Aktif Mengajar</span>
                         </div>
                     </div>
 
@@ -236,9 +253,9 @@
                         </div>
                     </div>
 
-                    <h2 class="text-[22px] font-black text-slate-900 mb-2 relative z-10 tracking-tight">QR Code Tidak Valid</h2>
+                    <h2 class="text-[22px] font-black text-slate-900 mb-2 relative z-10 tracking-tight">Kartu Tidak Valid</h2>
                     <p id="error-desc" class="text-sm text-slate-600 mb-8 relative z-10 leading-relaxed max-w-xs">
-                        Kami tidak dapat menemukan data santri yang terhubung dengan QR Code ini di pangkalan data kami.
+                        Kami tidak dapat menemukan data santri atau pengajar yang terhubung dengan QR Code ini di pangkalan data presensi kami.
                     </p>
 
                     <div class="w-full bg-slate-50/80 rounded-2xl p-4 border border-slate-200/60 mb-2 relative z-10 text-left flex items-start gap-3">
@@ -272,9 +289,9 @@
     <!-- Firebase SDK & Logika Aplikasi -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // TAMBAHAN: Kita impor modul otentikasi Firebase agar siapapun bisa akses data publik dengan aman
+        // Menggunakan Anonymous Login agar dapat query Collection Group dengan Rules yang aman
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collectionGroup, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collectionGroup, getDocs, collection, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Konfigurasi Database Firebase Murni
         const firebaseConfig = {
@@ -287,7 +304,7 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app); // Inisialisasi Otentikasi
+        const auth = getAuth(app); 
         const db = getFirestore(app);
 
         // DOM Elements
@@ -336,44 +353,41 @@
 
             // 1. Ambil Parameter ID dari URL
             const urlParams = new URLSearchParams(window.location.search);
-            const santriId = urlParams.get('id');
+            const queryId = urlParams.get('id');
 
-            // Jika QR Code di-scan tapi parameter ?id= hilang / orang mengakses secara manual tanpa ID
-            if (!santriId) {
+            // Jika QR Code di-scan tapi parameter ?id= hilang
+            if (!queryId) {
                 return setTimeout(() => {
                     triggerError(
                         "PARAMETER_ID_HILANG", 
-                        "Sistem tidak mendeteksi Kode ID pada tautan URL. Pastikan Anda memindai QR Code resmi menggunakan aplikasi pemindai QR atau kamera ponsel."
+                        "Sistem tidak mendeteksi Kode ID pada tautan URL. Pastikan Anda memindai QR Code resmi dari Kartu Digital Enterprise."
                     );
                 }, 1000);
             }
 
             try {
-                // LANGKAH KRUSIAL: Login sebagai Guest (Anonim) agar Firebase tidak memblokir koneksi
+                // Login sebagai Guest (Anonim)
                 loadingText.innerHTML = '<i data-lucide="shield" class="w-4 h-4"></i> Mengamankan Sesi Akses...';
                 if(window.lucide) window.lucide.createIcons();
                 
                 await signInAnonymously(auth);
 
-                loadingText.innerHTML = '<i data-lucide="radio" class="w-4 h-4"></i> Memvalidasi Enkripsi QR...';
+                loadingText.innerHTML = '<i data-lucide="radio" class="w-4 h-4"></i> Memvalidasi Kriptografi QR...';
                 if(window.lucide) window.lucide.createIcons();
 
-                // 2. PENCARIAN DATABASE GLOBAL (CROSS-TENANT)
-                // Sistem mencari ke SELURUH institusi yang terdaftar di database 
-                // untuk menemukan di mana siswa ini berada. (Sangat Cerdas & Independen)
+                // 2. PENCARIAN DATABASE GLOBAL (CROSS-TENANT) - CARI SANTRI
                 const studentsGroupRef = collectionGroup(db, 'students');
                 const studentsSnapshot = await getDocs(studentsGroupRef);
                 
-                let validStudent = null;
-                let tenantIdFound = null; // Menyimpan ID Institusi yang berhasil direkayasa balik
+                let validEntity = null;
+                let tenantIdFound = null;
+                let entityType = null; // 'student' or 'teacher'
 
                 studentsSnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
-                    if (data.kodeSiswa === santriId || docSnap.id === santriId) {
-                        validStudent = { id: docSnap.id, ...data };
-                        
-                        // Ekstrak ID Institusi (Tenant ID) dari struktur folder database-nya
-                        // Contoh path: artifacts/{sekolah_alam}/public/data/students/{id}
+                    if (data.kodeSiswa === queryId || docSnap.id === queryId) {
+                        validEntity = { id: docSnap.id, ...data };
+                        entityType = 'student';
                         const pathParts = docSnap.ref.path.split('/');
                         if (pathParts.length >= 2 && pathParts[0] === 'artifacts') {
                             tenantIdFound = pathParts[1];
@@ -381,39 +395,61 @@
                     }
                 });
 
-                // Jika santri sama sekali tidak ditemukan di institusi manapun
-                if (!validStudent) {
+                // 3. JIKA BUKAN SANTRI, CARI PENGAJAR
+                if (!validEntity) {
+                    loadingText.innerHTML = '<i data-lucide="search" class="w-4 h-4"></i> Memeriksa Direktori Pengajar...';
+                    if(window.lucide) window.lucide.createIcons();
+                    
+                    const teachersGroupRef = collectionGroup(db, 'teachers');
+                    const teachersSnapshot = await getDocs(teachersGroupRef);
+
+                    teachersSnapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        // Menggunakan doc.id atau pin sebagai parameter verifikasi untuk guru
+                        if (docSnap.id === queryId || data.pin === queryId) {
+                            validEntity = { id: docSnap.id, ...data };
+                            entityType = 'teacher';
+                            const pathParts = docSnap.ref.path.split('/');
+                            if (pathParts.length >= 2 && pathParts[0] === 'artifacts') {
+                                tenantIdFound = pathParts[1];
+                            }
+                        }
+                    });
+                }
+
+                if (!validEntity) {
                     return setTimeout(() => {
                         triggerError(
-                            "SANTRI_TIDAK_DITEMUKAN", 
-                            "Identitas dengan kode tersebut tidak ditemukan di seluruh jaringan kami. Kemungkinan ID Card palsu atau status santri telah dicabut."
+                            "IDENTITAS_TIDAK_DITEMUKAN", 
+                            "Identitas dengan kode tersebut tidak ditemukan di sistem manapun. Kemungkinan ID Card palsu atau status telah dicabut."
                         );
                     }, 1200);
                 }
 
-                // 3. Cari Nama Kelas secara cerdas dengan menggunakan tenantId yang baru saja ditemukan
-                let namaKelas = "Tanpa Kelas";
-                if (validStudent.kelas_id && tenantIdFound) {
-                    const classDoc = await getDoc(doc(db, 'artifacts', tenantIdFound, 'public', 'data', 'classes', validStudent.kelas_id));
-                    if (classDoc.exists()) {
-                        namaKelas = classDoc.data().nama_kelas || classDoc.data().name || "Tanpa Kelas";
+                // 4. Ambil Daftar Kelas untuk Menerjemahkan Referensi ID Kelas
+                let classMap = {};
+                if (tenantIdFound) {
+                    try {
+                        const classesRef = collection(db, 'artifacts', tenantIdFound, 'public', 'data', 'classes');
+                        const classSnap = await getDocs(classesRef);
+                        classSnap.forEach(c => {
+                            classMap[c.id] = c.data().nama_kelas || c.data().name || 'Tanpa Nama';
+                        });
+                    } catch(e) {
+                        console.warn("Gagal memuat direktori kelas.");
                     }
                 }
 
-                // 4. Update Tampilan Success
-                document.getElementById('val-nama').textContent = validStudent.nama || validStudent.name || "Tanpa Nama";
-                document.getElementById('val-id').textContent = validStudent.kodeSiswa || "-";
-                document.getElementById('val-kelas').textContent = namaKelas;
+                // 5. UPDATE TAMPILAN BERDASARKAN TIPE ENTITAS
+                document.getElementById('val-nama').textContent = validEntity.nama || validEntity.name || "Tanpa Nama";
                 
-                // Rapikan nama Tenant/Institusi (Contoh: "sekolah_alam" menjadi "Sekolah Alam")
                 const formatInstitusi = tenantIdFound ? tenantIdFound.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : "Institusi Terdaftar";
                 document.getElementById('val-institusi').textContent = formatInstitusi;
 
-                // Atur Foto Profil & Hilangkan fallback
                 const imgEl = document.getElementById('val-foto');
                 const fallbackEl = document.getElementById('val-foto-fallback');
-                if (validStudent.fotoProfil) {
-                    imgEl.src = validStudent.fotoProfil;
+                if (validEntity.fotoProfil) {
+                    imgEl.src = validEntity.fotoProfil;
                     imgEl.onload = () => {
                         imgEl.classList.remove('hidden');
                         fallbackEl.classList.add('hidden');
@@ -423,7 +459,40 @@
                     fallbackEl.classList.remove('hidden');
                 }
 
-                // Tampilkan sukses dengan delay minimum agar animasi skeleton (Kesan Pro) sempat terlihat
+                // Pengkondisian Khusus Santri vs Pengajar
+                if (entityType === 'student') {
+                    document.getElementById('val-id').textContent = validEntity.kodeSiswa || validEntity.id || "-";
+                    
+                    const kelasId = validEntity.kelas_id || validEntity.kelas;
+                    const namaKelas = classMap[kelasId] || validEntity.kelas || "Tanpa Kelas";
+                    document.getElementById('val-kelas').textContent = namaKelas;
+                    
+                    document.getElementById('val-role-badge').innerHTML = `<i data-lucide="user" class="w-3.5 h-3.5"></i> SANTRI TERVERIFIKASI`;
+                    document.getElementById('val-status-wrapper').classList.add('hidden');
+                } else {
+                    // Logika Pengajar
+                    document.getElementById('val-id').textContent = validEntity.pin || validEntity.id || "-";
+                    
+                    const kelasIds = validEntity.kelas_ids || [];
+                    let otorisasi = "Tanpa Otorisasi Kelas";
+                    if (kelasIds.length > 0) {
+                        otorisasi = kelasIds.map(id => classMap[id] || id).join(', ');
+                    } else if (validEntity.kelas) {
+                        otorisasi = classMap[validEntity.kelas] || validEntity.kelas;
+                    }
+                    
+                    if (otorisasi.length > 30) otorisasi = otorisasi.substring(0, 27) + '...';
+
+                    document.getElementById('val-kelas').textContent = otorisasi;
+                    document.getElementById('icon-kelas').setAttribute('data-lucide', 'briefcase');
+                    
+                    document.getElementById('val-role-badge').innerHTML = `<i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> PENGAJAR TERVERIFIKASI`;
+                    
+                    const statusWrapper = document.getElementById('val-status-wrapper');
+                    statusWrapper.classList.remove('hidden');
+                    statusWrapper.classList.add('flex');
+                }
+
                 setTimeout(() => {
                     showUI('state-success');
                 }, 1500); 
@@ -431,22 +500,21 @@
             } catch (error) {
                 console.error("Verification Error:", error);
                 
-                // Cek jika errornya karena masalah izin (Permission Denied)
                 if (error.code === 'permission-denied') {
                     triggerError(
                         "AKSES_DITOLAK", 
-                        "Sistem Pangkalan Data mengamankan informasi ini. Pastikan pengaturan Rules Firebase Anda mengizinkan 'read' untuk publik."
+                        "Sistem Pangkalan Data mengamankan informasi ini. Pastikan pengaturan Rules Firebase mengizinkan read."
                     );
                 } else {
                     triggerError(
                         "KONEKSI_DATABASE_GAGAL", 
-                        "Terjadi kesalahan teknis saat menghubungi server keamanan kami. Silakan periksa koneksi internet Anda dan muat ulang halaman."
+                        "Terjadi kesalahan teknis saat menghubungi server. Silakan periksa koneksi internet Anda."
                     );
                 }
             }
         }
 
-        // Initialize Icons & Verification Logic on load
+        // Initialize
         window.addEventListener('DOMContentLoaded', () => {
             window.lucide.createIcons();
             initVerification();
