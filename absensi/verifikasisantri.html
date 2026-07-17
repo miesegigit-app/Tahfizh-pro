@@ -8,7 +8,6 @@
     <meta name="description" content="Portal Verifikasi Validitas Kartu Presensi Santri dan Pengajar Enterprise">
     <meta name="theme-color" content="#F8FAFC">
 
-    <!-- Meta Tags & OG Image Setup (Konsisten) -->
     <meta property="og:title" content="Verifikasi Digital - TahfizhPro">
     <meta property="og:description" content="Sistem Validasi Identitas Pintar untuk Santri dan Pengajar.">
     <meta property="og:image" content="https://i.ibb.co.com/Tq2dVMHm/Desain-tanpa-judul-4.png">
@@ -21,7 +20,7 @@
     <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fira+Code:wght@600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -38,7 +37,7 @@
             background-size: 28px 28px;
         }
 
-        /* Animasi Efek Gelombang (Ripple) untuk Icon Status Utama */
+        /* Base Animasi Efek Gelombang (Ripple) */
         .ripple-wrapper {
             position: relative;
             display: inline-flex;
@@ -48,26 +47,37 @@
         .ripple-circle {
             position: absolute;
             border-radius: 50%;
-            background: rgba(16, 185, 129, 0.15);
-            animation: ripple-anim 2.5s cubic-bezier(0.0, 0.2, 0.8, 1) infinite;
         }
-        .ripple-circle:nth-child(2) {
-            animation-delay: 1.2s;
-        }
-        @keyframes ripple-anim {
+        .ripple-circle:nth-child(2) { animation-delay: 1.2s; }
+        
+        /* Tema Ripple Santri (Hijau Zamrud) */
+        .ripple-student { background: rgba(16, 185, 129, 0.15); animation: ripple-anim-student 2.5s cubic-bezier(0.0, 0.2, 0.8, 1) infinite; }
+        @keyframes ripple-anim-student {
             0% { width: 0; height: 0; opacity: 1; border: 2px solid rgba(16, 185, 129, 0.5); }
             100% { width: 160px; height: 160px; opacity: 0; border: 2px solid rgba(16, 185, 129, 0); }
         }
 
-        /* Animasi Efek Pulse Khusus untuk Foto Entity */
-        @keyframes photo-pulse-glow {
+        /* Tema Ripple Guru (Ungu Indigo Elite) */
+        .ripple-teacher { background: rgba(99, 102, 241, 0.15); animation: ripple-anim-teacher 2.5s cubic-bezier(0.0, 0.2, 0.8, 1) infinite; }
+        @keyframes ripple-anim-teacher {
+            0% { width: 0; height: 0; opacity: 1; border: 2px solid rgba(99, 102, 241, 0.6); }
+            100% { width: 180px; height: 180px; opacity: 0; border: 2px solid rgba(99, 102, 241, 0); }
+        }
+
+        /* Efek Pulse Glow Khusus untuk Foto Entity */
+        @keyframes photo-pulse-student-glow {
             0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
             70% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
             100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
-        .photo-pulse-active {
-            animation: photo-pulse-glow 2s infinite cubic-bezier(0.66, 0, 0, 1);
+        .pulse-student { animation: photo-pulse-student-glow 2s infinite cubic-bezier(0.66, 0, 0, 1); }
+
+        @keyframes photo-pulse-teacher-glow {
+            0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.6); }
+            70% { box-shadow: 0 0 0 24px rgba(139, 92, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
         }
+        .pulse-teacher { animation: photo-pulse-teacher-glow 2s infinite cubic-bezier(0.66, 0, 0, 1); }
 
         /* Watermark Keamanan Kriptografi Semu */
         .secure-watermark {
@@ -81,6 +91,12 @@
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
             box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02);
+            transition: all 0.5s ease;
+        }
+
+        /* Tema Khusus Glow Guru pada Glass Card */
+        .card-glow-teacher {
+            box-shadow: 0 20px 50px -10px rgba(99, 102, 241, 0.15), 0 0 0 1px rgba(99, 102, 241, 0.05) !important;
         }
 
         /* Skeleton Animation */
@@ -99,7 +115,6 @@
 </head>
 <body class="bg-grid-pattern min-h-screen flex flex-col items-center relative overflow-x-hidden">
 
-    <!-- Header Portal -->
     <header class="w-full max-w-md px-6 py-5 flex justify-between items-center z-10 sticky top-0 bg-white/85 backdrop-blur-lg border-b border-slate-200/80 shadow-sm">
         <div class="flex items-center gap-2.5">
             <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-md border border-slate-800">
@@ -116,10 +131,8 @@
     <!-- Main Container -->
     <main class="w-full max-w-md px-4 py-8 flex-1 flex flex-col items-center z-10">
         
-        <!-- STATE 1: LOADING SKELETON -->
         <div id="state-loading" class="w-full flex flex-col items-center justify-center">
             <div class="glass-card w-full rounded-3xl overflow-hidden border border-slate-200 p-8 flex flex-col items-center mb-6 relative">
-                <!-- Aksen shimmer atas -->
                 <div class="absolute top-0 left-0 right-0 h-2 skeleton"></div>
                 
                 <div class="w-16 h-16 rounded-full skeleton mb-6"></div>
@@ -140,36 +153,35 @@
             </p>
         </div>
 
-        <!-- STATE 2: SUCCESS (VALID) -->
         <div id="state-success" class="w-full hidden flex-col items-center animate-in fade-in zoom-in duration-300">
             
-            <div class="glass-card w-full rounded-3xl overflow-hidden border border-slate-200 relative mb-6">
-                <!-- Aksen Hijau atas -->
-                <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500"></div>
+            <div id="main-glass-card" class="glass-card w-full rounded-3xl overflow-hidden border border-slate-200 relative mb-6">
+                <!-- Aksen Atas Dinamis (Diatur JS) -->
+                <div id="top-accent-bar" class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500"></div>
                 
                 <div class="p-8 flex flex-col items-center relative mt-2">
-                    <!-- Icon Ripple Aktif (Main Status) -->
+                    
+                    <!-- Icon Ripple Aktif (Diatur JS) -->
                     <div class="ripple-wrapper mb-6">
-                        <div class="ripple-circle"></div>
-                        <div class="ripple-circle"></div>
-                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl rotate-3 flex items-center justify-center shadow-lg shadow-emerald-200 relative z-10 border border-emerald-300">
-                            <i data-lucide="check-circle-2" class="w-8 h-8 text-white -rotate-3"></i>
+                        <div id="ripple-1" class="ripple-circle ripple-student"></div>
+                        <div id="ripple-2" class="ripple-circle ripple-student"></div>
+                        <div id="main-icon-wrapper" class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl rotate-3 flex items-center justify-center shadow-lg shadow-emerald-200 relative z-10 border border-emerald-300">
+                            <i data-lucide="check-circle-2" class="w-8 h-8 text-white -rotate-3" id="main-icon"></i>
                         </div>
                     </div>
 
-                    <h2 class="text-[22px] font-black text-slate-900 mb-1 text-center tracking-tight">KARTU VALID</h2>
+                    <!-- Judul Dinamis -->
+                    <h2 id="val-title-text" class="text-[22px] font-black text-slate-900 mb-1 text-center tracking-tight">KARTU VALID</h2>
                     
-                    <!-- Dynamic Role Badge -->
+                    <!-- Role Badge Dinamis -->
                     <p id="val-role-badge" class="text-xs text-emerald-600 font-bold tracking-widest uppercase mb-8 flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
-                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Identitas Diakui
+                        <!-- Diinjeksi oleh JS -->
                     </p>
 
                     <!-- Foto Profil dengan Efek Pulse Glow Premium -->
                     <div class="relative w-32 h-32 mb-6 flex justify-center">
-                        <!-- Glow Container -->
-                        <div class="absolute inset-0 rounded-full photo-pulse-active z-0"></div>
+                        <div id="photo-pulse-container" class="absolute inset-0 rounded-full pulse-student z-0"></div>
                         
-                        <!-- Actual Photo Frame -->
                         <div class="relative w-full h-full rounded-full border-[5px] border-white shadow-xl overflow-hidden bg-slate-50 z-10 flex items-center justify-center">
                             <img id="val-foto" src="" alt="Foto Entitas" class="w-full h-full object-cover hidden">
                             <div id="val-foto-fallback" class="w-full h-full flex flex-col items-center justify-center text-slate-300">
@@ -178,28 +190,27 @@
                         </div>
 
                         <!-- Verified Badge terikat pada foto -->
-                        <div class="absolute bottom-0 right-1 bg-emerald-500 text-white rounded-full p-1.5 border-2 border-white shadow-md z-20" title="Identitas Tervalidasi">
-                            <i data-lucide="badge-check" class="w-5 h-5"></i>
+                        <div id="verified-badge-wrapper" class="absolute bottom-0 right-1 bg-emerald-500 text-white rounded-full p-1.5 border-2 border-white shadow-md z-20">
+                            <i id="verified-badge-icon" data-lucide="badge-check" class="w-5 h-5"></i>
                         </div>
                     </div>
 
-                    <!-- Data Utama -->
                     <h3 id="val-nama" class="text-2xl font-extrabold text-slate-800 text-center mb-3 tracking-tight">Memuat Nama...</h3>
                     
-                    <div class="flex flex-wrap justify-center items-center gap-2 mb-8">
-                        <div class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold border border-slate-200 text-center max-w-[200px] truncate">
+                    <div class="flex flex-wrap justify-center items-center gap-2 mb-8 w-full">
+                        <div id="val-kelas-wrapper" class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold border border-slate-200 text-center max-w-[200px] truncate shadow-sm">
                             <i id="icon-kelas" data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
                             <span id="val-kelas" class="truncate">Memuat...</span>
                         </div>
-                        <div class="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-100 font-mono tracking-wide">
-                            <i data-lucide="fingerprint" class="w-3.5 h-3.5 text-blue-400 flex-shrink-0"></i>
+                        <div id="val-id-wrapper" class="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-100 font-mono tracking-wide shadow-sm">
+                            <i data-lucide="fingerprint" class="w-3.5 h-3.5 opacity-60 flex-shrink-0"></i>
                             <span id="val-id">ID</span>
                         </div>
-                        <!-- Dynamic Status Badge for Teachers -->
-                        <div id="val-status-wrapper" class="hidden items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-100 uppercase tracking-widest">
-                            <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-500"></i>
-                            <span id="val-status">Aktif Mengajar</span>
-                        </div>
+                    </div>
+
+                    <!-- Khusus Pengajar - Status Tambahan -->
+                    <div id="val-status-wrapper" class="hidden mb-6 w-full">
+                        <!-- Konten Diinjeksi JS -->
                     </div>
 
                     <!-- Waktu Scan Realtime -->
@@ -218,9 +229,7 @@
 
                     <!-- Nama Institusi -->
                     <div class="w-full flex items-start gap-3 bg-slate-900 rounded-2xl p-4 text-left shadow-lg relative overflow-hidden">
-                        <!-- Dekorasi background institusi -->
                         <i data-lucide="building" class="absolute -right-4 -bottom-4 w-24 h-24 text-slate-800 opacity-50 z-0"></i>
-                        
                         <div class="w-10 h-10 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center flex-shrink-0 z-10 secure-watermark">
                             <i data-lucide="building-2" class="w-5 h-5 text-slate-300"></i>
                         </div>
@@ -238,10 +247,8 @@
             </button>
         </div>
 
-        <!-- STATE 3: ERROR / NOT FOUND -->
         <div id="state-error" class="w-full hidden flex-col items-center animate-in fade-in zoom-in duration-300">
             <div class="glass-card w-full rounded-3xl overflow-hidden border border-red-200 relative mb-6 shadow-md shadow-red-100/50">
-                <!-- Aksen Merah atas -->
                 <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-400 via-red-500 to-rose-500"></div>
                 
                 <div class="p-8 flex flex-col items-center text-center relative overflow-hidden mt-4">
@@ -286,12 +293,10 @@
         </div>
     </footer>
 
-    <!-- Firebase SDK & Logika Aplikasi -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // Menggunakan Anonymous Login agar dapat query Collection Group dengan Rules yang aman
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collectionGroup, getDocs, collection, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collectionGroup, getDocs, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Konfigurasi Database Firebase Murni
         const firebaseConfig = {
@@ -324,7 +329,6 @@
                 dateEl.textContent = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             }, 1000);
             
-            // Trigger awal
             const now = new Date();
             timeEl.textContent = now.toLocaleTimeString('id-ID', { hour12: false }) + ' WIB';
             dateEl.textContent = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -355,7 +359,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             const queryId = urlParams.get('id');
 
-            // Jika QR Code di-scan tapi parameter ?id= hilang
             if (!queryId) {
                 return setTimeout(() => {
                     triggerError(
@@ -366,7 +369,6 @@
             }
 
             try {
-                // Login sebagai Guest (Anonim)
                 loadingText.innerHTML = '<i data-lucide="shield" class="w-4 h-4"></i> Mengamankan Sesi Akses...';
                 if(window.lucide) window.lucide.createIcons();
                 
@@ -375,14 +377,14 @@
                 loadingText.innerHTML = '<i data-lucide="radio" class="w-4 h-4"></i> Memvalidasi Kriptografi QR...';
                 if(window.lucide) window.lucide.createIcons();
 
-                // 2. PENCARIAN DATABASE GLOBAL (CROSS-TENANT) - CARI SANTRI
+                let validEntity = null;
+                let tenantIdFound = null;
+                let entityType = null; 
+
+                // 2. CARI DI DIREKTORI SANTRI DULU
                 const studentsGroupRef = collectionGroup(db, 'students');
                 const studentsSnapshot = await getDocs(studentsGroupRef);
                 
-                let validEntity = null;
-                let tenantIdFound = null;
-                let entityType = null; // 'student' or 'teacher'
-
                 studentsSnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     if (data.kodeSiswa === queryId || docSnap.id === queryId) {
@@ -395,7 +397,7 @@
                     }
                 });
 
-                // 3. JIKA BUKAN SANTRI, CARI PENGAJAR
+                // 3. JIKA BUKAN SANTRI, CARI DI DIREKTORI PENGAJAR
                 if (!validEntity) {
                     loadingText.innerHTML = '<i data-lucide="search" class="w-4 h-4"></i> Memeriksa Direktori Pengajar...';
                     if(window.lucide) window.lucide.createIcons();
@@ -405,8 +407,8 @@
 
                     teachersSnapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        // MENGGUNAKAN KODE GURU SEBAGAI VALIDASI UTAMA
-                        // Tetap menyediakan fallback docSnap.id atau data.pin untuk backward compatibility jika diperlukan
+                        // Mendukung legacy login jika QR dicetak dengan PIN, 
+                        // TAPI nanti saat ditampikan, PIN TIDAK AKAN PERNAH DICETAK KE LAYAR
                         if (docSnap.id === queryId || data.kodeGuru === queryId || data.pin === queryId) {
                             validEntity = { id: docSnap.id, ...data };
                             entityType = 'teacher';
@@ -427,7 +429,7 @@
                     }, 1200);
                 }
 
-                // 4. Ambil Daftar Kelas untuk Menerjemahkan Referensi ID Kelas
+                // 4. Ambil Direktori Kelas
                 let classMap = {};
                 if (tenantIdFound) {
                     try {
@@ -436,12 +438,10 @@
                         classSnap.forEach(c => {
                             classMap[c.id] = c.data().nama_kelas || c.data().name || 'Tanpa Nama';
                         });
-                    } catch(e) {
-                        console.warn("Gagal memuat direktori kelas.");
-                    }
+                    } catch(e) { console.warn("Gagal memuat direktori kelas."); }
                 }
 
-                // 5. UPDATE TAMPILAN BERDASARKAN TIPE ENTITAS
+                // 5. UPDATE DATA UMUM
                 document.getElementById('val-nama').textContent = validEntity.nama || validEntity.name || "Tanpa Nama";
                 
                 const formatInstitusi = tenantIdFound ? tenantIdFound.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : "Institusi Terdaftar";
@@ -451,29 +451,56 @@
                 const fallbackEl = document.getElementById('val-foto-fallback');
                 if (validEntity.fotoProfil) {
                     imgEl.src = validEntity.fotoProfil;
-                    imgEl.onload = () => {
-                        imgEl.classList.remove('hidden');
-                        fallbackEl.classList.add('hidden');
-                    };
+                    imgEl.onload = () => { imgEl.classList.remove('hidden'); fallbackEl.classList.add('hidden'); };
                 } else {
-                    imgEl.classList.add('hidden');
-                    fallbackEl.classList.remove('hidden');
+                    imgEl.classList.add('hidden'); fallbackEl.classList.remove('hidden');
                 }
 
-                // Pengkondisian Khusus Santri vs Pengajar
-                if (entityType === 'student') {
-                    document.getElementById('val-id').textContent = validEntity.kodeSiswa || validEntity.id || "-";
+                const topAccent = document.getElementById('top-accent-bar');
+                const ripple1 = document.getElementById('ripple-1');
+                const ripple2 = document.getElementById('ripple-2');
+                const mainIconWrap = document.getElementById('main-icon-wrapper');
+                const roleBadge = document.getElementById('val-role-badge');
+                const pulseContainer = document.getElementById('photo-pulse-container');
+                const verifiedBadgeWrap = document.getElementById('verified-badge-wrapper');
+                const verifiedBadgeIcon = document.getElementById('verified-badge-icon');
+                const idBadgeWrapper = document.getElementById('val-id-wrapper');
+                const valTitle = document.getElementById('val-title-text');
+                const mainGlassCard = document.getElementById('main-glass-card');
+                const statusWrapper = document.getElementById('val-status-wrapper');
+
+                if (entityType === 'teacher') {
+                    // ==========================================
+                    // TEMA ELITE UNTUK GURU / PENGAJAR
+                    // ==========================================
+                    topAccent.className = "absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500";
                     
-                    const kelasId = validEntity.kelas_id || validEntity.kelas;
-                    const namaKelas = classMap[kelasId] || validEntity.kelas || "Tanpa Kelas";
-                    document.getElementById('val-kelas').textContent = namaKelas;
+                    ripple1.className = "ripple-circle ripple-teacher";
+                    ripple2.className = "ripple-circle ripple-teacher";
                     
-                    document.getElementById('val-role-badge').innerHTML = `<i data-lucide="user" class="w-3.5 h-3.5"></i> SANTRI TERVERIFIKASI`;
-                    document.getElementById('val-status-wrapper').classList.add('hidden');
-                } else {
-                    // Logika Pengajar - Menampilkan Kode Guru (Bukan PIN)
-                    document.getElementById('val-id').textContent = validEntity.kodeGuru || validEntity.pin || validEntity.id || "-";
+                    mainIconWrap.className = "w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl rotate-3 flex items-center justify-center shadow-xl shadow-indigo-200 relative z-10 border border-indigo-300";
+                    document.getElementById('main-icon').setAttribute('data-lucide', 'award');
                     
+                    valTitle.textContent = "OTORISASI PENGAJAR";
+                    valTitle.className = "text-[22px] font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-600 mb-1 text-center tracking-tight";
+                    
+                    roleBadge.className = "text-xs text-indigo-700 font-bold tracking-widest uppercase mb-8 flex items-center gap-1.5 bg-indigo-50 px-4 py-1.5 rounded-full border border-indigo-200 shadow-sm";
+                    roleBadge.innerHTML = `<i data-lucide="shield-check" class="w-3.5 h-3.5"></i> AKSES EKSEKUTIF VALID`;
+
+                    pulseContainer.className = "absolute inset-0 rounded-full pulse-teacher z-0";
+                    verifiedBadgeWrap.className = "absolute bottom-0 right-1 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-full p-2 border-[3px] border-white shadow-lg z-20";
+                    verifiedBadgeIcon.setAttribute('data-lucide', 'star');
+                    
+                    idBadgeWrapper.className = "flex items-center gap-1.5 px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-bold border border-purple-200 font-mono tracking-widest shadow-sm";
+                    
+                    mainGlassCard.classList.add('card-glow-teacher'); // Glow ekstra
+                    
+                    // PENANGANAN ID TANPA PIN
+                    // Mengambil kodeGuru. Jika kosong (data lama), gunakan validEntity.id (contoh: teacher_1234). 
+                    // PIN tidak akan pernah tersentuh dan ter-render di sini.
+                    document.getElementById('val-id').textContent = validEntity.kodeGuru || validEntity.id || "ID-UNKNOWN";
+
+                    // Otorisasi Kelas
                     const kelasIds = validEntity.kelas_ids || [];
                     let otorisasi = "Tanpa Otorisasi Kelas";
                     if (kelasIds.length > 0) {
@@ -481,19 +508,50 @@
                     } else if (validEntity.kelas) {
                         otorisasi = classMap[validEntity.kelas] || validEntity.kelas;
                     }
+                    if (otorisasi.length > 25) otorisasi = otorisasi.substring(0, 22) + '...';
                     
-                    if (otorisasi.length > 30) otorisasi = otorisasi.substring(0, 27) + '...';
-
                     document.getElementById('val-kelas').textContent = otorisasi;
                     document.getElementById('icon-kelas').setAttribute('data-lucide', 'briefcase');
-                    
-                    document.getElementById('val-role-badge').innerHTML = `<i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> PENGAJAR TERVERIFIKASI`;
-                    
-                    const statusWrapper = document.getElementById('val-status-wrapper');
+
+                    // Badge Status Aktif Mengajar Elite
                     statusWrapper.classList.remove('hidden');
-                    statusWrapper.classList.add('flex');
+                    statusWrapper.classList.add('flex', 'justify-center');
+                    statusWrapper.innerHTML = `<div class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 rounded-xl text-xs font-extrabold border border-indigo-100 shadow-sm uppercase tracking-[0.2em] w-full max-w-[250px] justify-center"><i data-lucide="activity" class="w-4 h-4 text-indigo-500"></i> AKTIF MENGAJAR</div>`;
+
+                } else {
+                    // ==========================================
+                    // TEMA STANDAR UNTUK SANTRI
+                    // ==========================================
+                    topAccent.className = "absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500";
+                    
+                    ripple1.className = "ripple-circle ripple-student";
+                    ripple2.className = "ripple-circle ripple-student";
+                    
+                    mainIconWrap.className = "w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl rotate-3 flex items-center justify-center shadow-lg shadow-emerald-200 relative z-10 border border-emerald-300";
+                    document.getElementById('main-icon').setAttribute('data-lucide', 'check-circle-2');
+                    
+                    valTitle.textContent = "KARTU VALID";
+                    valTitle.className = "text-[22px] font-black text-slate-900 mb-1 text-center tracking-tight";
+                    
+                    roleBadge.className = "text-xs text-emerald-600 font-bold tracking-widest uppercase mb-8 flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100";
+                    roleBadge.innerHTML = `<i data-lucide="user-check" class="w-3.5 h-3.5"></i> SANTRI TERVERIFIKASI`;
+
+                    pulseContainer.className = "absolute inset-0 rounded-full pulse-student z-0";
+                    verifiedBadgeWrap.className = "absolute bottom-0 right-1 bg-emerald-500 text-white rounded-full p-1.5 border-2 border-white shadow-md z-20";
+                    verifiedBadgeIcon.setAttribute('data-lucide', 'badge-check');
+                    
+                    idBadgeWrapper.className = "flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-100 font-mono tracking-wide shadow-sm";
+                    
+                    document.getElementById('val-id').textContent = validEntity.kodeSiswa || validEntity.id || "-";
+                    
+                    const kelasId = validEntity.kelas_id || validEntity.kelas;
+                    const namaKelas = classMap[kelasId] || validEntity.kelas || "Tanpa Kelas";
+                    document.getElementById('val-kelas').textContent = namaKelas;
+                    
+                    statusWrapper.classList.add('hidden');
                 }
 
+                // Tunda sedikit agar transisi mulus dan icon render via Lucide
                 setTimeout(() => {
                     showUI('state-success');
                 }, 1500); 
