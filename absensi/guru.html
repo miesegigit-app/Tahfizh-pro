@@ -9,16 +9,20 @@
     
     <title>TahfizhPro - Portal Guru Absensi</title>
     <meta name="description" content="Portal khusus pengajar untuk manajemen presensi cerdas real-time.">
+    <meta property="og:title" content="TahfizhPro Portal Guru">
+    <meta property="og:description" content="Portal khusus pengajar untuk manajemen presensi cerdas real-time.">
+    <meta property="og:image" content="https://i.ibb.co.com/Tq2dVMHm/Desain-tanpa-judul-4.png">
+    <meta property="og:type" content="website">
+    
     <meta name="theme-color" content="#f8fafc">
-
     <link rel="icon" href="./logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="./logo.png">
+    <link rel="manifest" href=""> <!-- Diinjeksi dinamis via JS -->
 
-    <!-- Fonts Original -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Fira+Code:wght@600&display=swap" rel="stylesheet">
     
-    <!-- Icons & QR Engine -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -53,7 +57,6 @@
     <style>
         body { background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
@@ -66,7 +69,6 @@
             border-bottom: 1px solid rgba(226, 232, 240, 0.8);
         }
 
-        /* Time / Calendar Custom Picker Styles */
         .custom-calendar {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -75,22 +77,13 @@
             box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
         }
 
-        /* Custom Dropdown Animation */
         .dropdown-content {
             transform-origin: top;
             transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
         }
 
-        /* Animation Keyframes Scanner */
-        @keyframes scanLaser {
-            0% { top: 0%; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
-        .laser-line {
-            animation: scanLaser 2s infinite ease-in-out;
-        }
+        @keyframes scanLaser { 0% { top: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        .laser-line { animation: scanLaser 2s infinite ease-in-out; }
 
         .loader {
             border: 3px solid #f3f3f3; border-top: 3px solid #0284c7;
@@ -99,43 +92,47 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Custom Transition */
         .view-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        
-        /* Bottom padding for safe area on mobile */
         .pb-safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 
-        /* Toast Animation */
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(20px) translateX(-50%); }
-            to { opacity: 1; transform: translateY(0) translateX(-50%); }
-        }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px) translateX(-50%); } to { opacity: 1; transform: translateY(0) translateX(-50%); } }
 
-        /* OVERRIDE CSS QR ENGINE */
-        #scanner-preview video {
-            object-fit: cover !important;
-            border-radius: 1rem !important; /* Menyamakan dengan border luar container */
-        }
-        
-        /* Menyembunyikan region transparan bawaan HTML5-QRCode */
-        #qr-shaded-region {
-            display: none !important;
-        }
-        
-        /* Menyembunyikan div pesan status bawaan html5qrcode (contoh: "QR Code detected") */
-        #scanner-preview__scan_region > div {
-            display: none !important; 
-        }
-
+        #scanner-preview video { object-fit: cover !important; border-radius: 1rem !important; }
+        #qr-shaded-region { display: none !important; }
+        #scanner-preview__scan_region > div { display: none !important; }
     </style>
 </head>
 <body class="text-slate-800 antialiased h-screen flex flex-col overflow-hidden relative">
 
-    <!-- Global Toast Container -->
+    <!-- GLOBAL UPDATE MODAL -->
+    <div id="global-update-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[999999] hidden flex-col items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border border-brand-100">
+            <div class="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-5 border-4 border-brand-100">
+                <i data-lucide="rocket" class="w-10 h-10 text-brand-600 animate-bounce"></i>
+            </div>
+            <h3 class="font-heading font-black text-xl text-slate-900 mb-2">Pembaruan Sistem <span id="update-version-badge" class="text-[10px] bg-brand-600 text-white px-2.5 py-1 rounded-full align-top ml-1 uppercase tracking-widest font-bold"></span></h3>
+            <p id="update-message-text" class="text-sm text-slate-600 mb-6 leading-relaxed">Pembaruan fitur terbaru telah diterapkan. Sistem akan dimuat ulang secara otomatis.</p>
+            <div class="loader mx-auto w-8 h-8 border-4 border-brand-100 border-t-brand-600"></div>
+        </div>
+    </div>
+
+    <!-- PWA INSTALL BANNER -->
+    <div id="pwa-install-banner" class="fixed top-0 left-0 right-0 bg-brand-600 text-white p-4 z-[99999] hidden items-center justify-between shadow-lg transform transition-transform -translate-y-full">
+        <div class="flex items-center gap-3">
+            <img src="./logo.png" class="w-10 h-10 rounded-xl bg-white p-1" alt="App Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGI0YThhIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01ek0yIDE3bDEwIDUgMTAtNSBNMiAxMmwxMCA1IDEwLTUiLz48L3N2Zz4='">
+            <div>
+                <p class="font-bold text-sm">Instal Portal Guru</p>
+                <p class="text-[11px] text-brand-100">Akses lebih cepat dari layar utama</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="window.dismissPwaBanner()" class="p-2 text-brand-200 hover:text-white transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <button onclick="window.installPwa()" class="bg-white text-brand-600 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-brand-50 transition-colors">Instal</button>
+        </div>
+    </div>
+
     <div id="toast-container" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex flex-col gap-2 w-max max-w-[90vw]"></div>
 
-    <!-- OVERLAY SAFETY NET (Jika Tenant Missing) -->
-    <!-- PERBAIKAN: Menambahkan 'flex' agar tidak merapat ke kiri -->
     <div id="safety-net-screen" class="fixed inset-0 bg-gradient-to-br from-slate-50 to-slate-200 z-[99999] hidden flex flex-col items-center justify-center p-6 text-center">
         <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-rose-100 border-t-4 border-t-rose-500 relative overflow-hidden">
             <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-rose-100 shadow-inner">
@@ -150,8 +147,6 @@
         </div>
     </div>
 
-    <!-- Overlay Loading Global -->
-    <!-- PERBAIKAN: Menambahkan 'flex' agar popup presisi di tengah layar -->
     <div id="global-loader" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden flex flex-col items-center justify-center transition-opacity duration-300">
         <div class="bg-white p-8 rounded-2xl flex flex-col items-center text-center shadow-2xl max-w-xs">
             <div class="loader mb-4 w-10 h-10 border-4 border-slate-200"></div>
@@ -185,22 +180,31 @@
                     <div class="relative">
                         <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
                         <input type="password" id="login-pin" maxlength="6" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-12 py-3 text-sm font-mono font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all" placeholder="••••••">
-                        <button onclick="togglePinVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                        <button onclick="window.togglePinVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
                             <i data-lucide="eye" id="pin-eye-icon" class="w-5 h-5"></i>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <button onclick="loginGuru()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2 active:scale-[0.98]">
+            <button onclick="window.loginGuru()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2 active:scale-[0.98]">
                 Masuk Dasbor <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
+
+            <!-- PORTAL SWITCHER: Navigasi Wali Murid -->
+            <div class="mt-6 pt-6 border-t border-slate-100 text-left">
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center mb-3">Akses Orang Tua / Wali</p>
+                <div class="flex gap-3">
+                    <button onclick="window.switchPortal('index')" class="w-full bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 text-slate-600 hover:text-brand-600 font-semibold py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-colors">
+                        <i data-lucide="users" class="w-4 h-4"></i> Masuk Portal Wali Murid
+                    </button>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- VIEW: MAIN DASHBOARD -->
     <div id="view-dashboard" class="hidden h-full flex flex-col relative">
-        <!-- Top App Bar -->
         <header class="h-16 glass-panel flex items-center justify-between px-4 sm:px-6 z-20 flex-shrink-0">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/20">G</div>
@@ -211,51 +215,41 @@
                     </p>
                 </div>
             </div>
-            <button onclick="logoutGuru()" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors flex items-center gap-2 text-xs font-bold">
+            <button onclick="window.logoutGuru()" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors flex items-center gap-2 text-xs font-bold">
                 <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
             </button>
         </header>
 
-        <!-- Dynamic Context Area (Sticky Header) -->
         <div class="bg-white border-b border-slate-200 p-4 space-y-3 z-10 shadow-sm relative">
             <div class="grid grid-cols-2 gap-3">
-                <!-- Custom Date Input Trigger -->
                 <div class="space-y-1">
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tanggal Absen</label>
-                    <div onclick="openCustomDatePicker('attendance')" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-2.5 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
+                    <div onclick="window.openCustomDatePicker('attendance')" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-2.5 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
                         <span id="display-selected-date" class="text-sm font-semibold text-slate-700 truncate">Hari Ini</span>
                         <i data-lucide="calendar" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
                     </div>
                 </div>
-                <!-- Custom Class Selector Trigger -->
                 <div class="space-y-1 relative">
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kelas Binaan</label>
-                    <div id="class-select-trigger" onclick="toggleClassSelector()" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-2.5 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
+                    <div id="class-select-trigger" onclick="window.toggleClassSelector()" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-2.5 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
                         <span id="display-selected-class" class="text-sm font-semibold text-slate-700 truncate">Pilih Kelas...</span>
                         <i data-lucide="chevron-down" id="class-chevron" class="w-4 h-4 text-slate-400 transition-transform flex-shrink-0"></i>
                     </div>
-                    
-                    <!-- Dropdown List Custom (Enterprise UI) -->
                     <div id="class-select-dropdown" class="dropdown-content absolute top-[calc(100%+6px)] left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-[100] max-h-56 overflow-y-auto scale-95 opacity-0 pointer-events-none">
-                        <!-- Items injected via JS -->
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Content Container (Scrollable) -->
         <div class="flex-1 overflow-y-auto p-4 space-y-5 pb-24 bg-slate-50/50" id="main-scroll-content">
             
-            <!-- TAB-VIEW 1: INPUT PRESENSI -->
             <div id="tab-presensi-content" class="space-y-4 view-transition">
-                <!-- Action Tools -->
                 <div class="flex items-center gap-3">
-                    <button onclick="openQrScanner()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 text-sm transition-transform active:scale-[0.98]">
+                    <button onclick="window.openQrScanner()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-slate-900/10 text-sm transition-transform active:scale-[0.98]">
                         <i data-lucide="qr-code" class="w-5 h-5"></i> Scanner Cerdas (Kamera)
                     </button>
                 </div>
 
-                <!-- Live Quick Stats Mini Panel -->
                 <div class="grid grid-cols-4 gap-2 bg-slate-100/80 p-2 rounded-2xl border border-slate-200">
                     <div class="bg-white rounded-xl p-2.5 text-center shadow-sm">
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Hadir</p>
@@ -275,13 +269,10 @@
                     </div>
                 </div>
 
-                <!-- Student Presensi Card List -->
                 <div id="attendance-cards-list" class="space-y-3 mt-4">
-                    <!-- Cards will be injected dynamically -->
                 </div>
             </div>
 
-            <!-- TAB-VIEW 2: LAPORAN / REKAPITULASI -->
             <div id="tab-laporan-content" class="hidden space-y-4 view-transition">
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-card p-5 space-y-4">
                     <div class="flex justify-between items-center pb-3 border-b border-slate-100">
@@ -289,12 +280,11 @@
                             <h3 class="font-heading font-bold text-slate-800 text-base">Persentase Kehadiran</h3>
                             <p class="text-[11px] text-slate-400 font-medium mt-0.5">Berdasarkan total histori bulan ini</p>
                         </div>
-                        <button onclick="copyRekapTsv()" class="bg-slate-50 hover:bg-slate-100 text-brand-600 border border-brand-100 font-bold text-xs px-3 py-2 rounded-lg flex items-center gap-1.5 transition-colors">
+                        <button onclick="window.copyRekapTsv()" class="bg-slate-50 hover:bg-slate-100 text-brand-600 border border-brand-100 font-bold text-xs px-3 py-2 rounded-lg flex items-center gap-1.5 transition-colors">
                             <i data-lucide="copy" class="w-3.5 h-3.5"></i> Salin (Excel)
                         </button>
                     </div>
 
-                    <!-- Rekap Table -->
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
                             <thead>
@@ -308,14 +298,12 @@
                                 </tr>
                             </thead>
                             <tbody id="tbody-rekap" class="divide-y divide-slate-50 font-medium text-slate-700">
-                                <!-- Injected dynamically -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB-VIEW 3: DELEGASI AKSES -->
             <div id="tab-delegasi-content" class="hidden space-y-4 view-transition">
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-card p-5 space-y-4">
                     <div>
@@ -324,38 +312,34 @@
                     </div>
                     
                     <div class="space-y-4 pt-2 border-t border-slate-100">
-                        <!-- Custom Select Guru -->
                         <div class="space-y-1.5 relative z-20">
                             <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Pilih Guru Pengganti</label>
-                            <div id="delegate-select-trigger" onclick="toggleDelegateSelector()" class="flex items-center justify-between border border-slate-200 rounded-xl px-4 py-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
+                            <div id="delegate-select-trigger" onclick="window.toggleDelegateSelector()" class="flex items-center justify-between border border-slate-200 rounded-xl px-4 py-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
                                 <span id="display-selected-delegate" class="text-sm font-semibold text-slate-700">Pilih Guru...</span>
                                 <i data-lucide="chevron-down" id="delegate-chevron" class="w-4 h-4 text-slate-400 transition-transform"></i>
                             </div>
-                            <!-- Custom Dropdown Delegasi -->
                             <div id="delegate-select-dropdown" class="dropdown-content absolute top-[calc(100%+6px)] left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-[100] max-h-48 overflow-y-auto scale-95 opacity-0 pointer-events-none">
-                                <!-- Options injected -->
                             </div>
                         </div>
 
-                        <!-- Date range parameters using Custom Modal -->
                         <div class="grid grid-cols-2 gap-3 relative z-10">
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tgl Mulai</label>
-                                <div onclick="openCustomDatePicker('start')" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
+                                <div onclick="window.openCustomDatePicker('start')" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
                                     <span id="display-delegate-start" class="text-xs font-semibold text-slate-700 truncate" data-val="">Pilih...</span>
                                     <i data-lucide="calendar" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
                                 </div>
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tgl Selesai</label>
-                                <div onclick="openCustomDatePicker('end')" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
+                                <div onclick="window.openCustomDatePicker('end')" class="flex items-center justify-between border border-slate-200 rounded-xl px-3 py-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors">
                                     <span id="display-delegate-end" class="text-xs font-semibold text-slate-700 truncate" data-val="">Pilih...</span>
                                     <i data-lucide="calendar" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
                                 </div>
                             </div>
                         </div>
 
-                        <button onclick="saveDelegasi()" id="btn-save-delegasi" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md text-sm flex items-center justify-center gap-2 mt-2">
+                        <button onclick="window.saveDelegasi()" id="btn-save-delegasi" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md text-sm flex items-center justify-center gap-2 mt-2">
                             <i data-lucide="user-check" class="w-4 h-4"></i> Delegasikan Akses
                         </button>
                     </div>
@@ -364,24 +348,21 @@
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-card p-5 space-y-4">
                     <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Delegasi Aktif Saat Ini</h4>
                     <div id="active-delegates-list" class="space-y-3">
-                        <!-- Injected dynamically -->
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <!-- Responsive Bottom Navigation Bar -->
         <nav class="absolute bottom-0 left-0 right-0 h-[72px] bg-white/95 backdrop-blur-lg border-t border-slate-200 flex justify-around items-center z-40 pb-safe-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
-            <button onclick="switchTab('presensi')" id="btn-tab-presensi" class="flex flex-col items-center justify-center text-brand-600 font-bold text-[10px] gap-1.5 flex-1 transition-colors">
+            <button onclick="window.switchTab('presensi')" id="btn-tab-presensi" class="flex flex-col items-center justify-center text-brand-600 font-bold text-[10px] gap-1.5 flex-1 transition-colors">
                 <div class="p-1.5 rounded-xl bg-brand-50"><i data-lucide="user-check" class="w-5 h-5"></i></div>
                 Presensi
             </button>
-            <button onclick="switchTab('laporan')" id="btn-tab-laporan" class="flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 font-semibold text-[10px] gap-1.5 flex-1 transition-colors">
+            <button onclick="window.switchTab('laporan')" id="btn-tab-laporan" class="flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 font-semibold text-[10px] gap-1.5 flex-1 transition-colors">
                 <div class="p-1.5 rounded-xl"><i data-lucide="file-text" class="w-5 h-5"></i></div>
                 Laporan
             </button>
-            <button onclick="switchTab('delegasi')" id="btn-tab-delegasi" class="flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 font-semibold text-[10px] gap-1.5 flex-1 transition-colors">
+            <button onclick="window.switchTab('delegasi')" id="btn-tab-delegasi" class="flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 font-semibold text-[10px] gap-1.5 flex-1 transition-colors">
                 <div class="p-1.5 rounded-xl"><i data-lucide="user-plus" class="w-5 h-5"></i></div>
                 Delegasi
             </button>
@@ -393,29 +374,26 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-datepicker-content">
             <div class="px-5 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                 <h3 class="font-heading font-bold text-slate-800 text-sm">Pilih Tanggal</h3>
-                <button onclick="closeModal('modal-datepicker')" class="text-slate-400 hover:text-slate-600 bg-white p-1 rounded-md shadow-sm border border-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <button onclick="window.closeModal('modal-datepicker')" class="text-slate-400 hover:text-slate-600 bg-white p-1 rounded-md shadow-sm border border-slate-100"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
             <div class="p-5 space-y-4">
                 <div class="custom-calendar">
-                    <!-- Calendar Header -->
                     <div class="flex justify-between items-center p-3 border-b border-slate-100 bg-slate-50/50">
-                        <button onclick="changeMonth(-1)" class="p-1.5 hover:bg-white bg-slate-100 border border-slate-200 rounded-lg text-slate-500 shadow-sm transition-all"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                        <button onclick="window.changeMonth(-1)" class="p-1.5 hover:bg-white bg-slate-100 border border-slate-200 rounded-lg text-slate-500 shadow-sm transition-all"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
                         <span id="calendar-title" class="text-sm font-bold text-slate-800">Month Year</span>
-                        <button onclick="changeMonth(1)" class="p-1.5 hover:bg-white bg-slate-100 border border-slate-200 rounded-lg text-slate-500 shadow-sm transition-all"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                        <button onclick="window.changeMonth(1)" class="p-1.5 hover:bg-white bg-slate-100 border border-slate-200 rounded-lg text-slate-500 shadow-sm transition-all"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                     </div>
-                    <!-- Calendar Days Grid -->
                     <div class="p-3 grid grid-cols-7 gap-1 text-center text-[11px] font-bold uppercase tracking-wide">
                         <div class="text-rose-400 py-1">Min</div><div class="text-slate-400 py-1">Sen</div><div class="text-slate-400 py-1">Sel</div>
                         <div class="text-slate-400 py-1">Rab</div><div class="text-slate-400 py-1">Kam</div><div class="text-slate-400 py-1">Jum</div>
                         <div class="text-brand-400 py-1">Sab</div>
-                        <!-- Date Days Injected Here -->
                         <div id="calendar-days-grid" class="contents"></div>
                     </div>
                 </div>
             </div>
             <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-                <button onclick="closeModal('modal-datepicker')" class="px-4 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
-                <button onclick="confirmSelectedDate()" class="px-5 py-2.5 text-sm font-bold bg-brand-600 text-white rounded-xl shadow-md shadow-brand-500/20 hover:bg-brand-700 transition-colors">Terapkan</button>
+                <button onclick="window.closeModal('modal-datepicker')" class="px-4 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
+                <button onclick="window.confirmSelectedDate()" class="px-5 py-2.5 text-sm font-bold bg-brand-600 text-white rounded-xl shadow-md shadow-brand-500/20 hover:bg-brand-700 transition-colors">Terapkan</button>
             </div>
         </div>
     </div>
@@ -425,25 +403,20 @@
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[90vh]" id="modal-qr-scanner-content">
             <div class="px-5 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                 <h3 class="font-heading font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="scan" class="w-4 h-4 text-brand-600"></i> Scanner Cerdas</h3>
-                <button onclick="closeQrScanner()" class="text-slate-400 hover:text-rose-500 bg-white p-1 rounded-md shadow-sm border border-slate-100 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <button onclick="window.closeQrScanner()" class="text-slate-400 hover:text-rose-500 bg-white p-1 rounded-md shadow-sm border border-slate-100 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
             <div class="p-6 flex-1 flex flex-col items-center justify-center space-y-6">
                 <p class="text-xs text-slate-500 text-center font-medium px-4">Arahkan kamera ke QR Code ID Santri untuk mencatat kehadiran <strong class="text-emerald-600">Hadir</strong> secara otomatis.</p>
                 
-                <!-- Interactive Camera Container -->
                 <div class="relative w-full aspect-square bg-slate-900 rounded-2xl overflow-hidden shadow-inner border-[6px] border-slate-100">
                     <div id="scanner-preview" class="w-full h-full object-cover"></div>
-                    <!-- Frame Overlay (Corners) -->
                     <div class="absolute top-4 left-4 w-8 h-8 border-t-4 border-l-4 border-brand-500 rounded-tl-lg pointer-events-none z-10"></div>
                     <div class="absolute top-4 right-4 w-8 h-8 border-t-4 border-r-4 border-brand-500 rounded-tr-lg pointer-events-none z-10"></div>
                     <div class="absolute bottom-4 left-4 w-8 h-8 border-b-4 border-l-4 border-brand-500 rounded-bl-lg pointer-events-none z-10"></div>
                     <div class="absolute bottom-4 right-4 w-8 h-8 border-b-4 border-r-4 border-brand-500 rounded-br-lg pointer-events-none z-10"></div>
-                    
-                    <!-- Animated Laser Line -->
                     <div class="laser-line absolute left-0 right-0 h-0.5 bg-brand-400 shadow-[0_0_12px_rgba(56,189,248,1)] z-10"></div>
                 </div>
 
-                <!-- Last Scanned Student Flash Overlay -->
                 <div id="scanner-feedback" class="hidden w-full bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center gap-3 animate-[slideUpFade_0.3s_ease-out]">
                     <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-inner flex-shrink-0"><i data-lucide="check" class="w-6 h-6"></i></div>
                     <div class="flex-1 min-w-0">
@@ -453,7 +426,7 @@
                 </div>
             </div>
             <div class="px-5 py-4 bg-slate-50 border-t border-slate-100">
-                <button onclick="closeQrScanner()" class="w-full py-3.5 bg-slate-800 text-white hover:bg-slate-900 font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                <button onclick="window.closeQrScanner()" class="w-full py-3.5 bg-slate-800 text-white hover:bg-slate-900 font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
                     <i data-lucide="power-off" class="w-4 h-4"></i> Matikan Kamera
                 </button>
             </div>
@@ -478,7 +451,7 @@
             selectedClass: null,
             selectedDate: new Date(), 
             calendarActiveDate: new Date(), 
-            datepickerContext: 'attendance', // 'attendance', 'start', 'end'
+            datepickerContext: 'attendance', 
             selectedDelegateTeacher: null
         };
 
@@ -534,7 +507,12 @@
             }, 3000);
         };
 
-        // Navigation
+        // Navigation Switcher untuk Portal (Tanpa ekstensi html)
+        window.switchPortal = function(targetPath) {
+            const currentSearch = window.location.search;
+            window.location.href = targetPath + currentSearch;
+        };
+
         window.switchTab = function(tabName) {
             ['presensi', 'laporan', 'delegasi'].forEach(t => {
                 document.getElementById(`tab-${t}-content`).classList.add('hidden');
@@ -600,7 +578,7 @@
             
             localUiState.calendarActiveDate = new Date(targetDate.getTime());
             renderCalendarDays(targetDate);
-            openModal('modal-datepicker');
+            window.openModal('modal-datepicker');
         };
 
         window.changeMonth = function(dir) {
@@ -656,7 +634,7 @@
                 document.getElementById('display-delegate-end').innerText = finalDate.toLocaleDateString('id-ID');
                 document.getElementById('display-delegate-end').dataset.val = finalDate.getTime();
             }
-            closeModal('modal-datepicker');
+            window.closeModal('modal-datepicker');
         };
 
         // Custom Selects Logic
@@ -717,6 +695,13 @@
             window.toggleDelegateSelector(); 
         };
 
+        // Helper: Menerjemahkan Kelas ID ke Nama Kelas
+        function getClassName(idOrName) {
+            if(!idOrName) return '<span class="text-rose-500 font-semibold">Tanpa Kelas</span>';
+            const cls = state.classes.find(c => c.id === idOrName || c.nama_kelas === idOrName || c.name === idOrName);
+            return cls ? (cls.nama_kelas || cls.name) : idOrName;
+        }
+
         function buildClassList() {
             const dropdown = document.getElementById('class-select-dropdown');
             dropdown.innerHTML = '';
@@ -747,7 +732,7 @@
                 const isSel = localUiState.selectedClass === c.id;
                 const nama = c.nama_kelas || c.name;
                 dropdown.innerHTML += `
-                    <div onclick="window.selectClass('${c.id}', '${nama}')" class="px-4 py-3 text-sm cursor-pointer font-semibold border-b border-slate-50 last:border-none transition-colors flex items-center justify-between ${isSel ? 'bg-brand-50 text-brand-700' : 'text-slate-700 hover:bg-slate-50'}">
+                    <div onclick="window.selectClass('${c.id}', '${nama.replace(/'/g, "\\'")}')" class="px-4 py-3 text-sm cursor-pointer font-semibold border-b border-slate-50 last:border-none transition-colors flex items-center justify-between ${isSel ? 'bg-brand-50 text-brand-700' : 'text-slate-700 hover:bg-slate-50'}">
                         ${nama}
                         ${isSel ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}
                     </div>
@@ -777,6 +762,30 @@
                 
                 await signInAnonymously(auth);
 
+                // GLOBAL DEPLOY RECEIVER
+                let currentVersionTimestamp = null;
+                const globalSettingsRef = doc(db, 'saas_master', 'global_config');
+                onSnapshot(globalSettingsRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (currentVersionTimestamp === null) {
+                            currentVersionTimestamp = data.forceUpdateTimestamp || 0;
+                        } else if (data.forceUpdateTimestamp && data.forceUpdateTimestamp > currentVersionTimestamp) {
+                            const modal = document.getElementById('global-update-modal');
+                            const badge = document.getElementById('update-version-badge');
+                            const msg = document.getElementById('update-message-text');
+                            
+                            if (badge) badge.innerText = data.version || 'Update';
+                            if (msg) msg.innerText = data.updateMessage || 'Memuat pembaruan sistem...';
+                            
+                            modal.classList.remove('hidden');
+                            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+                            
+                            setTimeout(() => { window.location.reload(true); }, 4000);
+                        }
+                    }
+                });
+
                 const refs = {
                     students: collection(db, 'artifacts', appId, 'public', 'data', 'students'),
                     teachers: collection(db, 'artifacts', appId, 'public', 'data', 'teachers'),
@@ -791,7 +800,6 @@
                         document.getElementById('global-loader').classList.add('opacity-0');
                         setTimeout(() => document.getElementById('global-loader').classList.add('hidden'), 300);
 
-                        // Auto Login Check
                         const savedTeacherId = localStorage.getItem('tahfizh_saved_teacher_id');
                         if (savedTeacherId) {
                             const restored = state.teachers.find(t => t.id === savedTeacherId);
@@ -801,7 +809,7 @@
                                 buildClassList();
                                 document.getElementById('view-login').classList.add('hidden');
                                 document.getElementById('view-dashboard').classList.remove('hidden');
-                                switchTab('presensi');
+                                window.switchTab('presensi');
                             }
                         }
                     }
@@ -857,7 +865,7 @@
                 
                 document.getElementById('view-login').classList.add('hidden');
                 document.getElementById('view-dashboard').classList.remove('hidden');
-                switchTab('presensi');
+                window.switchTab('presensi');
             } else {
                 window.showToast("Kredensial tidak valid. Silakan coba kembali.", true);
             }
@@ -1069,7 +1077,6 @@
             document.body.removeChild(tempInput);
         };
 
-        // Delegasi Logic
         function renderDelegasiUI() {
             const dropdown = document.getElementById('delegate-select-dropdown');
             dropdown.innerHTML = '';
@@ -1081,7 +1088,7 @@
                     if (loggedInTeacher && t.id !== loggedInTeacher.id) {
                         const isSel = localUiState.selectedDelegateTeacher === t.id;
                         dropdown.innerHTML += `
-                            <div onclick="window.selectDelegateTeacher('${t.id}', '${t.nama}')" class="px-4 py-3 text-sm cursor-pointer font-semibold border-b border-slate-50 last:border-none transition-colors flex items-center justify-between ${isSel ? 'bg-brand-50 text-brand-700' : 'text-slate-700 hover:bg-slate-50'}">
+                            <div onclick="window.selectDelegateTeacher('${t.id}', '${t.nama.replace(/'/g, "\\'")}')" class="px-4 py-3 text-sm cursor-pointer font-semibold border-b border-slate-50 last:border-none transition-colors flex items-center justify-between ${isSel ? 'bg-brand-50 text-brand-700' : 'text-slate-700 hover:bg-slate-50'}">
                                 ${t.nama}
                                 ${isSel ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}
                             </div>
@@ -1138,7 +1145,6 @@
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', localUiState.selectedClass), { delegations: [...currentDels, newDel] });
                 window.showToast(`Akses kelas diberikan kepada ${guruTarget.nama}.`);
                 
-                // Reset form
                 document.getElementById('display-delegate-start').innerText = 'Pilih...';
                 document.getElementById('display-delegate-start').dataset.val = '';
                 document.getElementById('display-delegate-end').innerText = 'Pilih...';
@@ -1161,14 +1167,13 @@
             } catch(e) { window.showToast("Gagal mencabut akses.", true); }
         };
 
-        // Smart Scanner
         let scannerEngine = null;
         let isProcessingScan = false;
 
         window.openQrScanner = function() {
             if(!localUiState.selectedClass) return window.showToast("Pilih kelas binaan terlebih dahulu!", true);
             
-            openModal('modal-qr-scanner');
+            window.openModal('modal-qr-scanner');
             document.getElementById('scanner-feedback').classList.add('hidden');
             isProcessingScan = false;
 
@@ -1183,9 +1188,9 @@
         window.closeQrScanner = function() {
             if(scannerEngine) {
                 scannerEngine.stop().then(() => {
-                    scannerEngine.clear(); scannerEngine = null; closeModal('modal-qr-scanner');
+                    scannerEngine.clear(); scannerEngine = null; window.closeModal('modal-qr-scanner');
                 }).catch(err => console.error(err));
-            } else { closeModal('modal-qr-scanner'); }
+            } else { window.closeModal('modal-qr-scanner'); }
         };
 
         async function onScanSuccess(decodedText) {

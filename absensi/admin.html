@@ -153,7 +153,7 @@
             <p class="text-sm text-slate-600 mb-6 leading-relaxed">Sistem tidak dapat mengidentifikasi institusi Anda. Pastikan Anda mengakses URL dengan parameter App ID yang benar.</p>
             <div class="bg-slate-50 p-4 rounded-xl border border-dashed border-slate-200 text-left">
                 <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contoh Format URL:</p>
-                <code class="text-xs font-mono text-brand-600 font-bold bg-brand-50 px-2 py-1 rounded">domain.com/admin_2.html?sekolah=id</code>
+                <code class="text-xs font-mono text-brand-600 font-bold bg-brand-50 px-2 py-1 rounded">domain.com/admin?sekolah=id_sekolah</code>
             </div>
         </div>
     </div>
@@ -469,7 +469,7 @@
     </main>
 
     <!-- PREVIEW ID CARD DENGAN SCROLL FIX DAN HD RENDER -->
-    <div id="modal-cetak-kartu" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+    <div id="modal-cetak-kartu" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] hidden items-center justify-center p-4 transition-opacity duration-300 opacity-0">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden transform scale-95 transition-all duration-300 flex flex-col max-h-[90vh]" id="modal-cetak-kartu-content">
             
             <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 flex-shrink-0">
@@ -497,7 +497,7 @@
     </div>
 
     <!-- MODAL: CUSTOM CONFIRM -->
-    <div id="modal-confirm" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+    <div id="modal-confirm" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden items-center justify-center p-4 transition-opacity duration-300 opacity-0">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-all duration-300 p-8 text-center flex flex-col" id="modal-confirm-content">
             <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-5 border-4 border-rose-100" id="confirm-icon-wrapper">
                 <i data-lucide="alert-triangle" class="w-10 h-10 text-rose-500" id="confirm-icon"></i>
@@ -513,7 +513,7 @@
     </div>
 
     <!-- MODAL: FORM KELAS -->
-    <div id="modal-kelas" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+    <div id="modal-kelas" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 transition-opacity duration-300 opacity-0">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-all duration-300 flex flex-col max-h-[90vh]" id="modal-kelas-content">
             <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 flex-shrink-0">
                 <h3 class="font-heading font-extrabold text-lg text-slate-800" id="modal-kelas-title">Tambah Kelas</h3>
@@ -536,7 +536,7 @@
     </div>
 
     <!-- MODAL: FORM SANTRI -->
-    <div id="modal-santri" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+    <div id="modal-santri" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 transition-opacity duration-300 opacity-0">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-all duration-300 flex flex-col max-h-[90vh]" id="modal-santri-content">
             <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 flex-shrink-0">
                 <h3 class="font-heading font-extrabold text-lg text-slate-800" id="modal-santri-title">Tambah Santri</h3>
@@ -583,7 +583,7 @@
     </div>
 
     <!-- MODAL: FORM GURU -->
-    <div id="modal-guru" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+    <div id="modal-guru" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 transition-opacity duration-300 opacity-0">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-all duration-300 flex flex-col max-h-[90vh]" id="modal-guru-content">
             <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 flex-shrink-0">
                 <h3 class="font-heading font-extrabold text-lg text-slate-800" id="modal-guru-title">Tambah Pengajar</h3>
@@ -872,8 +872,12 @@
             const modal = document.getElementById(id);
             const content = document.getElementById(`${id}-content`);
             if(!modal || !content) return;
+            
             modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
             setTimeout(() => {
+                modal.classList.remove('opacity-0');
                 content.classList.remove('scale-95', 'opacity-0');
                 content.classList.add('scale-100', 'opacity-100');
             }, 10);
@@ -883,9 +887,15 @@
             const modal = document.getElementById(id);
             const content = document.getElementById(`${id}-content`);
             if(!modal || !content) return;
+            
+            modal.classList.add('opacity-0');
             content.classList.remove('scale-100', 'opacity-100');
             content.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 300);
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
         };
 
         async function initFirebaseData() {
@@ -976,6 +986,7 @@
                             if (msg) msg.innerText = data.updateMessage || 'Memuat pembaruan sistem...';
                             
                             modal.classList.remove('hidden');
+                            modal.classList.add('flex');
                             setTimeout(() => modal.classList.remove('opacity-0'), 10);
                             
                             setTimeout(() => { window.location.reload(true); }, 4000);
