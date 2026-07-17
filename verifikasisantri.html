@@ -405,8 +405,9 @@
 
                     teachersSnapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        // Menggunakan doc.id atau pin sebagai parameter verifikasi untuk guru
-                        if (docSnap.id === queryId || data.pin === queryId) {
+                        // MENGGUNAKAN KODE GURU SEBAGAI VALIDASI UTAMA
+                        // Tetap menyediakan fallback docSnap.id atau data.pin untuk backward compatibility jika diperlukan
+                        if (docSnap.id === queryId || data.kodeGuru === queryId || data.pin === queryId) {
                             validEntity = { id: docSnap.id, ...data };
                             entityType = 'teacher';
                             const pathParts = docSnap.ref.path.split('/');
@@ -470,8 +471,8 @@
                     document.getElementById('val-role-badge').innerHTML = `<i data-lucide="user" class="w-3.5 h-3.5"></i> SANTRI TERVERIFIKASI`;
                     document.getElementById('val-status-wrapper').classList.add('hidden');
                 } else {
-                    // Logika Pengajar
-                    document.getElementById('val-id').textContent = validEntity.pin || validEntity.id || "-";
+                    // Logika Pengajar - Menampilkan Kode Guru (Bukan PIN)
+                    document.getElementById('val-id').textContent = validEntity.kodeGuru || validEntity.pin || validEntity.id || "-";
                     
                     const kelasIds = validEntity.kelas_ids || [];
                     let otorisasi = "Tanpa Otorisasi Kelas";
