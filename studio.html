@@ -33,18 +33,18 @@
             --radius-md: 8px;
             --radius-lg: 12px;
             --radius-full: 9999px;
+            --radius-xl: 24px;
         }
 
         /* RESET & ANTI-DELAY TOUCH */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; outline: none; -webkit-tap-highlight-color: transparent; }
         
         button, a, .btn, .tool-btn, .side-btn, .d-pad-btn { 
-            touch-action: manipulation; /* Mematikan jeda 300ms double tap di Android Lama */
+            touch-action: manipulation; 
             cursor: pointer;
             user-select: none; -webkit-user-select: none;
         }
 
-        /* Layout absolut memutar bug 100vh di mobile browser */
         body { background-color: var(--bg-body); color: var(--text-main); display: flex; flex-direction: column; position: fixed; inset: 0; overflow: hidden; }
 
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; font-size: 13px; font-weight: 600; border-radius: var(--radius-md); transition: all 0.2s; border: 1px solid transparent; }
@@ -86,10 +86,53 @@
             border-radius: 24px; overflow: hidden; 
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.1); 
             background: #ffffff;
-            transform-origin: center center;
+            transform-origin: top left;
+            /* Default diatur via JS untuk zoom & pan */
             transform: translate(-50%, -50%) scale(1);
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            /* Dihilangkan transition transform untuk mencegah delay saat panning manual */
         }
+
+        /* ZOOM CONTROLS */
+        .zoom-controls {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            padding: 6px;
+            gap: 4px;
+            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            user-select: none;
+        }
+        .zoom-btn {
+            background: transparent;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .zoom-btn:hover { background: rgba(255,255,255,0.1); color: var(--primary); }
+        .zoom-text {
+            font-size: 12px;
+            font-weight: 700;
+            width: 48px;
+            text-align: center;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: 0.2s;
+        }
+        .zoom-text:hover { color: var(--primary); }
 
         /* PROPERTIES PANEL */
         .properties-panel { width: 320px; background: rgba(15, 23, 42, 0.98); border-left: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; z-index: 50; user-select: none; -webkit-user-select: none; }
@@ -118,7 +161,7 @@
         .d-pad-btn.right { grid-column: 3; grid-row: 2; }
         .d-pad-btn.down { grid-column: 2; grid-row: 3; }
 
-        /* Modal Projects */
+        /* Modal Projects & Toasts */
         .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.9); backdrop-filter: blur(8px); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 20px; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-content { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-xl); width: 100%; max-width: 480px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); }
@@ -138,26 +181,25 @@
             
             .studio-body { flex-direction: column; }
             
-            /* FIX PANEL SCROLL DI BAWAH */
             .toolbar { 
                 width: 100%; height: 85px; flex-direction: row; border-right: none; border-top: 1px solid var(--border-color); 
                 overflow-x: auto; padding: 8px 12px; justify-content: flex-start; order: 3; 
-                -webkit-overflow-scrolling: touch; touch-action: pan-x; /* Explicit pan untuk XZ1 */
+                -webkit-overflow-scrolling: touch; touch-action: pan-x; 
             }
             .tool-btn { width: 65px; height: 100%; margin-right: 8px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); }
             .divider, .section-label { display: none; }
             
             .canvas-area { order: 1; }
+            .zoom-controls { top: 12px; right: 12px; }
             
-            /* FIX PROPERTIES PANEL SCROLL */
             .properties-panel { 
                 position: absolute; bottom: 0; left: 0; width: 100%; 
                 border-left: none; border-top: 1px solid var(--primary); 
-                max-height: 45vh; /* Dibatasi kurang dari setengah layar */
+                max-height: 45vh; 
                 box-shadow: 0 -10px 40px rgba(0,0,0,0.9);
                 transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
                 border-radius: 24px 24px 0 0; z-index: 200; order: 2; padding-bottom: 24px;
-                overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; /* Smooth Scroll Mobile */
+                overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; 
             }
             .properties-panel.open { transform: translateY(0); }
             .mobile-header { display: flex; }
@@ -239,7 +281,6 @@
                 <i data-lucide="image-plus" style="width: 24px;"></i> <span>Upload<br>Logo</span>
             </button>
 
-            <!-- UPDATE: Opsi Auto-Detect Master System -->
             <div class="divider"></div>
             
             <button class="tool-btn" style="color: var(--success);" onclick="StudioApp.addPlaceholder('NAMA')">
@@ -261,7 +302,6 @@
                 <i data-lucide="qr-code" style="width: 24px;"></i> <span>[QR]</span>
             </button>
             
-            <!-- UPDATE KONTEN DINAMIS -->
             <div class="divider"></div>
             <button class="tool-btn" style="color: var(--accent);" onclick="StudioApp.addPlaceholder('INFO')">
                 <i data-lucide="info" style="width: 24px;"></i> <span>[INFO]</span>
@@ -277,6 +317,13 @@
         </aside>
 
         <main class="canvas-area" id="canvas-area-wrapper">
+            <!-- Zoom Controls UI -->
+            <div class="zoom-controls">
+                <button class="zoom-btn" onclick="StudioApp.zoomOut()" title="Zoom Out"><i data-lucide="minus" style="width: 16px;"></i></button>
+                <span class="zoom-text" id="zoom-level-text" onclick="StudioApp.resetZoom()" title="Reset Pan & Zoom">100%</span>
+                <button class="zoom-btn" onclick="StudioApp.zoomIn()" title="Zoom In"><i data-lucide="plus" style="width: 16px;"></i></button>
+            </div>
+
             <div class="canvas-wrapper" id="canvas-container">
                 <canvas id="studio-canvas" width="540" height="860"></canvas>
             </div>
@@ -390,7 +437,6 @@
                         <button class="d-pad-btn right" onclick="StudioApp.nudge(1, 0)"><i data-lucide="arrow-right"></i></button>
                         <button class="d-pad-btn down" onclick="StudioApp.nudge(0, 1)"><i data-lucide="arrow-down"></i></button>
                     </div>
-                    <p style="font-size: 10px; color: var(--success); text-align: center; margin-top:4px;">💡 Tips: Seret area kosong (hitam/putih) untuk geser objek instan.</p>
                 </div>
 
                 <div class="grid-2">
@@ -430,10 +476,11 @@
             history: { front: [], back: [] }, historyIndex: { front: -1, back: -1 },
             isHistoryAction: false, isInitPhase: true,
 
-            // Remote Drag State
-            isRemoteDragging: false,
-            dragStartPointer: null,
-            objStartPos: null,
+            // Zoom & Pan System Variables
+            baseScale: 1,
+            currentZoom: 1,
+            panX: 0,
+            panY: 0,
 
             init() {
                 this.canvas = new fabric.Canvas('studio-canvas', { 
@@ -448,100 +495,141 @@
                 this.canvas.on('object:removed', (e) => { if(!this.isHistoryAction && !this.isInitPhase && e.target.type !== 'line') this.saveHistoryAndState(); });
                 this.canvas.on('selection:created', (e) => this.handleSelection(e.selected[0]));
                 this.canvas.on('selection:updated', (e) => this.handleSelection(e.selected[0]));
-                this.canvas.on('selection:cleared', () => { if (!this.isRemoteDragging) this.hideProperties(); });
-                
-                // Smart Guides
+
                 this.lineV = new fabric.Line([270, -1000, 270, 2000], { stroke: '#EF4444', strokeWidth: 2, strokeDashArray: [5, 5], selectable: false, evented: false, opacity: 0 });
                 this.lineH = new fabric.Line([-1000, 430, 2000, 430], { stroke: '#EF4444', strokeWidth: 2, strokeDashArray: [5, 5], selectable: false, evented: false, opacity: 0 });
                 this.canvas.add(this.lineV, this.lineH);
                 this.canvas.on('object:moving', (e) => this.handleSnapping(e.target));
 
                 // -------------------------------------------------------------
-                // PERBAIKAN FINAL: SMART POINTER (DELAYED DESELECT & REMOTE DRAG)
+                // FINAL POINTER & TOUCH SYSTEM (PAN, ZOOM, DRAG)
                 // -------------------------------------------------------------
                 const workArea = document.getElementById('canvas-area-wrapper');
-                let pointerState = { isDown: false, isDragging: false, startX: 0, startY: 0, objLeft: 0, objTop: 0 };
+                let pointerState = { isDown: false, isDragging: false, isPanning: false, isPinching: false, startX: 0, startY: 0, objLeft: 0, objTop: 0, startPanX: 0, startPanY: 0 };
+                let initialPinchDistance = 0;
+                let initialZoom = 1;
                 
-                // Blokir fungsi deselect bawaan Fabric JIKA jari sedang menahan layar 
                 const origDiscard = this.canvas.discardActiveObject.bind(this.canvas);
                 this.canvas.discardActiveObject = function(e) {
-                    if (pointerState.isDown) return this; 
+                    if (pointerState.isDown || pointerState.isPinching) return this; 
                     return origDiscard(e);
                 }.bind(this);
 
-                const getPtr = (e) => (e.touches && e.touches.length > 0) ? e.touches[0] : (e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : e);
-
                 const onPointerDown = (e) => {
-                    // Abaikan sentuhan pada antarmuka UI (Panel, Toolbar, Tombol)
+                    // Ignore UI Clicks
                     if (e.target.closest('.properties-panel') || e.target.closest('.toolbar') || 
                         e.target.closest('.topbar') || e.target.closest('#mobile-fab') || 
-                        e.target.closest('.modal-overlay') || e.target.closest('.custom-select')) {
+                        e.target.closest('.modal-overlay') || e.target.closest('.custom-select') ||
+                        e.target.closest('.zoom-controls')) {
                         return;
                     }
 
-                    if (this.activeObject) {
-                        // Cek apakah sentuhan tepat di atas SEBUAH objek kanvas
-                        let onAnyObject = false;
-                        if (e.target.classList.contains('upper-canvas')) {
-                            const target = this.canvas.findTarget(e, false);
-                            if (target) onAnyObject = true;
-                        }
+                    // Pinch-to-Zoom Mobile Detection
+                    if (e.touches && e.touches.length === 2) {
+                        pointerState.isPinching = true;
+                        initialPinchDistance = Math.hypot(
+                            e.touches[0].clientX - e.touches[1].clientX,
+                            e.touches[0].clientY - e.touches[1].clientY
+                        );
+                        initialZoom = this.currentZoom;
+                        return;
+                    }
 
-                        // Jika sentuhan di area kosong kanvas ATAU di area hitam (luar kanvas)
-                        if (!onAnyObject) {
-                            pointerState.isDown = true;
-                            pointerState.isDragging = false;
-                            const pt = getPtr(e);
-                            pointerState.startX = pt.clientX;
-                            pointerState.startY = pt.clientY;
-                            pointerState.objLeft = this.activeObject.left;
-                            pointerState.objTop = this.activeObject.top;
-                        }
+                    let onAnyObject = false;
+                    if (e.target.classList.contains('upper-canvas')) {
+                        const target = this.canvas.findTarget(e, false);
+                        if (target) onAnyObject = true;
+                    }
+
+                    pointerState.isDown = true;
+                    pointerState.isDragging = false;
+                    pointerState.isPanning = false;
+
+                    const pt = (e.touches && e.touches.length > 0) ? e.touches[0] : (e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : e);
+                    pointerState.startX = pt.clientX;
+                    pointerState.startY = pt.clientY;
+
+                    if (this.activeObject && !onAnyObject) {
+                        // Init Remote Drag
+                        pointerState.objLeft = this.activeObject.left;
+                        pointerState.objTop = this.activeObject.top;
+                    } else if (!this.activeObject && !onAnyObject) {
+                        // Init Canvas Panning
+                        pointerState.isPanning = true;
+                        pointerState.startPanX = this.panX;
+                        pointerState.startPanY = this.panY;
+                    } else {
+                        // Let FabricJS handle object interaction natively
+                        pointerState.isDown = false; 
                     }
                 };
 
                 const onPointerMove = (e) => {
-                    if (!pointerState.isDown || !this.activeObject) return;
+                    // Handle Pinch to Zoom Execution
+                    if (pointerState.isPinching && e.touches && e.touches.length === 2) {
+                        const currentDistance = Math.hypot(
+                            e.touches[0].clientX - e.touches[1].clientX,
+                            e.touches[0].clientY - e.touches[1].clientY
+                        );
+                        const scaleChange = currentDistance / initialPinchDistance;
+                        this.currentZoom = Math.max(0.25, Math.min(initialZoom * scaleChange, 4));
+                        this.applyTransform();
+                        if (e.cancelable) e.preventDefault();
+                        return;
+                    }
 
-                    const pt = getPtr(e);
+                    if (!pointerState.isDown) return;
+                    
+                    const pt = (e.touches && e.touches.length > 0) ? e.touches[0] : (e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : e);
                     const dx = pt.clientX - pointerState.startX;
                     const dy = pt.clientY - pointerState.startY;
 
-                    // Deteksi pergerakan minimal 4px (anti getar)
-                    if (!pointerState.isDragging && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
-                        pointerState.isDragging = true;
+                    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+                        if (this.activeObject && !pointerState.isPanning) {
+                            pointerState.isDragging = true;
+                        } else if (pointerState.isPanning) {
+                            pointerState.isDragging = true;
+                        }
                     }
 
                     if (pointerState.isDragging) {
-                        // Hitung skala untuk responsivitas pergerakan
-                        const container = document.getElementById('canvas-container');
-                        let scale = 1;
-                        const match = container.style.transform.match(/scale\(([^)]+)\)/);
-                        if (match) scale = parseFloat(match[1]);
-
-                        this.activeObject.set({
-                            left: pointerState.objLeft + (dx / scale),
-                            top: pointerState.objTop + (dy / scale)
-                        });
-                        this.activeObject.setCoords();
-                        this.canvas.renderAll();
-                        this.handleSnapping(this.activeObject);
-                        
+                        if (this.activeObject && !pointerState.isPanning) {
+                            // Remote Drag Element
+                            const actualScale = this.baseScale * this.currentZoom;
+                            this.activeObject.set({
+                                left: pointerState.objLeft + (dx / actualScale),
+                                top: pointerState.objTop + (dy / actualScale)
+                            });
+                            this.activeObject.setCoords();
+                            this.canvas.renderAll();
+                            this.handleSnapping(this.activeObject);
+                        } else if (pointerState.isPanning) {
+                            // Pan Canvas Wrapper
+                            this.panX = pointerState.startPanX + dx;
+                            this.panY = pointerState.startPanY + dy;
+                            this.applyTransform();
+                        }
                         if (e.cancelable) e.preventDefault(); 
                     }
                 };
 
                 const onPointerUp = (e) => {
+                    if (e.touches && e.touches.length < 2) {
+                        pointerState.isPinching = false;
+                    }
+
                     if (!pointerState.isDown) return;
                     pointerState.isDown = false;
                     
                     if (pointerState.isDragging) {
-                        // Jika selesai geser (Remote Drag selesai)
                         pointerState.isDragging = false;
-                        this.saveHistoryAndState();
-                        setTimeout(() => { this.lineV.set({opacity:0}); this.lineH.set({opacity:0}); this.canvas.renderAll(); }, 50);
+                        pointerState.isPanning = false;
+                        if (this.activeObject) {
+                            this.saveHistoryAndState();
+                            setTimeout(() => { this.lineV.set({opacity:0}); this.lineH.set({opacity:0}); this.canvas.renderAll(); }, 50);
+                        }
                     } else {
-                        // Jika dilepas TANPA geser (Tap biasa) = DESELECT OBJEK
+                        // Standard Tap on Empty Canvas = Deselect
                         if (this.activeObject) {
                             origDiscard(); 
                             this.canvas.renderAll();
@@ -550,7 +638,7 @@
                     }
                 };
 
-                // Pasang Event Listeners
+                // Pointer Events listeners
                 workArea.addEventListener('mousedown', onPointerDown);
                 workArea.addEventListener('touchstart', onPointerDown, { passive: false });
                 
@@ -559,9 +647,25 @@
                 
                 window.addEventListener('mouseup', onPointerUp);
                 window.addEventListener('touchend', onPointerUp);
-                // -------------------------------------------------------------
 
-                // Keyboard Delete & Undo Redo
+                // Mouse Wheel Event for Zoom & Pan
+                workArea.addEventListener('wheel', (e) => {
+                    if (e.target.closest('.properties-panel') || e.target.closest('.toolbar')) return;
+                    e.preventDefault();
+                    
+                    if (e.ctrlKey || e.metaKey) {
+                        // Zoom in/out via Ctrl+Wheel
+                        const zoomDelta = e.deltaY * -0.005;
+                        this.currentZoom = Math.max(0.25, Math.min(this.currentZoom + zoomDelta, 4));
+                    } else {
+                        // Panning via Wheel
+                        this.panX -= e.deltaX;
+                        this.panY -= e.deltaY;
+                    }
+                    this.applyTransform();
+                }, { passive: false });
+
+                // Keyboard Shortcuts
                 window.addEventListener('keydown', (e) => {
                     if ((e.key === 'Delete' || e.key === 'Backspace') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { this.deleteSelected(); }
                     if (e.ctrlKey && e.key === 'z') { e.preventDefault(); this.undo(); }
@@ -581,6 +685,7 @@
                 }, 100);
             },
 
+            // Responsive Scaling & Zoom System
             resizeCanvas() {
                 const wrapper = document.getElementById('canvas-area-wrapper');
                 const container = document.getElementById('canvas-container');
@@ -593,9 +698,30 @@
                 
                 const availW = rect.width - paddingW;
                 const availH = rect.height - paddingH;
-                const scale = Math.min(availW / 540, availH / 860);
-                container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                
+                // Define the core base scale needed to fit the screen
+                this.baseScale = Math.min(availW / 540, availH / 860);
+                this.applyTransform();
             },
+
+            applyTransform() {
+                const container = document.getElementById('canvas-container');
+                if(!container) return;
+                
+                // Combine base structural scale with user-defined zoom
+                const finalScale = this.baseScale * this.currentZoom;
+                
+                // Set absolute transform ensuring accurate panning and scaling
+                container.style.transform = `translate(calc(-50% + ${this.panX}px), calc(-50% + ${this.panY}px)) scale(${finalScale})`;
+                
+                // Update UI text
+                const textEl = document.getElementById('zoom-level-text');
+                if (textEl) textEl.innerText = Math.round(this.currentZoom * 100) + '%';
+            },
+
+            zoomIn() { this.currentZoom = Math.min(this.currentZoom + 0.25, 4); this.applyTransform(); },
+            zoomOut() { this.currentZoom = Math.max(this.currentZoom - 0.25, 0.25); this.applyTransform(); },
+            resetZoom() { this.currentZoom = 1; this.panX = 0; this.panY = 0; this.applyTransform(); },
 
             saveHistoryAndState(isInitial = false) {
                 if(this.isHistoryAction) return; 
@@ -700,7 +826,6 @@
             },
 
             addPlaceholder(type) {
-                // UPDATE: Selaraskan dengan system auto-detect di admin.html
                 if (type === 'NAMA' || type === 'ID' || type === 'KELAS') {
                     const txt = `[${type}]`;
                     const topPos = type === 'NAMA' ? 480 : (type === 'ID' ? 520 : 560);
@@ -718,7 +843,6 @@
                     this.canvas.add(ph); this.canvas.setActiveObject(ph);
                 }
                 else if (type === 'FOTO') {
-                    // UPDATE: Default sebagai bulatan mengikuti style yang diminta (opsional bisa diubah di properties panel)
                     const circle = new fabric.Circle({ left: 270, top: 250, radius: 100, fill: '#E2E8F0', originX: 'center', originY: 'center', stroke: '#3B82F6', strokeWidth: 4, strokeDashArray: [10, 5], placeholderType: type });
                     this.canvas.add(circle); this.canvas.setActiveObject(circle);
                 } 
@@ -737,7 +861,6 @@
                 }
             },
 
-            // PERBAIKAN: AUTO-COMPRESS GAMBAR JUMBO MENGGUNAKAN HTML5 CANVAS API
             handleUpload(e, type) {
                 const file = e.target.files[0]; 
                 if(!file) return;
@@ -746,34 +869,27 @@
                 reader.onload = (event) => {
                     const img = new Image();
                     img.onload = () => {
-                        // Tentukan dimensi maksimal gambar yang diizinkan agar file JSON tetap kecil
                         const MAX_WIDTH = type === 'background' ? 1080 : 600;
                         const MAX_HEIGHT = type === 'background' ? 1080 : 600;
                         
                         let width = img.width;
                         let height = img.height;
 
-                        // Kalkulasi rasio asli
                         if (width > height) {
                             if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
                         } else {
                             if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
                         }
 
-                        // Buat elemen canvas sementara (off-screen)
                         const tempCanvas = document.createElement('canvas');
                         tempCanvas.width = width;
                         tempCanvas.height = height;
                         const ctx = tempCanvas.getContext('2d');
                         
-                        // Gambar ulang foto asli ke dalam dimensi baru (downscaling)
                         ctx.drawImage(img, 0, 0, width, height);
-
-                        // Kompresi kualitas gambar (Jika JPEG berikan kualitas 85%, jika PNG otomatis lossless)
                         const formatMime = file.type === 'image/jpeg' ? 'image/jpeg' : 'image/png';
                         const compressedBase64 = tempCanvas.toDataURL(formatMime, 0.85);
 
-                        // Kirim data Base64 hasil kompresi ke Fabric.JS
                         fabric.Image.fromURL(compressedBase64, (fabricImg) => {
                             if(type === 'background') {
                                 const scale = Math.max(540 / fabricImg.width, 860 / fabricImg.height);
@@ -822,7 +938,6 @@
 
                 if (obj.type === 'i-text' || obj.type === 'text') {
                     document.getElementById('prop-text').style.display = 'flex';
-                    // UPDATE: Izinkan ganti teks meski placeholder. Tapi berikan note.
                     document.getElementById('val-text').value = obj.text; document.getElementById('val-text').disabled = false;
                     document.getElementById('val-color').value = obj.fill; document.getElementById('val-size').value = obj.fontSize;
                     const fonts = { 'Inter': 'Inter (Clean)', 'Poppins': 'Poppins (Friendly)', 'Montserrat': 'Montserrat (Geometric)', 'Plus Jakarta Sans': 'Plus Jakarta (Corporate)', 'Playfair Display': 'Playfair (Serif)' };
@@ -840,7 +955,6 @@
                 
                 if(window.innerWidth <= 768) {
                     document.getElementById('mobile-fab').style.display = 'flex';
-                    document.getElementById('canvas-container').style.transform = document.getElementById('canvas-container').style.transform.replace(/scale\([0-9.]+\)/, `scale(${Math.min(0.55, parseFloat(document.getElementById('canvas-container').style.transform.split('scale(')[1]))})`); 
                 }
             },
 
@@ -850,12 +964,26 @@
                 if(window.innerWidth <= 768) { 
                     document.getElementById('mobile-fab').style.display = 'none'; 
                     document.getElementById('prop-panel').classList.remove('open'); 
-                    this.resizeCanvas(); 
                 }
             },
 
-            openPanel() { document.getElementById('prop-panel').classList.add('open'); document.getElementById('mobile-fab').style.display = 'none'; },
-            closePanel() { document.getElementById('prop-panel').classList.remove('open'); if(this.activeObject) document.getElementById('mobile-fab').style.display = 'flex'; this.resizeCanvas(); },
+            openPanel() { 
+                document.getElementById('prop-panel').classList.add('open'); 
+                document.getElementById('mobile-fab').style.display = 'none'; 
+                // Adjust pan to ensure canvas element stays visible on small mobile screen
+                if(window.innerWidth <= 768 && this.panY === 0) {
+                    this.panY = -120;
+                    this.applyTransform();
+                }
+            },
+            closePanel() { 
+                document.getElementById('prop-panel').classList.remove('open'); 
+                if(this.activeObject) document.getElementById('mobile-fab').style.display = 'flex'; 
+                if(window.innerWidth <= 768 && this.panY === -120) {
+                    this.panY = 0;
+                    this.applyTransform();
+                }
+            },
 
             updateCanvasBg() { const c = document.getElementById('val-bg-color').value; this.canvas.backgroundColor = c; document.getElementById('val-bg-hex').textContent = c; this.canvas.renderAll(); this.saveHistoryAndState(); },
             updateText() { if(this.activeObject) { this.activeObject.set('text', document.getElementById('val-text').value); this.canvas.renderAll(); this.saveHistoryAndState(); } },
@@ -871,7 +999,6 @@
                     const top = this.activeObject.top;
                     
                     let newShape;
-                    // RECREATE THE SHAPE TO ENSURE FABRIC JS TYPE CORRECTNESS
                     if(value === 'circle') { 
                         newShape = new fabric.Circle({ left: left, top: top, radius: 100, fill: '#E2E8F0', originX: 'center', originY: 'center', stroke: '#3B82F6', strokeWidth: 4, strokeDashArray: [10, 5], placeholderType: 'FOTO' });
                     } else if (value === 'rounded') { 
@@ -891,7 +1018,6 @@
             sendBackward() { if(this.activeObject) { this.canvas.sendBackwards(this.activeObject); this.canvas.renderAll(); this.saveHistoryAndState(); } },
             deleteSelected() { if(this.activeObject) { this.canvas.remove(this.activeObject); this.hideProperties(); this.saveHistoryAndState(); } },
 
-            // PERBAIKAN: INJEKSI FUNGSI RENDER PROJECT LIST YANG HILANG
             renderProjectList() {
                 const container = document.getElementById('project-list-container');
                 const projects = this.getProjects();
@@ -918,14 +1044,10 @@
                     </div>
                 `).join('');
                 
-                // Render ulang icon SVG setelah disuntik ke DOM
                 if(window.lucide) window.lucide.createIcons();
             },
 
-            openProjectsModal() { 
-                this.renderProjectList(); 
-                document.getElementById('modal-projects').classList.add('active'); 
-            },
+            openProjectsModal() { this.renderProjectList(); document.getElementById('modal-projects').classList.add('active'); },
             closeProjectsModal() { document.getElementById('modal-projects').classList.remove('active'); },
             getProjects() { return JSON.parse(localStorage.getItem('tahfizh_projects') || '[]'); },
             
