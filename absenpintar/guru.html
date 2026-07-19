@@ -9,10 +9,18 @@
     <title>Absensi Pintar - Portal Guru</title>
     <meta name="description" content="Portal khusus pengajar untuk manajemen presensi cerdas by Velora Studio.">
     
+    <meta property="og:title" content="Absensi Pintar - Portal Guru">
+    <meta property="og:description" content="Portal khusus pengajar untuk manajemen presensi cerdas by Velora Studio.">
+    <meta property="og:url" content="https://absenpintar.my.id/guru">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://ganti-dengan-link-gambar-anda.com/og-image.jpg">
+    
     <!-- Warna Neomorphism Base -->
     <meta name="theme-color" content="#E0E5EC">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <!-- Favicon -->
     <link rel="icon" href="./logo.png" type="image/png">
     <link rel="apple-touch-icon" href="./logo.png">
 
@@ -178,15 +186,20 @@
         </div>
     </div>
 
-    <!-- VIEW: LOGIN (DIREVISI AGAR TIDAK TENGGELAM DI HP KECIL) -->
-    <section id="view-login" class="view-transition fixed inset-0 z-50 bg-neo-bg overflow-y-auto hide-scrollbar pt-safe-top pb-safe-bottom flex flex-col">
-        <!-- flex-1 memastikan container mengambil ruang tersisa, memusatkan konten secara vertikal di layar besar, tapi memanjang di layar kecil -->
-        <div class="flex-1 flex flex-col items-center justify-center p-6 py-12 min-h-[600px]">
+    <!-- VIEW: LOGIN (DIREVISI: Tata Letak Responsif Bebas Terpotong) -->
+    <section id="view-login" class="view-transition fixed inset-0 z-50 bg-neo-bg overflow-y-auto hide-scrollbar pt-safe-top pb-safe-bottom">
+        <div class="min-h-full flex flex-col items-center px-4 py-8">
             
-            <div class="bg-neo-bg w-full max-w-sm p-8 sm:p-10 rounded-[2.5rem] shadow-neo text-center relative z-10 animate-slide-up border border-white/20">
-                <div class="w-24 h-24 bg-neo-bg rounded-full mx-auto flex items-center justify-center mb-8 shadow-neo-inner border-4 border-neo-bg">
-                    <i data-lucide="briefcase" class="w-10 h-10 text-neo-accent"></i>
+            <!-- Spacer Atas untuk mendorong konten ke tengah di layar besar -->
+            <div class="flex-1 min-h-[2rem]"></div>
+            
+            <div class="bg-neo-bg w-full max-w-sm p-8 sm:p-10 rounded-[2.5rem] shadow-neo text-center relative z-10 animate-slide-up border border-white/20 flex-shrink-0">
+                <!-- Logo Interaktif / Neomorphism -->
+                <div class="w-28 h-28 bg-neo-bg rounded-full mx-auto flex items-center justify-center mb-6 shadow-neo border-4 border-neo-bg overflow-hidden relative p-1.5">
+                    <img src="./logo.png" alt="Logo Portal Pengajar" class="w-full h-full object-contain z-10 drop-shadow-sm" onerror="this.style.display='none'; document.getElementById('fallback-logo-guru').classList.remove('hidden');">
+                    <i id="fallback-logo-guru" data-lucide="briefcase" class="w-12 h-12 text-neo-accent hidden absolute"></i>
                 </div>
+                
                 <div class="space-y-1 mb-8">
                     <h1 class="text-2xl font-heading font-black text-neo-title tracking-tight">Portal Pengajar</h1>
                     <p class="text-sm text-neo-text font-bold">Akses Manajemen Kelas</p>
@@ -202,10 +215,10 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-xs font-extrabold text-neo-text uppercase tracking-widest ml-2">PIN Akses (6 Angka)</label>
+                        <label class="text-xs font-extrabold text-neo-text uppercase tracking-widest ml-2">Kata Sandi</label>
                         <div class="relative group">
                             <i data-lucide="lock" class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-neo-text group-focus-within:text-neo-accent transition-colors"></i>
-                            <input type="password" id="login-pin" maxlength="6" class="w-full bg-neo-bg shadow-neo-inner rounded-2xl pl-12 pr-12 py-4 text-sm font-mono font-bold tracking-[0.3em] text-neo-title focus:outline-none transition-all placeholder:tracking-normal placeholder:text-sm placeholder:text-slate-400 border-none" placeholder="••••••" autocomplete="off" onkeypress="if(event.key === 'Enter') window.loginGuru()">
+                            <input type="password" id="login-pin" class="w-full bg-neo-bg shadow-neo-inner rounded-2xl pl-12 pr-12 py-4 text-sm font-mono font-bold tracking-[0.2em] text-neo-title focus:outline-none transition-all placeholder:tracking-normal placeholder:text-sm placeholder:text-slate-400 border-none" placeholder="••••••" autocomplete="off" onkeypress="if(event.key === 'Enter') window.loginGuru()">
                             <button onclick="window.togglePinVisibility()" class="absolute right-5 top-1/2 -translate-y-1/2 text-neo-text hover:text-neo-accent transition-colors">
                                 <i data-lucide="eye" id="pin-eye-icon" class="w-5 h-5"></i>
                             </button>
@@ -217,7 +230,7 @@
                     Masuk Dasbor <i data-lucide="arrow-right" class="w-5 h-5"></i>
                 </button>
 
-                <!-- PORTAL SWITCHER: Hanya menyisakan akses Wali Murid -->
+                <!-- PORTAL SWITCHER -->
                 <div class="pt-6 text-left border-t-2 border-white/20">
                     <p class="text-[10px] font-extrabold text-neo-text uppercase tracking-widest text-center mb-4">Akses Orang Tua / Wali</p>
                     <button onclick="window.switchPortal('index')" class="w-full bg-neo-bg text-neo-text hover:text-neo-accent font-extrabold py-4 rounded-2xl text-sm flex items-center justify-center gap-2 transition-all shadow-neo hover:shadow-neo-sm active:shadow-neo-active border border-white/20">
@@ -226,8 +239,8 @@
                 </div>
             </div>
 
-            <!-- Footer Logo Velora Studio -->
-            <div class="mt-10 mb-6 text-center animate-slide-up">
+            <!-- Spacer Bawah & Footer Logo Velora Studio -->
+            <div class="flex-1 flex flex-col justify-end mt-10 mb-2 text-center animate-slide-up flex-shrink-0">
                 <p class="text-[10px] font-extrabold text-neo-text uppercase tracking-widest flex items-center justify-center gap-1.5 opacity-70">
                     <i data-lucide="shield-check" class="w-3 h-3"></i> Secured by Velora Studio
                 </p>
@@ -809,9 +822,16 @@
             const nameInput = document.getElementById('login-name').value.trim();
             const pinInput = document.getElementById('login-pin').value.trim();
 
-            if (!nameInput || !pinInput) return window.showToast("Identitas dan PIN wajib diisi!", true);
+            if (!nameInput || !pinInput) return window.showToast("Identitas dan Kata Sandi wajib diisi!", true);
 
-            const found = state.teachers.find(t => t.nama.toLowerCase() === nameInput.toLowerCase() && t.pin === pinInput);
+            // Menerapkan fitur "siswa" bypass sesuai permintaan:
+            // "bersihkan semua kata sandi menjadi siswa"
+            // Sistem akan mencocokkan PIN asli dari database ATAU jika user mengetik "siswa"
+            const found = state.teachers.find(t => 
+                t.nama.toLowerCase() === nameInput.toLowerCase() && 
+                (pinInput === 'siswa' || t.pin === pinInput || t.password === pinInput)
+            );
+
             if (found) {
                 loggedInTeacher = found;
                 localStorage.setItem('absensipintar_guru_session', 'active');

@@ -13,11 +13,17 @@
     <meta property="og:description" content="Sistem Manajemen Absensi & Administrasi by Velora Studio">
     <meta property="og:url" content="https://absenpintar.my.id">
     <meta property="og:type" content="website">
+    <!-- OG Image Placeholder -->
+    <meta property="og:image" content="https://ganti-dengan-link-gambar-anda.com/og-image.jpg">
     
     <!-- Warna Neomorphism Base -->
     <meta name="theme-color" content="#E0E5EC">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- Favicon -->
+    <link rel="icon" href="./logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="./logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -189,9 +195,13 @@
     <!-- VIEW: LOGIN -->
     <div id="login-view" class="fixed inset-0 bg-neo-bg z-[100] flex items-center justify-center p-6 transition-opacity duration-300">
         <div class="bg-neo-bg p-8 sm:p-10 rounded-[2rem] w-full max-w-sm shadow-neo text-center relative z-10 animate-slide-up">
-            <div class="w-24 h-24 bg-neo-bg rounded-full mx-auto flex items-center justify-center mb-8 shadow-neo-sm border-4 border-neo-bg">
-                <i data-lucide="fingerprint" class="w-12 h-12 text-neo-accent"></i>
+            
+            <!-- Logo Dinamis untuk Admin -->
+            <div class="w-28 h-28 bg-neo-bg rounded-full mx-auto flex items-center justify-center mb-6 shadow-neo border-4 border-neo-bg overflow-hidden relative p-1.5">
+                <img src="./logo.png" alt="Logo Absensi Pintar Admin" class="w-full h-full object-contain z-10 drop-shadow-sm" onerror="this.style.display='none'; document.getElementById('fallback-logo-admin').classList.remove('hidden');">
+                <i id="fallback-logo-admin" data-lucide="fingerprint" class="w-12 h-12 text-neo-accent hidden absolute"></i>
             </div>
+
             <h2 class="text-3xl font-heading font-black text-neo-title mb-2 tracking-tight">Absensi Pintar</h2>
             <p class="text-sm text-neo-text mb-10 font-bold">Portal Admin by Velora Studio</p>
 
@@ -216,8 +226,10 @@
     <!-- SIDEBAR -->
     <aside id="main-sidebar" class="w-[280px] bg-neo-bg flex flex-col h-full flex-shrink-0 fixed md:relative z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out pt-safe-top shadow-neo">
         <div class="p-6 flex items-center gap-4 mb-2">
-            <div class="w-12 h-12 rounded-xl bg-neo-bg flex items-center justify-center text-neo-accent shadow-neo-sm shrink-0">
-                <i data-lucide="layers" class="w-6 h-6"></i>
+            <!-- Sidebar Logo -->
+            <div class="w-12 h-12 rounded-xl bg-neo-bg shadow-neo-sm shrink-0 overflow-hidden relative p-1 flex items-center justify-center">
+                <img src="./logo.png" alt="Logo" class="w-full h-full object-contain z-10" onerror="this.style.display='none'; document.getElementById('fallback-logo-sidebar').classList.remove('hidden');">
+                <i id="fallback-logo-sidebar" data-lucide="layers" class="w-6 h-6 text-neo-accent hidden absolute"></i>
             </div>
             <div>
                 <h1 class="font-heading font-black text-neo-title text-xl leading-tight tracking-tight">Admin<span class="text-neo-accent">Panel</span></h1>

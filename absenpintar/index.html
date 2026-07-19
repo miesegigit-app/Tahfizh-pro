@@ -143,11 +143,14 @@
         </div>
     </div>
 
-    <!-- VIEW: LOGIN (DIREVISI: Bisa discroll, logo dinamis, tombol rahasia dihilangkan) -->
-    <section id="view-login" class="view-transition fixed inset-0 z-50 bg-neo-bg overflow-y-auto hide-scrollbar pt-safe-top pb-safe-bottom flex flex-col">
-        <div class="flex-1 flex flex-col items-center justify-center p-6 py-12 min-h-[600px]">
+    <!-- VIEW: LOGIN (DIREVISI: Tata Letak Responsif Bebas Terpotong) -->
+    <section id="view-login" class="view-transition fixed inset-0 z-50 bg-neo-bg overflow-y-auto hide-scrollbar pt-safe-top pb-safe-bottom">
+        <div class="min-h-full flex flex-col items-center px-4 py-8">
             
-            <div class="bg-neo-bg w-full max-w-sm p-8 sm:p-10 rounded-[2.5rem] shadow-neo text-center relative z-10 animate-slide-up border border-white/20">
+            <!-- Spacer Atas untuk mendorong konten ke tengah di layar besar -->
+            <div class="flex-1 min-h-[2rem]"></div>
+            
+            <div class="bg-neo-bg w-full max-w-sm p-8 sm:p-10 rounded-[2.5rem] shadow-neo text-center relative z-10 animate-slide-up border border-white/20 flex-shrink-0">
                 
                 <!-- Logo Interaktif / Neomorphism -->
                 <div class="w-28 h-28 bg-neo-bg rounded-full mx-auto flex items-center justify-center mb-6 shadow-neo border-4 border-neo-bg overflow-hidden relative p-1.5">
@@ -184,8 +187,8 @@
                 </div>
             </div>
 
-            <!-- Footer Logo Velora Studio -->
-            <div class="mt-10 mb-6 text-center animate-slide-up">
+            <!-- Spacer Bawah & Footer Logo Velora Studio -->
+            <div class="flex-1 flex flex-col justify-end mt-10 mb-2 text-center animate-slide-up flex-shrink-0">
                 <p class="text-[10px] font-extrabold text-neo-text uppercase tracking-widest flex items-center justify-center gap-1.5 opacity-70">
                     <i data-lucide="shield-check" class="w-3 h-3"></i> Secured by Velora Studio
                 </p>
@@ -538,8 +541,10 @@
             state.student = null;
             document.getElementById('login-id').value = '';
             document.getElementById('view-dashboard').classList.add('hidden');
+            
+            // Fix agar kembali ke mode scrollable saat logout
             document.getElementById('view-login').classList.remove('hidden');
-            document.getElementById('view-login').classList.add('flex');
+            
             window.closeModal('modal-confirm');
             window.showToast("Berhasil Keluar.");
         };
