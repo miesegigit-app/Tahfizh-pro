@@ -1,1 +1,825 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; script-src 'self' https: 'unsafe-inline' 'unsafe-eval' type: module; style-src 'self' https: 'unsafe-inline'; font-src 'self' https: data:; connect-src 'self' https: wss:;">
+    
+    <title>Absensi Pintar - Portal Wali Murid</title>
+    <meta name="description" content="Portal pemantauan absensi dan akademik siswa oleh Velora Studio.">
+    
+    <meta property="og:title" content="Absensi Pintar - Portal Wali Murid">
+    <meta property="og:description" content="Aplikasi pemantauan absensi dan akademik siswa.">
+    <meta property="og:type" content="website">
+    <!-- OG Image Placeholder (Silakan sesuaikan URL-nya nanti) -->
+    <meta property="og:image" content="https://ganti-dengan-link-gambar-anda.com/og-image.jpg">
+    
+    <!-- Warna Neomorphism Base -->
+    <meta name="theme-color" content="#E0E5EC">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="./logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="./logo.png">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Fira+Code:wght@600&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        neo: {
+                            bg: '#E0E5EC',
+                            text: '#64748B',
+                            title: '#334155',
+                            accent: '#6366F1' // Indigo / Velora Studio Brand
+                        }
+                    },
+                    boxShadow: {
+                        'neo': '9px 9px 16px rgba(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5)',
+                        'neo-sm': '5px 5px 10px rgba(163,177,198,0.6), -5px -5px 10px rgba(255,255,255, 0.5)',
+                        'neo-inner': 'inset 6px 6px 10px 0 rgba(163,177,198, 0.7), inset -6px -6px 10px 0 rgba(255,255,255, 0.8)',
+                        'neo-active': 'inset 3px 3px 6px 0 rgba(163,177,198, 0.7), inset -3px -3px 6px 0 rgba(255,255,255, 0.8)',
+                    },
+                    animation: {
+                        'slide-up': 'slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pop-in': 'popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        slideUpFade: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        body { 
+            background-color: #E0E5EC; 
+            color: #64748B;
+            -webkit-tap-highlight-color: transparent; 
+            overscroll-behavior-y: none;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .loader {
+            border: 3px solid #E0E5EC; border-top: 3px solid #6366F1;
+            border-radius: 50%; width: 24px; height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Neomorphism Custom Toast */
+        #toast-container { position: fixed; top: max(24px, var(--safe-area-top)); left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 12px; pointer-events: none; width: max-content; max-width: 90vw; }
+        .toast {
+            background: #E0E5EC; color: #334155; padding: 14px 20px; border-radius: 16px;
+            font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 12px;
+            box-shadow: 9px 9px 16px rgba(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5);
+            animation: slideInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            pointer-events: auto;
+        }
+        .toast.error { color: #EF4444; }
+        @keyframes slideInDown { from { transform: translateY(-100%) translateX(-50%); opacity: 0; } to { transform: translateY(0) translateX(-50%); opacity: 1; } }
+        @keyframes fadeOutUp { from { transform: translateY(0) translateX(-50%); opacity: 1; } to { transform: translateY(-100%) translateX(-50%); opacity: 0; } }
+
+        .view-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        .pt-safe-top { padding-top: var(--safe-area-top); }
+        .pb-safe-bottom { padding-bottom: calc(var(--safe-area-bottom) + 1rem); }
+    </style>
+</head>
+<body class="antialiased h-[100dvh] flex flex-col overflow-hidden relative">
+
+    <div id="toast-container"></div>
+
+    <!-- STRICT SAFETY NET -->
+    <div id="safety-net-screen" class="fixed inset-0 bg-neo-bg z-[99999] hidden flex-col items-center justify-center p-6 text-center">
+        <div class="bg-neo-bg p-8 rounded-3xl shadow-neo max-w-md w-full relative overflow-hidden border border-white/20">
+            <div class="w-20 h-20 bg-neo-bg rounded-full flex items-center justify-center mx-auto mb-6 shadow-neo-inner border-4 border-neo-bg">
+                <i data-lucide="shield-alert" class="w-10 h-10 text-rose-500"></i>
+            </div>
+            <h2 class="text-xl font-heading font-black text-neo-title mb-2">Akses Terkunci</h2>
+            <p class="text-sm text-neo-text mb-6 leading-relaxed">Sistem tidak mendeteksi institusi tempat anak Anda bersekolah. Akses harus menggunakan tautan unik yang diberikan oleh pihak yayasan.</p>
+            <div class="bg-neo-bg shadow-neo-inner p-4 rounded-xl text-left border border-white/40">
+                <p class="text-[11px] font-bold text-neo-text uppercase tracking-wider mb-1">Contoh Format Tautan:</p>
+                <code class="text-xs font-mono text-neo-accent font-bold break-all">absenpintar.my.id/?sekolah=id_sekolah</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- GLOBAL LOADER -->
+    <div id="global-loader" class="fixed inset-0 bg-neo-bg/80 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center transition-opacity duration-300">
+        <div class="bg-neo-bg p-8 rounded-3xl flex flex-col items-center text-center shadow-neo max-w-xs border border-white/40">
+            <div class="loader mb-6 w-10 h-10"></div>
+            <h2 class="text-lg font-heading font-black text-neo-title">Menghubungkan...</h2>
+            <p class="text-xs text-neo-text mt-2 font-bold">Menyiapkan pangkalan data</p>
+        </div>
+    </div>
+
+    <!-- VIEW: LOGIN (DIREVISI: Bisa discroll, logo dinamis, tombol rahasia dihilangkan) -->
+    <section id="view-login" class="view-transition fixed inset-0 z-50 bg-neo-bg overflow-y-auto hide-scrollbar pt-safe-top pb-safe-bottom flex flex-col">
+        <div class="flex-1 flex flex-col items-center justify-center p-6 py-12 min-h-[600px]">
+            
+            <div class="bg-neo-bg w-full max-w-sm p-8 sm:p-10 rounded-[2.5rem] shadow-neo text-center relative z-10 animate-slide-up border border-white/20">
+                
+                <!-- Logo Interaktif / Neomorphism -->
+                <div class="w-28 h-28 bg-neo-bg rounded-full mx-auto flex items-center justify-center mb-6 shadow-neo border-4 border-neo-bg overflow-hidden relative p-1.5">
+                    <img src="./logo.png" alt="Logo Absensi Pintar" class="w-full h-full object-contain z-10 drop-shadow-sm" onerror="this.style.display='none'; document.getElementById('fallback-logo').classList.remove('hidden');">
+                    <i id="fallback-logo" data-lucide="users" class="w-12 h-12 text-neo-accent hidden absolute"></i>
+                </div>
+                
+                <div class="space-y-1 mb-8">
+                    <h1 class="text-2xl font-heading font-black text-neo-title tracking-tight">Portal Wali Murid</h1>
+                    <p class="text-sm text-neo-text font-bold" id="tenant-name-display">Memuat Institusi...</p>
+                </div>
+
+                <div class="space-y-6 text-left mb-8">
+                    <div class="space-y-2">
+                        <label class="text-xs font-extrabold text-neo-text uppercase tracking-widest ml-2">ID Siswa / NIS</label>
+                        <div class="relative group">
+                            <i data-lucide="fingerprint" class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-neo-text group-focus-within:text-neo-accent transition-colors"></i>
+                            <input type="text" id="login-id" class="w-full bg-neo-bg shadow-neo-inner rounded-2xl pl-12 pr-6 py-4 text-sm font-mono font-bold tracking-widest text-neo-title focus:outline-none transition-all placeholder-neo-text/70 placeholder:tracking-normal border-none" placeholder="Ketik ID Siswa" autocomplete="off" onkeypress="if(event.key === 'Enter') window.loginOrtu()">
+                        </div>
+                        <p class="text-[10px] font-bold text-neo-text ml-2 mt-1">Gunakan Nomor ID yang tertera pada Kartu Pelajar.</p>
+                    </div>
+                </div>
+
+                <button onclick="window.loginOrtu()" id="btn-login" class="w-full bg-neo-bg text-neo-accent font-extrabold py-4 rounded-2xl transition-all shadow-neo hover:shadow-neo-sm active:shadow-neo-active flex items-center justify-center gap-2 mb-8 border border-white/20">
+                    Akses Data Anak <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </button>
+
+                <!-- PORTAL SWITCHER: Hanya menyisakan akses Guru Internal -->
+                <div class="pt-6 text-left border-t-2 border-white/20">
+                    <p class="text-[10px] font-extrabold text-neo-text uppercase tracking-widest text-center mb-4">Akses Internal Institusi</p>
+                    <button onclick="window.switchPortal('guru')" class="w-full bg-neo-bg text-neo-text hover:text-neo-accent font-extrabold py-4 rounded-2xl text-sm flex items-center justify-center gap-2 transition-all shadow-neo hover:shadow-neo-sm active:shadow-neo-active border border-white/20">
+                        <i data-lucide="briefcase" class="w-5 h-5"></i> Masuk Portal Pengajar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer Logo Velora Studio -->
+            <div class="mt-10 mb-6 text-center animate-slide-up">
+                <p class="text-[10px] font-extrabold text-neo-text uppercase tracking-widest flex items-center justify-center gap-1.5 opacity-70">
+                    <i data-lucide="shield-check" class="w-3 h-3"></i> Secured by Velora Studio
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIEW: MAIN DASHBOARD -->
+    <div id="view-dashboard" class="hidden h-full flex flex-col w-full max-w-md mx-auto bg-neo-bg relative overflow-hidden shadow-[0_0_50px_rgba(163,177,198,0.3)] border-x border-white/30">
+        
+        <!-- HEADER -->
+        <header class="pt-safe-top pb-4 px-6 flex items-center justify-between z-30 flex-shrink-0 mt-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-neo-bg rounded-2xl flex items-center justify-center text-neo-accent shadow-neo border border-white/40 overflow-hidden" id="profile-img-container">
+                    <i data-lucide="user" class="w-6 h-6" id="profile-fallback"></i>
+                    <img src="" id="profile-img" class="w-full h-full object-cover hidden">
+                </div>
+                <div>
+                    <h2 id="display-student-name" class="font-heading font-black text-lg text-neo-title leading-tight tracking-tight">Nama Siswa</h2>
+                    <p id="display-student-class" class="text-[10px] text-neo-text font-extrabold uppercase tracking-widest mt-0.5">Kelas -</p>
+                </div>
+            </div>
+            <button onclick="window.confirmLogout()" class="w-12 h-12 bg-neo-bg shadow-neo text-rose-500 rounded-2xl transition-all flex items-center justify-center active:shadow-neo-active border border-white/40" title="Keluar">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
+            </button>
+        </header>
+
+        <!-- SCROLLABLE CONTENT -->
+        <div class="flex-1 overflow-y-auto hide-scrollbar px-6 py-4 space-y-8" id="main-scroll-content">
+            
+            <!-- TAB: RINGKASAN -->
+            <div id="tab-ringkasan-content" class="space-y-8 view-transition pb-24">
+                
+                <!-- Status Hari Ini -->
+                <div class="bg-neo-bg p-8 rounded-[2rem] shadow-neo text-center relative overflow-hidden border border-white/20">
+                    <p class="text-xs font-extrabold text-neo-text uppercase tracking-widest mb-4">Status Kehadiran Hari Ini</p>
+                    
+                    <div id="today-status-container" class="w-24 h-24 mx-auto rounded-full bg-neo-bg shadow-neo-inner flex items-center justify-center mb-5 border-4 border-neo-bg">
+                        <i data-lucide="clock" class="w-8 h-8 text-neo-text animate-pulse"></i>
+                    </div>
+                    
+                    <h3 id="today-status-text" class="font-heading font-black text-xl text-neo-title mb-1">Belum Ada Data</h3>
+                    <p id="today-status-time" class="text-xs font-bold text-neo-text">Silakan scan ID Card saat tiba di lokasi.</p>
+                </div>
+
+                <!-- Rekap Bulanan -->
+                <div>
+                    <h3 class="font-heading font-black text-neo-title text-lg mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-5 h-5 text-neo-accent"></i> Rekap Bulan Ini</h3>
+                    <div class="grid grid-cols-2 gap-5">
+                        <div class="bg-neo-bg rounded-[1.5rem] p-5 shadow-neo relative overflow-hidden flex items-center gap-4 border border-white/20">
+                            <div class="w-10 h-10 rounded-xl bg-neo-bg shadow-neo-inner text-emerald-500 flex items-center justify-center flex-shrink-0"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
+                            <div>
+                                <p class="text-[10px] text-neo-text font-extrabold uppercase tracking-widest">Hadir</p>
+                                <h4 id="count-hadir" class="text-xl font-heading font-black text-neo-title mt-0.5">0</h4>
+                            </div>
+                        </div>
+                        <div class="bg-neo-bg rounded-[1.5rem] p-5 shadow-neo relative overflow-hidden flex items-center gap-4 border border-white/20">
+                            <div class="w-10 h-10 rounded-xl bg-neo-bg shadow-neo-inner text-blue-500 flex items-center justify-center flex-shrink-0"><i data-lucide="info" class="w-5 h-5"></i></div>
+                            <div>
+                                <p class="text-[10px] text-neo-text font-extrabold uppercase tracking-widest">Izin</p>
+                                <h4 id="count-izin" class="text-xl font-heading font-black text-neo-title mt-0.5">0</h4>
+                            </div>
+                        </div>
+                        <div class="bg-neo-bg rounded-[1.5rem] p-5 shadow-neo relative overflow-hidden flex items-center gap-4 border border-white/20">
+                            <div class="w-10 h-10 rounded-xl bg-neo-bg shadow-neo-inner text-amber-500 flex items-center justify-center flex-shrink-0"><i data-lucide="thermometer" class="w-5 h-5"></i></div>
+                            <div>
+                                <p class="text-[10px] text-neo-text font-extrabold uppercase tracking-widest">Sakit</p>
+                                <h4 id="count-sakit" class="text-xl font-heading font-black text-neo-title mt-0.5">0</h4>
+                            </div>
+                        </div>
+                        <div class="bg-neo-bg rounded-[1.5rem] p-5 shadow-neo relative overflow-hidden flex items-center gap-4 border border-white/20">
+                            <div class="w-10 h-10 rounded-xl bg-neo-bg shadow-neo-inner text-rose-500 flex items-center justify-center flex-shrink-0"><i data-lucide="x-circle" class="w-5 h-5"></i></div>
+                            <div>
+                                <p class="text-[10px] text-neo-text font-extrabold uppercase tracking-widest">Alfa</p>
+                                <h4 id="count-alfa" class="text-xl font-heading font-black text-neo-title mt-0.5">0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: HISTORI -->
+            <div id="tab-histori-content" class="hidden space-y-6 view-transition pb-24">
+                <div class="bg-neo-bg rounded-[2rem] shadow-neo p-6 space-y-6 border border-white/20">
+                    <div class="flex justify-between items-center pb-4 border-b-2 border-white/20">
+                        <div>
+                            <h3 class="font-heading font-black text-neo-title text-lg">Catatan Kehadiran</h3>
+                            <p class="text-[11px] text-neo-text font-bold mt-1 uppercase tracking-widest" id="history-month-text">Bulan Ini</p>
+                        </div>
+                    </div>
+
+                    <div id="history-list" class="space-y-4">
+                        <!-- Data histori di-inject via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: KEUANGAN -->
+            <div id="tab-keuangan-content" class="hidden space-y-6 view-transition pb-24">
+                <div class="bg-neo-bg rounded-[2rem] shadow-neo p-8 text-center relative overflow-hidden border border-white/20">
+                    <div class="w-20 h-20 bg-neo-bg shadow-neo-inner rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-neo-bg" id="finance-icon-container">
+                        <i data-lucide="wallet" class="w-8 h-8 text-neo-accent" id="finance-icon"></i>
+                    </div>
+                    
+                    <p class="text-xs font-extrabold text-neo-text uppercase tracking-widest mb-2">Status SPP / Administrasi</p>
+                    <h3 id="finance-status-text" class="font-heading font-black text-2xl text-neo-title mb-2">Memeriksa...</h3>
+                    
+                    <div id="finance-amount-container" class="hidden">
+                        <p class="text-sm font-bold text-neo-text mb-4 mt-2">Total Tunggakan Aktif:</p>
+                        <div class="inline-block bg-neo-bg shadow-neo-inner px-8 py-5 rounded-2xl mb-8 border border-white/10">
+                            <span id="finance-amount" class="text-3xl font-mono font-black text-rose-500 tracking-tight">Rp 0</span>
+                        </div>
+                        
+                        <button onclick="window.konfirmasiPembayaran()" class="w-full bg-neo-bg text-emerald-500 font-extrabold py-4 rounded-2xl transition-all shadow-neo hover:shadow-neo-sm active:shadow-neo-active flex items-center justify-center gap-3 text-sm border border-white/20">
+                            <i data-lucide="message-circle" class="w-5 h-5"></i> Konfirmasi ke Tata Usaha
+                        </button>
+                    </div>
+
+                    <div id="finance-paid-container" class="hidden">
+                        <div class="bg-neo-bg shadow-neo-inner p-5 rounded-2xl mt-6 border border-white/10">
+                            <p class="text-sm font-bold text-neo-text leading-relaxed">Terima kasih, administrasi pendidikan Ananda telah terselesaikan untuk periode ini.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Kontak Admin -->
+                <div class="bg-neo-bg rounded-[2rem] shadow-neo p-6 flex items-center gap-4 border border-white/20">
+                    <div class="w-12 h-12 bg-neo-bg shadow-neo-inner rounded-xl flex items-center justify-center flex-shrink-0 text-neo-text">
+                        <i data-lucide="help-circle" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-black text-neo-title text-sm">Butuh Bantuan?</h4>
+                        <p class="text-xs font-bold text-neo-text mt-1">Hubungi Tata Usaha jika ada ketidaksesuaian data.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav class="absolute bottom-0 w-full bg-neo-bg rounded-t-[2.5rem] z-[100] shadow-[0_-10px_20px_rgba(163,177,198,0.2)] pb-safe-bottom border-t border-white/40">
+            <div class="h-20 flex justify-around items-center px-4 pt-2">
+                <button onclick="window.switchTab('ringkasan')" id="btn-tab-ringkasan" class="flex flex-col items-center justify-center text-neo-accent font-black text-[10px] w-20 gap-1 transition-all active:scale-95">
+                    <div class="w-12 h-10 rounded-[1.25rem] bg-neo-bg shadow-neo-inner flex items-center justify-center mb-1 transition-all text-neo-accent border border-white/10">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    </div>
+                    Ringkasan
+                </button>
+                <button onclick="window.switchTab('histori')" id="btn-tab-histori" class="flex flex-col items-center justify-center text-neo-text hover:text-neo-title font-bold text-[10px] w-20 gap-1 transition-all active:scale-95">
+                    <div class="w-12 h-10 rounded-[1.25rem] bg-neo-bg flex items-center justify-center mb-1 transition-all shadow-neo border border-white/20">
+                        <i data-lucide="calendar-days" class="w-5 h-5"></i>
+                    </div>
+                    Histori
+                </button>
+                <button onclick="window.switchTab('keuangan')" id="btn-tab-keuangan" class="flex flex-col items-center justify-center text-neo-text hover:text-neo-title font-bold text-[10px] w-20 gap-1 transition-all active:scale-95">
+                    <div class="w-12 h-10 rounded-[1.25rem] bg-neo-bg flex items-center justify-center mb-1 transition-all shadow-neo border border-white/20">
+                        <i data-lucide="wallet" class="w-5 h-5"></i>
+                    </div>
+                    Keuangan
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- MODAL: CUSTOM CONFIRM -->
+    <div id="modal-confirm" class="fixed inset-0 bg-neo-bg/80 backdrop-blur-md z-[200] hidden items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+        <div class="bg-neo-bg rounded-[2rem] shadow-neo w-full max-w-sm overflow-hidden transform scale-95 transition-all duration-300 p-10 text-center flex flex-col border border-white/30" id="modal-confirm-content">
+            <div class="w-24 h-24 bg-neo-bg rounded-full flex items-center justify-center mx-auto mb-8 shadow-neo-inner border-4 border-neo-bg" id="confirm-icon-wrapper">
+                <i data-lucide="log-out" class="w-10 h-10 text-rose-500" id="confirm-icon"></i>
+            </div>
+            <h3 class="font-heading font-black text-2xl text-neo-title mb-3 tracking-tight" id="confirm-title">Keluar Akun</h3>
+            <p class="text-sm text-neo-text mb-10 leading-relaxed font-bold" id="confirm-desc">Apakah Anda yakin ingin keluar dari pemantauan data siswa ini?</p>
+            
+            <div class="flex gap-4 mt-auto">
+                <button onclick="window.closeModal('modal-confirm')" class="flex-1 py-4 text-sm font-extrabold text-neo-text bg-neo-bg shadow-neo active:shadow-neo-active rounded-2xl transition-all border border-white/20">Batal</button>
+                <button id="btn-execute-confirm" onclick="window.logoutOrtu()" class="flex-1 py-4 text-sm font-extrabold text-rose-500 bg-neo-bg shadow-neo active:shadow-neo-active rounded-2xl transition-all border border-white/20">Keluar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business & Database Logic Script -->
+    <script type="module">
+        import { db, appId, auth } from './firebase-config.js';
+        import { signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { collection, doc, getDoc, getDocs, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // === 0. STRICT LOCK LOGIC ===
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) window.lucide.createIcons();
+            
+            // Kunci total jika App ID tidak ada di URL atau Cache
+            if (!appId || window.SAAS_TENANT_MISSING) {
+                const safetyNet = document.getElementById('safety-net-screen');
+                const loginView = document.getElementById('view-login');
+                const dashboardView = document.getElementById('view-dashboard');
+                
+                if (safetyNet) {
+                    safetyNet.classList.remove('hidden');
+                    safetyNet.style.display = 'flex';
+                }
+                if (loginView) loginView.style.display = 'none';
+                if (dashboardView) dashboardView.style.display = 'none';
+                
+                return; 
+            }
+
+            // Cek Sesi Tersimpan
+            if (localStorage.getItem('absensipintar_ortu_session') === 'active' && localStorage.getItem('absensipintar_saved_student_id')) {
+                document.getElementById('view-login').classList.add('hidden');
+                initFirebaseData();
+            } else {
+                fetchTenantInfo(); // Hanya ambil nama sekolah untuk layar login
+            }
+        });
+
+        // === 1. GLOBAL VARIABLES & STATE ===
+        const state = {
+            student: null,
+            attendance: [],
+            settings: { nominalTagihan: 5000, salesWaNumber: '' },
+            tenantName: 'Institusi Terdaftar'
+        };
+
+        // Utilities
+        const dateToYmdString = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        
+        window.showToast = function(message, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'error' : ''}`;
+            toast.innerHTML = `<div class="w-8 h-8 rounded-full bg-neo-bg shadow-neo-inner flex items-center justify-center flex-shrink-0 border border-white/10 ${isError ? 'text-rose-500' : 'text-emerald-500'}"><i data-lucide="${isError ? 'alert-octagon' : 'check-circle'}" class="w-5 h-5"></i></div> <span>${message}</span>`;
+            container.appendChild(toast);
+            if(window.lucide) window.lucide.createIcons();
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOutUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        };
+
+        window.switchPortal = function(targetPath) {
+            const currentSearch = window.location.search;
+            window.location.href = targetPath + currentSearch;
+        };
+
+        window.switchTab = function(tabName) {
+            ['ringkasan', 'histori', 'keuangan'].forEach(t => {
+                document.getElementById(`tab-${t}-content`).classList.add('hidden');
+                const btn = document.getElementById(`btn-tab-${t}`);
+                btn.className = "flex flex-col items-center justify-center text-neo-text hover:text-neo-title font-bold text-[10px] w-20 gap-1 transition-all active:scale-95";
+                btn.querySelector('div').className = "w-12 h-10 rounded-[1.25rem] bg-neo-bg flex items-center justify-center mb-1 transition-all shadow-neo border border-white/20";
+            });
+
+            document.getElementById(`tab-${tabName}-content`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-tab-${tabName}`);
+            activeBtn.className = "flex flex-col items-center justify-center text-neo-accent font-black text-[10px] w-20 gap-1 transition-all active:scale-95";
+            activeBtn.querySelector('div').className = "w-12 h-10 rounded-[1.25rem] bg-neo-bg shadow-neo-inner flex items-center justify-center mb-1 transition-all text-neo-accent border border-white/10";
+
+            if (tabName === 'ringkasan') renderRingkasan();
+            if (tabName === 'histori') renderHistori();
+            if (tabName === 'keuangan') renderKeuangan();
+            
+            document.getElementById('main-scroll-content').scrollTo({top: 0, behavior: 'smooth'});
+        };
+
+        window.openModal = function(id) {
+            const el = document.getElementById(id); const content = document.getElementById(id + '-content');
+            el.classList.remove('hidden'); el.classList.add('flex');
+            setTimeout(() => { content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100'); }, 10);
+        };
+
+        window.closeModal = function(id) {
+            const el = document.getElementById(id); const content = document.getElementById(id + '-content');
+            content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { el.classList.add('hidden'); el.classList.remove('flex'); }, 300);
+        };
+
+        window.confirmLogout = function() {
+            window.openModal('modal-confirm');
+        };
+
+        // === 2. FIREBASE LOGIC ===
+
+        async function fetchTenantInfo() {
+            try {
+                await signInAnonymously(auth);
+                const clientRef = doc(db, 'saas_master', 'clients', 'list', appId);
+                const snap = await getDoc(clientRef);
+                if(snap.exists() && snap.data().name) {
+                    state.tenantName = snap.data().name;
+                    document.getElementById('tenant-name-display').innerText = state.tenantName;
+                }
+            } catch(e) {
+                console.warn("Gagal menarik nama institusi.", e);
+            }
+        }
+
+        window.loginOrtu = async function() {
+            const idInput = document.getElementById('login-id').value.trim();
+            if (!idInput) return window.showToast("ID Siswa wajib diisi!", true);
+
+            const btn = document.getElementById('btn-login');
+            btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Mencari Data...';
+            if(window.lucide) window.lucide.createIcons();
+
+            try {
+                await signInAnonymously(auth);
+                
+                // Cari Siswa (O(1) langsung ke tenant spesifik)
+                let studentData = null;
+                
+                // Coba by Doc ID
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', idInput);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    studentData = { id: docSnap.id, ...docSnap.data() };
+                } else {
+                    // Coba by kodeSiswa
+                    const stuRef = collection(db, 'artifacts', appId, 'public', 'data', 'students');
+                    const q = query(stuRef, where('kodeSiswa', '==', idInput));
+                    const qSnap = await getDocs(q);
+                    if (!qSnap.empty) {
+                        studentData = { id: qSnap.docs[0].id, ...qSnap.docs[0].data() };
+                    }
+                }
+
+                if (studentData) {
+                    localStorage.setItem('absensipintar_ortu_session', 'active');
+                    localStorage.setItem('absensipintar_saved_student_id', studentData.id);
+                    state.student = studentData;
+                    
+                    document.getElementById('view-login').classList.add('hidden');
+                    initFirebaseData();
+                    window.showToast(`Selamat datang, Wali dari ${studentData.nama}`);
+                } else {
+                    window.showToast("ID Siswa tidak ditemukan di institusi ini.", true);
+                }
+            } catch(e) {
+                window.showToast("Terjadi kesalahan koneksi server.", true);
+            } finally {
+                btn.disabled = false; btn.innerHTML = 'Akses Data Anak <i data-lucide="arrow-right" class="w-5 h-5"></i>';
+                if(window.lucide) window.lucide.createIcons();
+            }
+        };
+
+        window.logoutOrtu = function() {
+            localStorage.removeItem('absensipintar_ortu_session');
+            localStorage.removeItem('absensipintar_saved_student_id');
+            state.student = null;
+            document.getElementById('login-id').value = '';
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-login').classList.remove('hidden');
+            document.getElementById('view-login').classList.add('flex');
+            window.closeModal('modal-confirm');
+            window.showToast("Berhasil Keluar.");
+        };
+
+        async function initFirebaseData() {
+            try {
+                document.getElementById('global-loader').classList.remove('hidden');
+                document.getElementById('global-loader').classList.add('flex');
+                
+                await signInAnonymously(auth);
+
+                const studentId = localStorage.getItem('absensipintar_saved_student_id');
+                if(!studentId) return window.logoutOrtu();
+
+                // 1. Listen Global Settings & Tenant Info
+                const globalSetRef = doc(db, 'saas_master', 'global_config');
+                onSnapshot(globalSetRef, (snap) => {
+                    if(snap.exists() && snap.data().salesWaNumber) state.settings.salesWaNumber = snap.data().salesWaNumber;
+                });
+
+                const tenantSetRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
+                onSnapshot(tenantSetRef, (snap) => {
+                    if(snap.exists()) {
+                        const data = snap.data();
+                        if(data.nominalTagihan) state.settings.nominalTagihan = data.nominalTagihan;
+                        renderKeuangan();
+                    }
+                });
+
+                // 2. Listen Student Data
+                const studentRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', studentId);
+                onSnapshot(studentRef, async (docSnap) => {
+                    if (docSnap.exists()) {
+                        state.student = { id: docSnap.id, ...docSnap.data() };
+                        updateUIHeader();
+                        renderKeuangan();
+                        
+                        // Resolve Class Name
+                        const kelasId = state.student.kelas_id || state.student.kelas;
+                        if(kelasId) {
+                            try {
+                                const clsSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', kelasId));
+                                if(clsSnap.exists()) {
+                                    document.getElementById('display-student-class').innerText = `Kelas ${clsSnap.data().nama_kelas || clsSnap.data().name}`;
+                                } else {
+                                    document.getElementById('display-student-class').innerText = `Kelas ${kelasId}`;
+                                }
+                            } catch(e) {}
+                        }
+
+                    } else {
+                        window.showToast("Data siswa telah dihapus dari sistem.", true);
+                        window.logoutOrtu();
+                    }
+                });
+
+                // 3. Listen Attendance
+                const attRef = collection(db, 'artifacts', appId, 'public', 'data', 'attendance');
+                const qAtt = query(attRef, where('studentId', '==', studentId));
+                onSnapshot(qAtt, (snap) => {
+                    state.attendance = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                    
+                    document.getElementById('global-loader').classList.add('opacity-0');
+                    setTimeout(() => { 
+                        document.getElementById('global-loader').classList.add('hidden'); 
+                        document.getElementById('global-loader').classList.remove('flex'); 
+                        document.getElementById('view-dashboard').classList.remove('hidden');
+                        window.switchTab('ringkasan');
+                    }, 300);
+                });
+
+            } catch(e) {
+                window.showToast("Gagal menyinkronkan pangkalan data. Cek koneksi internet.", true);
+            }
+        }
+
+        function updateUIHeader() {
+            if(!state.student) return;
+            document.getElementById('display-student-name').innerText = state.student.nama || 'Tanpa Nama';
+            
+            const imgEl = document.getElementById('profile-img');
+            const fallback = document.getElementById('profile-fallback');
+            const container = document.getElementById('profile-img-container');
+            
+            if(state.student.fotoProfil) {
+                imgEl.src = state.student.fotoProfil;
+                imgEl.classList.remove('hidden');
+                fallback.classList.add('hidden');
+            } else {
+                imgEl.classList.add('hidden');
+                fallback.classList.remove('hidden');
+            }
+        }
+
+        function renderRingkasan() {
+            const todayStr = dateToYmdString(new Date());
+            const currentMonthPrefix = todayStr.slice(0, 7);
+
+            // 1. Status Hari Ini
+            const todayAtt = state.attendance.find(a => a.date === todayStr);
+            const statusContainer = document.getElementById('today-status-container');
+            const statusIcon = statusContainer.querySelector('i');
+            const statusText = document.getElementById('today-status-text');
+            const statusTime = document.getElementById('today-status-time');
+
+            statusContainer.className = "w-24 h-24 mx-auto rounded-full shadow-neo-inner flex items-center justify-center mb-5 border-4 border-neo-bg transition-all";
+            
+            if (todayAtt) {
+                const timeStr = todayAtt.timestamp ? new Date(todayAtt.timestamp).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) : '-';
+                
+                if (todayAtt.status === 'H') {
+                    statusContainer.classList.add('bg-neo-bg', 'text-emerald-500');
+                    statusIcon.setAttribute('data-lucide', 'check-circle-2');
+                    statusIcon.classList.remove('animate-pulse');
+                    statusText.innerText = "HADIR";
+                    statusText.className = "font-heading font-black text-xl text-emerald-500 mb-1";
+                    statusTime.innerText = `Tercatat pada pukul ${timeStr} WIB`;
+                } else if (todayAtt.status === 'I') {
+                    statusContainer.classList.add('bg-neo-bg', 'text-blue-500');
+                    statusIcon.setAttribute('data-lucide', 'info');
+                    statusIcon.classList.remove('animate-pulse');
+                    statusText.innerText = "IZIN";
+                    statusText.className = "font-heading font-black text-xl text-blue-500 mb-1";
+                    statusTime.innerText = `Keterangan tercatat di sistem.`;
+                } else if (todayAtt.status === 'S') {
+                    statusContainer.classList.add('bg-neo-bg', 'text-amber-500');
+                    statusIcon.setAttribute('data-lucide', 'thermometer');
+                    statusIcon.classList.remove('animate-pulse');
+                    statusText.innerText = "SAKIT";
+                    statusText.className = "font-heading font-black text-xl text-amber-500 mb-1";
+                    statusTime.innerText = `Semoga lekas sembuh.`;
+                } else if (todayAtt.status === 'A') {
+                    statusContainer.classList.add('bg-neo-bg', 'text-rose-500');
+                    statusIcon.setAttribute('data-lucide', 'x-circle');
+                    statusIcon.classList.remove('animate-pulse');
+                    statusText.innerText = "ALFA";
+                    statusText.className = "font-heading font-black text-xl text-rose-500 mb-1";
+                    statusTime.innerText = `Tanpa keterangan.`;
+                }
+            } else {
+                statusContainer.classList.add('bg-neo-bg', 'text-neo-text');
+                statusIcon.setAttribute('data-lucide', 'clock');
+                statusIcon.classList.add('animate-pulse');
+                statusText.innerText = "Belum Ada Data";
+                statusText.className = "font-heading font-black text-xl text-neo-title mb-1";
+                statusTime.innerText = "Silakan scan ID Card saat tiba di lokasi.";
+            }
+
+            // 2. Rekap Bulanan
+            let cH = 0, cI = 0, cS = 0, cA = 0;
+            state.attendance.forEach(a => {
+                if(a.date.startsWith(currentMonthPrefix)) {
+                    if(a.status === 'H') cH++;
+                    if(a.status === 'I') cI++;
+                    if(a.status === 'S') cS++;
+                    if(a.status === 'A') cA++;
+                }
+            });
+
+            document.getElementById('count-hadir').innerText = cH;
+            document.getElementById('count-izin').innerText = cI;
+            document.getElementById('count-sakit').innerText = cS;
+            document.getElementById('count-alfa').innerText = cA;
+
+            if(window.lucide) window.lucide.createIcons();
+        }
+
+        function renderHistori() {
+            const currentMonthPrefix = dateToYmdString(new Date()).slice(0, 7);
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            document.getElementById('history-month-text').innerText = `${monthNames[new Date().getMonth()]} ${new Date().getFullYear()}`;
+
+            const listCont = document.getElementById('history-list');
+            listCont.innerHTML = '';
+
+            const currentMonthData = state.attendance.filter(a => a.date.startsWith(currentMonthPrefix)).sort((a,b) => b.date.localeCompare(a.date));
+
+            if(currentMonthData.length === 0) {
+                listCont.innerHTML = `
+                <div class="py-10 text-center text-neo-text">
+                    <div class="w-20 h-20 bg-neo-bg shadow-neo-inner border border-white/20 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="calendar-x" class="w-8 h-8 opacity-50"></i></div>
+                    <p class="font-bold text-sm">Belum ada riwayat bulan ini.</p>
+                </div>`;
+                if(window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            currentMonthData.forEach(item => {
+                const dateObj = new Date(item.date);
+                const dayName = dateObj.toLocaleDateString('id-ID', {weekday: 'long'});
+                const dateNum = dateObj.getDate();
+                const timeStr = item.timestamp ? new Date(item.timestamp).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) : '-';
+
+                let iconStr = '', colorClass = '', statusLabel = '';
+                if(item.status === 'H') { iconStr = 'check-circle-2'; colorClass = 'text-emerald-500'; statusLabel = 'Hadir'; }
+                else if(item.status === 'I') { iconStr = 'info'; colorClass = 'text-blue-500'; statusLabel = 'Izin'; }
+                else if(item.status === 'S') { iconStr = 'thermometer'; colorClass = 'text-amber-500'; statusLabel = 'Sakit'; }
+                else if(item.status === 'A') { iconStr = 'x-circle'; colorClass = 'text-rose-500'; statusLabel = 'Alfa'; }
+
+                listCont.innerHTML += `
+                <div class="bg-neo-bg p-5 rounded-2xl shadow-neo-inner flex items-center justify-between border border-white/10">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-neo-bg shadow-neo flex flex-col items-center justify-center flex-shrink-0 border border-white/20">
+                            <span class="text-[9px] font-extrabold text-neo-text uppercase">${dayName.substring(0,3)}</span>
+                            <span class="text-lg font-black text-neo-title leading-none mt-0.5">${dateNum}</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-sm ${colorClass}">${statusLabel}</p>
+                            <p class="text-[10px] font-extrabold text-neo-text uppercase tracking-widest mt-0.5">Pukul: ${timeStr}</p>
+                        </div>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-neo-bg shadow-neo flex items-center justify-center ${colorClass} border border-white/20">
+                        <i data-lucide="${iconStr}" class="w-5 h-5"></i>
+                    </div>
+                </div>`;
+            });
+            if(window.lucide) window.lucide.createIcons();
+        }
+
+        function renderKeuangan() {
+            if(!state.student) return;
+            
+            const isMidtrans = state.student.metodePembayaran === 'midtrans' || state.student.metodePembayaran === 'gateway';
+            const isPaid = state.student.pembayaranLunas === true || isMidtrans;
+
+            const iconContainer = document.getElementById('finance-icon-container');
+            const icon = document.getElementById('finance-icon');
+            const statusText = document.getElementById('finance-status-text');
+            const amountContainer = document.getElementById('finance-amount-container');
+            const paidContainer = document.getElementById('finance-paid-container');
+
+            if(isPaid) {
+                iconContainer.className = "w-20 h-20 bg-neo-bg shadow-neo-inner rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-500 border-4 border-neo-bg";
+                icon.setAttribute('data-lucide', 'check-circle');
+                statusText.innerText = "LUNAS";
+                statusText.className = "font-heading font-black text-2xl text-emerald-500 mb-2";
+                
+                amountContainer.classList.add('hidden');
+                paidContainer.classList.remove('hidden');
+            } else {
+                iconContainer.className = "w-20 h-20 bg-neo-bg shadow-neo-inner rounded-full flex items-center justify-center mx-auto mb-6 text-rose-500 border-4 border-neo-bg";
+                icon.setAttribute('data-lucide', 'alert-circle');
+                statusText.innerText = "BELUM LUNAS";
+                statusText.className = "font-heading font-black text-2xl text-rose-500 mb-2";
+                
+                amountContainer.classList.remove('hidden');
+                paidContainer.classList.add('hidden');
+
+                const baseTagihan = state.settings.nominalTagihan || 5000;
+                const tunggakan = state.student.akumulasiTunggakan || 0;
+                // Jika hari ini belum bayar, tagihan = base + tunggakan bulan lalu
+                const totalTagihan = baseTagihan + tunggakan;
+
+                document.getElementById('finance-amount').innerText = `Rp ${totalTagihan.toLocaleString('id-ID')}`;
+            }
+
+            if(window.lucide) window.lucide.createIcons();
+        }
+
+        window.konfirmasiPembayaran = function() {
+            if(!state.student) return;
+            const waNumber = state.settings.salesWaNumber || state.tenantPhone; 
+            
+            if(!waNumber) {
+                return window.showToast("Nomor Admin belum dikonfigurasi. Harap hubungi TU sekolah secara langsung.", true);
+            }
+
+            const baseTagihan = state.settings.nominalTagihan || 5000;
+            const tunggakan = state.student.akumulasiTunggakan || 0;
+            const totalTagihan = baseTagihan + tunggakan;
+            const nomStr = totalTagihan.toLocaleString('id-ID');
+
+            const text = `Assalamu'alaikum Admin.\n\nSaya wali dari *${state.student.nama}* (ID: ${state.student.kodeSiswa || state.student.id}).\n\nIngin mengkonfirmasi perihal administrasi pendidikan / SPP sebesar *Rp ${nomStr}*. Mohon panduannya. Terima kasih.`;
+            
+            let cleanWa = waNumber;
+            if(cleanWa.startsWith('0')) cleanWa = '62' + cleanWa.substring(1);
+            
+            window.open(`https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}`, '_blank');
+        };
+
+    </script>
+</body>
+</html>

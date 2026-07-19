@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <title>Absensi Pintar - Verifikasi Digital</title>
+    <meta name="description" content="Portal Verifikasi Validitas Kartu Presensi Santri dan Pengajar by Velora Studio">
+    <meta name="theme-color" content="#E0E5EC">
+
+    <meta property="og:title" content="Verifikasi Digital - Absensi Pintar">
+    <meta property="og:description" content="Sistem Validasi Identitas Pintar untuk Santri dan Pengajar.">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Fira+Code:wght@600&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                        heading: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        neo: {
+                            bg: '#E0E5EC',
+                            text: '#4A5568',
+                            title: '#2D3748',
+                            accent: '#6366F1'
+                        }
+                    },
+                    boxShadow: {
+                        'neo': '9px 9px 16px rgba(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5)',
+                        'neo-sm': '5px 5px 10px rgba(163,177,198,0.6), -5px -5px 10px rgba(255,255,255, 0.5)',
+                        'neo-inner': 'inset 6px 6px 10px 0 rgba(163,177,198, 0.7), inset -6px -6px 10px 0 rgba(255,255,255, 0.8)',
+                        'neo-active': 'inset 3px 3px 6px 0 rgba(163,177,198, 0.7), inset -3px -3px 6px 0 rgba(255,255,255, 0.8)',
+                    },
+                    animation: {
+                        'slide-up': 'slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        slideUpFade: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #E0E5EC;
+            color: #4A5568;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ripple-wrapper { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+        .ripple-circle { position: absolute; border-radius: 50%; box-shadow: 5px 5px 10px rgba(163,177,198,0.3), -5px -5px 10px rgba(255,255,255, 0.5); }
+        .ripple-circle:nth-child(2) { animation-delay: 1.2s; }
+        
+        .ripple-student { animation: ripple-anim-student 2.5s cubic-bezier(0.0, 0.2, 0.8, 1) infinite; }
+        @keyframes ripple-anim-student {
+            0% { width: 0; height: 0; opacity: 1; border: 2px solid rgba(16, 185, 129, 0.5); }
+            100% { width: 160px; height: 160px; opacity: 0; border: 2px solid rgba(16, 185, 129, 0); box-shadow: none; }
+        }
+
+        .ripple-teacher { animation: ripple-anim-teacher 2.5s cubic-bezier(0.0, 0.2, 0.8, 1) infinite; }
+        @keyframes ripple-anim-teacher {
+            0% { width: 0; height: 0; opacity: 1; border: 2px solid rgba(99, 102, 241, 0.6); }
+            100% { width: 180px; height: 180px; opacity: 0; border: 2px solid rgba(99, 102, 241, 0); box-shadow: none; }
+        }
+
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .skeleton { background-color: #E0E5EC; box-shadow: inset 3px 3px 6px 0 rgba(163,177,198, 0.5), inset -3px -3px 6px 0 rgba(255,255,255, 0.6); position: relative; overflow: hidden; }
+        .skeleton::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 1.5s infinite linear; }
+
+        .view-transition { transition: opacity 0.4s ease-in-out, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center relative overflow-x-hidden p-6">
+
+    <header class="w-full max-w-md flex justify-between items-center z-10 bg-neo-bg rounded-3xl p-4 shadow-neo mb-8">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-neo-bg text-neo-accent flex items-center justify-center shadow-neo-inner">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </div>
+            <span class="font-heading font-black text-neo-title tracking-tight text-lg">Absensi Pintar</span>
+        </div>
+        <div class="flex items-center gap-2 px-4 py-2 rounded-xl bg-neo-bg shadow-neo-inner">
+            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+            <span class="text-[10px] font-extrabold text-emerald-600 tracking-widest uppercase">Live</span>
+        </div>
+    </header>
+
+    <main class="w-full max-w-md flex-1 flex flex-col items-center z-10">
+        
+        <div id="state-loading" class="w-full flex flex-col items-center justify-center view-transition">
+            <div class="bg-neo-bg w-full rounded-[2rem] shadow-neo p-10 flex flex-col items-center mb-8 relative">
+                <div class="w-20 h-20 rounded-full skeleton mb-8"></div>
+                <div class="w-48 h-6 rounded-xl skeleton mb-4"></div>
+                <div class="w-32 h-4 rounded-xl skeleton mb-10"></div>
+                <div class="w-36 h-36 rounded-full skeleton mb-8 border-8 border-neo-bg"></div>
+                <div class="w-56 h-8 rounded-xl skeleton mb-6"></div>
+                <div class="flex gap-4 mb-8 w-full justify-center">
+                    <div class="w-20 h-8 rounded-xl skeleton"></div>
+                    <div class="w-28 h-8 rounded-xl skeleton"></div>
+                </div>
+            </div>
+            <p id="loading-text" class="text-sm font-extrabold text-neo-text animate-pulse flex items-center gap-2 bg-neo-bg px-6 py-3 rounded-2xl shadow-neo-inner">
+                <i data-lucide="loader-2" class="w-5 h-5 animate-spin text-neo-accent"></i> Memvalidasi Identitas...
+            </p>
+        </div>
+
+        <div id="state-success" class="w-full hidden flex-col items-center view-transition opacity-0 translate-y-4">
+            <div id="main-glass-card" class="bg-neo-bg w-full rounded-[2rem] shadow-neo relative mb-8 overflow-hidden">
+                <div class="p-10 flex flex-col items-center relative z-10">
+                    
+                    <div class="ripple-wrapper mb-8">
+                        <div id="ripple-1" class="ripple-circle ripple-student"></div>
+                        <div id="ripple-2" class="ripple-circle ripple-student"></div>
+                        <div id="main-icon-wrapper" class="w-20 h-20 bg-neo-bg rounded-2xl flex items-center justify-center shadow-neo relative z-10">
+                            <i data-lucide="check-circle-2" class="w-10 h-10 text-emerald-500" id="main-icon"></i>
+                        </div>
+                    </div>
+
+                    <h2 id="val-title-text" class="text-2xl font-heading font-black text-neo-title mb-2 text-center tracking-tight uppercase">KARTU VALID</h2>
+                    
+                    <div id="val-role-badge" class="text-[11px] text-emerald-600 font-extrabold tracking-widest uppercase mb-10 flex items-center gap-2 bg-neo-bg px-5 py-2 rounded-xl shadow-neo-inner"></div>
+
+                    <div class="relative w-36 h-36 mb-8 flex justify-center">
+                        <div class="relative w-full h-full rounded-full shadow-neo-inner border-[6px] border-neo-bg overflow-hidden bg-neo-bg z-10 flex items-center justify-center p-1">
+                            <img id="val-foto" src="" alt="Foto Entitas" class="w-full h-full object-cover rounded-full hidden shadow-sm">
+                            <div id="val-foto-fallback" class="w-full h-full flex flex-col items-center justify-center text-neo-text opacity-50">
+                                <i data-lucide="user" class="w-12 h-12"></i>
+                            </div>
+                        </div>
+                        <div id="verified-badge-wrapper" class="absolute bottom-0 right-2 bg-neo-bg text-emerald-500 rounded-full p-2 shadow-neo z-20">
+                            <i id="verified-badge-icon" data-lucide="badge-check" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <h3 id="val-nama" class="text-2xl font-heading font-black text-neo-title text-center mb-4 tracking-tight leading-tight">Memuat Nama...</h3>
+                    
+                    <div class="flex flex-wrap justify-center items-center gap-4 mb-10 w-full">
+                        <div id="val-kelas-wrapper" class="flex items-center gap-2 px-4 py-2.5 bg-neo-bg text-neo-text rounded-xl text-xs font-extrabold shadow-neo-inner max-w-[200px] truncate">
+                            <i id="icon-kelas" data-lucide="layout-grid" class="w-4 h-4 text-neo-accent flex-shrink-0"></i>
+                            <span id="val-kelas" class="truncate">Memuat...</span>
+                        </div>
+                        <div id="val-id-wrapper" class="flex items-center gap-2 px-4 py-2.5 bg-neo-bg text-neo-text rounded-xl text-xs font-bold shadow-neo-inner font-mono tracking-wider">
+                            <i data-lucide="fingerprint" class="w-4 h-4 text-neo-accent flex-shrink-0"></i>
+                            <span id="val-id">ID</span>
+                        </div>
+                    </div>
+
+                    <div id="val-status-wrapper" class="hidden mb-8 w-full"></div>
+
+                    <div class="w-full bg-neo-bg rounded-2xl p-5 shadow-neo-inner mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-neo-bg shadow-neo flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="clock-4" class="w-6 h-6 text-neo-accent"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-extrabold text-neo-text uppercase tracking-widest mb-1">Waktu Pemindaian</p>
+                                <p id="val-time" class="text-sm font-black text-neo-title font-mono"></p>
+                                <p id="val-date" class="text-xs text-neo-text font-bold mt-0.5"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full flex items-center gap-4 bg-neo-bg rounded-2xl p-5 shadow-neo relative overflow-hidden">
+                        <div class="w-12 h-12 rounded-xl bg-neo-bg shadow-neo-inner flex items-center justify-center flex-shrink-0 z-10">
+                            <i data-lucide="building-2" class="w-6 h-6 text-neo-text"></i>
+                        </div>
+                        <div class="z-10 relative">
+                            <p class="text-[10px] font-extrabold text-neo-text uppercase tracking-widest mb-1">Status Terdaftar</p>
+                            <p id="val-institusi" class="text-sm font-black text-neo-title leading-tight">Sistem Absensi Pintar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="window.location.reload()" class="w-full py-5 rounded-2xl bg-neo-bg text-neo-text hover:text-neo-accent font-extrabold text-sm transition-all flex items-center justify-center gap-3 shadow-neo hover:shadow-neo-sm active:shadow-neo-active">
+                <i data-lucide="scan-line" class="w-5 h-5"></i> Pindai QR Lainnya
+            </button>
+        </div>
+
+        <div id="state-error" class="w-full hidden flex-col items-center view-transition opacity-0 translate-y-4">
+            <div class="bg-neo-bg w-full rounded-[2rem] shadow-neo relative mb-8 overflow-hidden">
+                <div class="p-10 flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="w-28 h-28 bg-neo-bg rounded-full flex items-center justify-center mb-6 relative z-10 shadow-neo-inner border-[6px] border-neo-bg">
+                        <div class="w-20 h-20 bg-neo-bg rounded-full flex items-center justify-center shadow-neo">
+                            <i data-lucide="shield-alert" class="w-10 h-10 text-rose-500 animate-pulse"></i>
+                        </div>
+                    </div>
+
+                    <h2 class="text-2xl font-heading font-black text-neo-title mb-3 relative z-10 tracking-tight uppercase">Kartu Tidak Valid</h2>
+                    <p id="error-desc" class="text-sm text-neo-text mb-10 relative z-10 leading-relaxed font-bold">
+                        Kami tidak dapat menemukan data yang terhubung.
+                    </p>
+
+                    <div class="w-full bg-neo-bg rounded-2xl p-5 shadow-neo-inner relative z-10 text-left flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-neo-bg shadow-neo flex items-center justify-center flex-shrink-0 mt-1">
+                            <i data-lucide="terminal" class="w-5 h-5 text-rose-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-extrabold text-neo-text uppercase tracking-widest mb-2">Diagnosa Sistem</p>
+                            <p id="error-code" class="text-xs font-black text-neo-title font-mono bg-neo-bg shadow-neo px-3 py-1.5 rounded-lg inline-block">ERROR_CODE</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="window.location.reload()" class="w-full py-5 rounded-2xl bg-neo-bg text-rose-500 font-extrabold text-sm transition-all flex items-center justify-center gap-3 shadow-neo hover:shadow-neo-sm active:shadow-neo-active">
+                <i data-lucide="refresh-cw" class="w-5 h-5"></i> Coba Pindai Lagi
+            </button>
+        </div>
+    </main>
+
+    <footer class="py-8 text-center z-10 w-full mt-auto">
+        <div class="flex flex-col items-center justify-center gap-2">
+            <i data-lucide="lock" class="w-4 h-4 text-neo-text"></i>
+            <p class="text-[10px] font-extrabold text-neo-text tracking-widest uppercase">
+                Secured by Velora Studio
+            </p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, getDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Konfigurasi Database
+        const firebaseConfig = {
+            apiKey: "AIzaSyC4KBqM6yMA0Do9Zx64zYYrNMMYh0VA7Hc",
+            authDomain: "muthobaah.firebaseapp.com",
+            projectId: "muthobaah",
+            storageBucket: "muthobaah.firebasestorage.app",
+            messagingSenderId: "502582418252",
+            appId: "1:502582418252:web:088500cd149989fd69cde9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app); 
+        const db = getFirestore(app);
+
+        const stateLoading = document.getElementById('state-loading');
+        const stateSuccess = document.getElementById('state-success');
+        const stateError = document.getElementById('state-error');
+        const loadingText = document.getElementById('loading-text');
+
+        function startRealtimeClock() {
+            const timeEl = document.getElementById('val-time');
+            const dateEl = document.getElementById('val-date');
+            
+            setInterval(() => {
+                const now = new Date();
+                timeEl.textContent = now.toLocaleTimeString('id-ID', { hour12: false }) + ' WIB';
+                dateEl.textContent = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }, 1000);
+            
+            const now = new Date();
+            timeEl.textContent = now.toLocaleTimeString('id-ID', { hour12: false }) + ' WIB';
+            dateEl.textContent = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function showUI(stateId) {
+            stateLoading.classList.add('hidden');
+            stateSuccess.classList.add('hidden');
+            stateError.classList.add('hidden');
+            
+            const target = document.getElementById(stateId);
+            target.classList.remove('hidden');
+            target.classList.add('flex');
+            
+            setTimeout(() => {
+                target.classList.remove('opacity-0', 'translate-y-4');
+            }, 50);
+            
+            if(window.lucide) window.lucide.createIcons();
+        }
+
+        function triggerError(code, message) {
+            document.getElementById('error-code').textContent = code;
+            document.getElementById('error-desc').textContent = message;
+            showUI('state-error');
+        }
+
+        async function initVerification() {
+            startRealtimeClock();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            // Mendukung parameter "?id=" maupun url format "?sekolah=x&id=y"
+            const queryId = urlParams.get('id');
+            const querySekolah = urlParams.get('sekolah');
+
+            if (!queryId) {
+                return setTimeout(() => {
+                    triggerError("PARAMETER_HILANG", "Sistem tidak mendeteksi Kode ID pada tautan URL. Pastikan Anda memindai QR Code resmi.");
+                }, 1000);
+            }
+
+            try {
+                loadingText.innerHTML = '<i data-lucide="shield" class="w-5 h-5 text-neo-accent"></i> Membangun Koneksi Aman...';
+                if(window.lucide) window.lucide.createIcons();
+                
+                await signInAnonymously(auth);
+
+                loadingText.innerHTML = '<i data-lucide="search" class="w-5 h-5 text-neo-accent"></i> Melacak Identitas...';
+                if(window.lucide) window.lucide.createIcons();
+
+                let validEntity = null;
+                let tenantIdFound = null;
+                let entityType = null; 
+
+                // Optimasi Cerdas: Cari Daftar Sekolah Dulu (Bypass CollectionGroup Read-All)
+                let tenantIdsToSearch = [];
+                if (querySekolah) {
+                    tenantIdsToSearch.push(querySekolah);
+                } else {
+                    const clientsSnap = await getDocs(collection(db, 'saas_master', 'clients', 'list'));
+                    clientsSnap.forEach(d => tenantIdsToSearch.push(d.id));
+                }
+
+                // Loop Pencarian Efisien per Yayasan
+                for (const tId of tenantIdsToSearch) {
+                    
+                    // 1. Cek Santri by Doc ID
+                    const stuRef = doc(db, 'artifacts', tId, 'public', 'data', 'students', queryId);
+                    const stuSnap = await getDoc(stuRef);
+                    if (stuSnap.exists()) {
+                        validEntity = { id: stuSnap.id, ...stuSnap.data() };
+                        tenantIdFound = tId; entityType = 'student'; break;
+                    }
+
+                    // 2. Cek Santri by kodeSiswa
+                    const stuQ = query(collection(db, 'artifacts', tId, 'public', 'data', 'students'), where('kodeSiswa', '==', queryId));
+                    const stuQSnap = await getDocs(stuQ);
+                    if (!stuQSnap.empty) {
+                        validEntity = { id: stuQSnap.docs[0].id, ...stuQSnap.docs[0].data() };
+                        tenantIdFound = tId; entityType = 'student'; break;
+                    }
+
+                    // 3. Cek Guru by Doc ID
+                    const guruRef = doc(db, 'artifacts', tId, 'public', 'data', 'teachers', queryId);
+                    const guruSnap = await getDoc(guruRef);
+                    if (guruSnap.exists()) {
+                        validEntity = { id: guruSnap.id, ...guruSnap.data() };
+                        tenantIdFound = tId; entityType = 'teacher'; break;
+                    }
+
+                    // 4. Cek Guru by kodeGuru
+                    const guruQ = query(collection(db, 'artifacts', tId, 'public', 'data', 'teachers'), where('kodeGuru', '==', queryId));
+                    const guruQSnap = await getDocs(guruQ);
+                    if (!guruQSnap.empty) {
+                        validEntity = { id: guruQSnap.docs[0].id, ...guruQSnap.docs[0].data() };
+                        tenantIdFound = tId; entityType = 'teacher'; break;
+                    }
+                    
+                    // 5. Cek Guru by PIN (Support Kartu Lama)
+                    const pinQ = query(collection(db, 'artifacts', tId, 'public', 'data', 'teachers'), where('pin', '==', queryId));
+                    const pinQSnap = await getDocs(pinQ);
+                    if (!pinQSnap.empty) {
+                        validEntity = { id: pinQSnap.docs[0].id, ...pinQSnap.docs[0].data() };
+                        tenantIdFound = tId; entityType = 'teacher'; break;
+                    }
+                }
+
+                if (!validEntity) {
+                    return setTimeout(() => {
+                        triggerError("IDENTITAS_TIDAK_DITEMUKAN", "Identitas dengan kode tersebut tidak terdaftar di sistem. Kemungkinan kartu palsu atau status telah dicabut.");
+                    }, 1000);
+                }
+
+                // Mengambil Nama Kelas
+                let classMap = {};
+                if (tenantIdFound) {
+                    try {
+                        const classesRef = collection(db, 'artifacts', tenantIdFound, 'public', 'data', 'classes');
+                        const classSnap = await getDocs(classesRef);
+                        classSnap.forEach(c => { classMap[c.id] = c.data().nama_kelas || c.data().name || 'Tanpa Nama'; });
+                    } catch(e) {}
+                }
+
+                // Render Data
+                document.getElementById('val-nama').textContent = validEntity.nama || validEntity.name || "Tanpa Nama";
+                const formatInstitusi = tenantIdFound ? tenantIdFound.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : "Institusi Terdaftar";
+                document.getElementById('val-institusi').textContent = formatInstitusi;
+
+                const imgEl = document.getElementById('val-foto');
+                const fallbackEl = document.getElementById('val-foto-fallback');
+                if (validEntity.fotoProfil) {
+                    imgEl.src = validEntity.fotoProfil;
+                    imgEl.onload = () => { imgEl.classList.remove('hidden'); fallbackEl.classList.add('hidden'); };
+                } else {
+                    imgEl.classList.add('hidden'); fallbackEl.classList.remove('hidden');
+                }
+
+                const ripple1 = document.getElementById('ripple-1');
+                const ripple2 = document.getElementById('ripple-2');
+                const mainIcon = document.getElementById('main-icon');
+                const roleBadge = document.getElementById('val-role-badge');
+                const verifiedBadgeWrap = document.getElementById('verified-badge-wrapper');
+                const verifiedBadgeIcon = document.getElementById('verified-badge-icon');
+                const valTitle = document.getElementById('val-title-text');
+                const statusWrapper = document.getElementById('val-status-wrapper');
+
+                if (entityType === 'teacher') {
+                    ripple1.className = "ripple-circle ripple-teacher";
+                    ripple2.className = "ripple-circle ripple-teacher";
+                    
+                    mainIcon.setAttribute('data-lucide', 'award');
+                    mainIcon.className = "w-10 h-10 text-neo-accent";
+                    
+                    valTitle.textContent = "OTORISASI PENGAJAR";
+                    roleBadge.innerHTML = `<i data-lucide="shield-check" class="w-4 h-4"></i> AKSES EKSEKUTIF VALID`;
+                    roleBadge.className = "text-[11px] text-neo-accent font-extrabold tracking-widest uppercase mb-10 flex items-center gap-2 bg-neo-bg px-5 py-2 rounded-xl shadow-neo-inner";
+
+                    verifiedBadgeWrap.className = "absolute bottom-0 right-2 bg-neo-bg text-neo-accent rounded-full p-2 shadow-neo z-20";
+                    verifiedBadgeIcon.setAttribute('data-lucide', 'star');
+                    
+                    document.getElementById('val-id').textContent = validEntity.kodeGuru || validEntity.id || "ID-UNKNOWN";
+
+                    const kelasIds = validEntity.kelas_ids || [];
+                    let otorisasi = "Tanpa Otorisasi Kelas";
+                    if (kelasIds.length > 0) otorisasi = kelasIds.map(id => classMap[id] || id).join(', ');
+                    else if (validEntity.kelas) otorisasi = classMap[validEntity.kelas] || validEntity.kelas;
+                    
+                    if (otorisasi.length > 25) otorisasi = otorisasi.substring(0, 22) + '...';
+                    document.getElementById('val-kelas').textContent = otorisasi;
+                    document.getElementById('icon-kelas').setAttribute('data-lucide', 'briefcase');
+
+                    statusWrapper.classList.remove('hidden');
+                    statusWrapper.classList.add('flex', 'justify-center');
+                    statusWrapper.innerHTML = `<div class="flex items-center gap-2 px-6 py-3 bg-neo-bg text-neo-accent rounded-xl text-xs font-black shadow-neo uppercase tracking-[0.2em] w-full max-w-[250px] justify-center"><i data-lucide="activity" class="w-4 h-4"></i> AKTIF MENGAJAR</div>`;
+
+                } else {
+                    ripple1.className = "ripple-circle ripple-student";
+                    ripple2.className = "ripple-circle ripple-student";
+                    
+                    mainIcon.setAttribute('data-lucide', 'check-circle-2');
+                    mainIcon.className = "w-10 h-10 text-emerald-500";
+                    
+                    valTitle.textContent = "KARTU VALID";
+                    roleBadge.innerHTML = `<i data-lucide="user-check" class="w-4 h-4"></i> SANTRI TERVERIFIKASI`;
+                    roleBadge.className = "text-[11px] text-emerald-600 font-extrabold tracking-widest uppercase mb-10 flex items-center gap-2 bg-neo-bg px-5 py-2 rounded-xl shadow-neo-inner";
+
+                    verifiedBadgeWrap.className = "absolute bottom-0 right-2 bg-neo-bg text-emerald-500 rounded-full p-2 shadow-neo z-20";
+                    verifiedBadgeIcon.setAttribute('data-lucide', 'badge-check');
+                    
+                    document.getElementById('val-id').textContent = validEntity.kodeSiswa || validEntity.id || "-";
+                    
+                    const kelasId = validEntity.kelas_id || validEntity.kelas;
+                    document.getElementById('val-kelas').textContent = classMap[kelasId] || validEntity.kelas || "Tanpa Kelas";
+                    
+                    statusWrapper.classList.add('hidden');
+                }
+
+                setTimeout(() => { showUI('state-success'); }, 1000); 
+
+            } catch (error) {
+                console.error("Verification Catch Error:", error);
+                
+                // MENGUAK ERROR ASLI FIREBASE KE UI
+                let errCode = error.code ? error.code.toUpperCase().replace(/\//g, '_') : "KONEKSI_GAGAL";
+                let errMsg = error.message || "Terjadi kesalahan teknis saat menghubungi server.";
+                
+                // Peringatan Khusus untuk Developer
+                if (errCode === 'AUTH_OPERATION-NOT-ALLOWED') {
+                    errMsg = "PENTING: Fitur 'Anonymous Authentication' belum diaktifkan di Firebase Console Anda!";
+                }
+
+                triggerError(errCode, errMsg);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            window.lucide.createIcons();
+            initVerification();
+        });
+    </script>
+</body>
+</html>
