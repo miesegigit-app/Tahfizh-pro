@@ -63,6 +63,20 @@
         .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
         .form-control:disabled { background-color: #F1F5F9; color: var(--text-light); cursor: not-allowed; }
         
+        /* CUSTOM DROPDOWN UI COMPONENT */
+        .custom-select-wrapper { position: relative; user-select: none; flex: 1; min-width: 160px; max-width: 250px; }
+        .custom-select-trigger { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; font-size: 13px; font-weight: 600; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s; color: var(--text-main); height: 100%; }
+        .custom-select-trigger:hover { border-color: var(--border-focus); background: #F8FAFC; }
+        .custom-select-trigger.active { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .custom-options { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); z-index: 100; display: none; max-height: 250px; overflow-y: auto; opacity: 0; transform: translateY(-5px); transition: opacity 0.2s, transform 0.2s; }
+        .custom-options.open { display: block; opacity: 1; transform: translateY(0); }
+        .custom-option { padding: 12px 14px; font-size: 13px; font-weight: 500; color: var(--text-main); cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #F8FAFC; }
+        .custom-option:last-child { border-bottom: none; }
+        .custom-option:hover { background: #F1F5F9; color: var(--primary); }
+        .custom-option.selected { color: var(--primary); font-weight: 700; background: var(--primary-light); }
+        .custom-option-icon { width: 16px; height: 16px; opacity: 0; transition: opacity 0.2s; }
+        .custom-option.selected .custom-option-icon { opacity: 1; }
+
         .badge { display: inline-flex; align-items: center; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: var(--radius-full); text-transform: uppercase; letter-spacing: 0.05em; }
         .badge-success { background: var(--success-bg); color: var(--success); border: 1px solid #A7F3D0; }
         .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid #FECACA; }
@@ -453,10 +467,48 @@
                 </div>
 
                 <div class="data-card">
-                    <div class="data-header">
-                        <div>
-                            <h2 style="font-size: 18px;">Direktori Santri</h2>
-                            <p class="text-muted text-xs">Akses master data santri lintas kelas (Edit Foto, Mutasi, Tagihan).</p>
+                    <div class="data-header" style="flex-direction: column; align-items: flex-start; gap: 16px;">
+                        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <h2 style="font-size: 18px;">Direktori Santri</h2>
+                                <p class="text-muted text-xs">Akses master data santri lintas kelas (Edit Foto, Mutasi, Tagihan).</p>
+                            </div>
+                        </div>
+                        
+                        <!-- FILTER BAR STUDENTS -->
+                        <div style="width: 100%; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                            <!-- Live Search -->
+                            <div class="input-group" style="margin: 0; flex: 1; min-width: 200px; max-width: 300px;">
+                                <div style="position: relative; height: 100%;">
+                                    <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; color: var(--text-light);"></i>
+                                    <input type="text" id="student-search" class="form-control" placeholder="Cari nama atau ID santri..." style="padding-left: 36px; padding-right: 36px; height: 100%;" oninput="window.handleStudentSearch(this)">
+                                    <button id="clear-student-search-btn" class="search-clear-btn" onclick="window.clearStudentSearch()" title="Hapus Pencarian" style="display: none; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer;"><i data-lucide="x" style="width: 14px; height: 14px;"></i></button>
+                                </div>
+                            </div>
+                            <!-- Custom Select: Class Filter -->
+                            <div class="custom-select-wrapper" id="wrapper-student-class" onclick="window.toggleCustomSelect('options-student-class', this)">
+                                <div class="custom-select-trigger" id="trigger-student-class">
+                                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Semua Kelas</span>
+                                    <i data-lucide="chevron-down" style="width: 16px; flex-shrink: 0; margin-left: 8px;"></i>
+                                </div>
+                                <div class="custom-options" id="options-student-class">
+                                    <div class="custom-option selected" onclick="window.selectCustomOption('student-class', 'all', 'Semua Kelas', event)">Semua Kelas <i data-lucide="check" class="custom-option-icon"></i></div>
+                                    <div class="custom-option" onclick="window.selectCustomOption('student-class', 'unassigned', 'Tanpa Kelas', event)">Tanpa Kelas <i data-lucide="check" class="custom-option-icon"></i></div>
+                                    <!-- Dynamic Classes Injected Here -->
+                                </div>
+                            </div>
+                            <!-- Custom Select: Sort Filter -->
+                            <div class="custom-select-wrapper" id="wrapper-student-sort" onclick="window.toggleCustomSelect('options-student-sort', this)">
+                                <div class="custom-select-trigger" id="trigger-student-sort">
+                                    <span>Urutan Default</span>
+                                    <i data-lucide="chevron-down" style="width: 16px; flex-shrink: 0; margin-left: 8px;"></i>
+                                </div>
+                                <div class="custom-options" id="options-student-sort">
+                                    <div class="custom-option selected" onclick="window.selectCustomOption('student-sort', 'default', 'Urutan Default', event)">Urutan Default <i data-lucide="check" class="custom-option-icon"></i></div>
+                                    <div class="custom-option" onclick="window.selectCustomOption('student-sort', 'az', 'Abjad (A-Z)', event)">Abjad (A-Z) <i data-lucide="check" class="custom-option-icon"></i></div>
+                                    <div class="custom-option" onclick="window.selectCustomOption('student-sort', 'za', 'Abjad (Z-A)', event)">Abjad (Z-A) <i data-lucide="check" class="custom-option-icon"></i></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -599,21 +651,52 @@
                     </div>
 
                     <div class="data-card">
-                        <div class="data-header" style="flex-direction: column; align-items: flex-start;">
-                            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
-                                <h2 style="font-size: 16px;">Daftar Tagihan Santri</h2>
-                                <div class="input-group" style="margin: 0; width: 100%; max-width: 250px;">
-                                    <div style="position: relative;">
-                                        <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; color: var(--text-light);"></i>
-                                        <input type="text" id="finance-search" class="form-control" placeholder="Cari nama santri..." style="padding-left: 36px; padding-right: 36px; padding-top:8px; padding-bottom:8px; font-size: 13px;" oninput="window.handleSearchInput(this)">
-                                        <button id="clear-search-btn" class="search-clear-btn" onclick="window.clearFinanceSearch()" title="Hapus Pencarian" style="display: none; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer;"><i data-lucide="x" style="width: 14px; height: 14px;"></i></button>
-                                    </div>
+                        <div class="data-header" style="flex-direction: column; align-items: flex-start; gap: 16px;">
+                            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h2 style="font-size: 16px;">Daftar Tagihan Santri</h2>
+                                </div>
+                                <div class="pill-nav" style="margin-bottom: 0;">
+                                    <button class="pill-btn active" onclick="window.setFinanceFilter('all', this)"><i data-lucide="layers" style="width:14px;"></i> Semua</button>
+                                    <button class="pill-btn" onclick="window.setFinanceFilter('lunas', this)" style="color: var(--success);"><i data-lucide="check-circle" style="width:14px;"></i> Lunas</button>
+                                    <button class="pill-btn" onclick="window.setFinanceFilter('tunggak', this)" style="color: var(--danger);"><i data-lucide="alert-circle" style="width:14px;"></i> Menunggak</button>
                                 </div>
                             </div>
-                            <div class="pill-nav" style="margin-bottom: 0;">
-                                <button class="pill-btn active" onclick="window.setFinanceFilter('all', this)"><i data-lucide="layers" style="width:14px;"></i> Semua</button>
-                                <button class="pill-btn" onclick="window.setFinanceFilter('lunas', this)" style="color: var(--success);"><i data-lucide="check-circle" style="width:14px;"></i> Lunas</button>
-                                <button class="pill-btn" onclick="window.setFinanceFilter('tunggak', this)" style="color: var(--danger);"><i data-lucide="alert-circle" style="width:14px;"></i> Menunggak</button>
+                            
+                            <!-- FILTER BAR FINANCE -->
+                            <div style="width: 100%; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; padding-top: 8px; border-top: 1px dashed var(--border-color);">
+                                <!-- Live Search -->
+                                <div class="input-group" style="margin: 0; flex: 1; min-width: 200px; max-width: 300px;">
+                                    <div style="position: relative; height: 100%;">
+                                        <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; color: var(--text-light);"></i>
+                                        <input type="text" id="finance-search" class="form-control" placeholder="Cari nama atau ID santri..." style="padding-left: 36px; padding-right: 36px; height: 100%;" oninput="window.handleFinanceSearchInput(this)">
+                                        <button id="clear-finance-search-btn" class="search-clear-btn" onclick="window.clearFinanceSearch()" title="Hapus Pencarian" style="display: none; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer;"><i data-lucide="x" style="width: 14px; height: 14px;"></i></button>
+                                    </div>
+                                </div>
+                                <!-- Custom Select: Class Filter -->
+                                <div class="custom-select-wrapper" id="wrapper-finance-class" onclick="window.toggleCustomSelect('options-finance-class', this)">
+                                    <div class="custom-select-trigger" id="trigger-finance-class">
+                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Semua Kelas</span>
+                                        <i data-lucide="chevron-down" style="width: 16px; flex-shrink: 0; margin-left: 8px;"></i>
+                                    </div>
+                                    <div class="custom-options" id="options-finance-class">
+                                        <div class="custom-option selected" onclick="window.selectCustomOption('finance-class', 'all', 'Semua Kelas', event)">Semua Kelas <i data-lucide="check" class="custom-option-icon"></i></div>
+                                        <div class="custom-option" onclick="window.selectCustomOption('finance-class', 'unassigned', 'Tanpa Kelas', event)">Tanpa Kelas <i data-lucide="check" class="custom-option-icon"></i></div>
+                                        <!-- Dynamic Classes Injected Here -->
+                                    </div>
+                                </div>
+                                <!-- Custom Select: Sort Filter -->
+                                <div class="custom-select-wrapper" id="wrapper-finance-sort" onclick="window.toggleCustomSelect('options-finance-sort', this)">
+                                    <div class="custom-select-trigger" id="trigger-finance-sort">
+                                        <span>Urutan Default</span>
+                                        <i data-lucide="chevron-down" style="width: 16px; flex-shrink: 0; margin-left: 8px;"></i>
+                                    </div>
+                                    <div class="custom-options" id="options-finance-sort">
+                                        <div class="custom-option selected" onclick="window.selectCustomOption('finance-sort', 'default', 'Urutan Default', event)">Urutan Default <i data-lucide="check" class="custom-option-icon"></i></div>
+                                        <div class="custom-option" onclick="window.selectCustomOption('finance-sort', 'az', 'Abjad (A-Z)', event)">Abjad (A-Z) <i data-lucide="check" class="custom-option-icon"></i></div>
+                                        <div class="custom-option" onclick="window.selectCustomOption('finance-sort', 'za', 'Abjad (Z-A)', event)">Abjad (Z-A) <i data-lucide="check" class="custom-option-icon"></i></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="table-responsive">
@@ -743,6 +826,7 @@
         </main>
     </div>
 
+    <!-- MODAL FORMS -->
     <div id="modal-class" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -822,9 +906,20 @@
                     <label>No. WhatsApp Ortu</label>
                     <input type="number" id="input-student-wa" class="form-control">
                 </div>
+                
+                <!-- CUSTOM DROPDOWN FOR MODAL -->
                 <div class="input-group" style="margin-bottom: 0;">
                     <label>Mutasi Kelas (Pindah Kelas)</label>
-                    <select id="select-student-class" class="form-control" style="cursor: pointer;"></select>
+                    <input type="hidden" id="hidden-student-mutation-class">
+                    <div class="custom-select-wrapper" id="wrapper-modal-mutation" onclick="window.toggleCustomSelect('options-modal-mutation', this)" style="max-width: 100%;">
+                        <div class="custom-select-trigger" id="trigger-modal-mutation">
+                            <span>Pilih Kelas...</span>
+                            <i data-lucide="chevron-down" style="width: 16px; flex-shrink: 0; margin-left: 8px;"></i>
+                        </div>
+                        <div class="custom-options" id="options-modal-mutation">
+                            <!-- Injected Via JS -->
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -961,8 +1056,12 @@
         let allDataClasses = []; let allDataTeachers = []; let allDataStudents = [];
         let globalSettings = { periodeTagihan: "Bulan Ini", nominalTagihan: 5000, nominalDenda: 2000, isSholatModuleActive: true, isAbsensiQrActive: false, isCetakKartuActive: false, adminPin: "admin123", idCardFrontJson: null, idCardBackJson: null, batasJamMasuk: "07:00" };
         let confirmActionCallback = null; let confirmRequiredText = "1";
-        let currentFinanceFilterStatus = 'all'; let totalDanaDisetorKePusat = 0; 
-        let globalSaaSSettings = { developerShare: 20 }; let siswaTerpilihCetak = null;
+        
+        // FILTER STATES
+        let currentStudentSearch = ''; let currentStudentClassFilter = 'all'; let currentStudentSortOrder = 'default';
+        let currentFinanceSearch = ''; let currentFinanceFilterStatus = 'all'; let currentFinanceClassFilter = 'all'; let currentFinanceSortOrder = 'default';
+
+        let totalDanaDisetorKePusat = 0; let globalSaaSSettings = { developerShare: 20 }; let siswaTerpilihCetak = null;
         
         window.unsubscribeAdminClasses = null; window.unsubscribeAdminTeachers = null; window.unsubscribeAdminStudents = null; window.unsubscribeAdminSettings = null; window.unsubscribeSaasMaster = null; window.unsubscribeTenantSilo = null; window.cropper = null; 
 
@@ -997,6 +1096,147 @@
                 startRealtimeListeners();
             } else { listenSatuKaliUntukAdminPin(); }
         });
+
+        // ==========================================
+        // CUSTOM DROPDOWN LOGIC
+        // ==========================================
+        window.toggleCustomSelect = function(optionsId, wrapperElement) {
+            // Tutup dropdown lain yang sedang terbuka
+            document.querySelectorAll('.custom-options.open').forEach(el => {
+                if(el.id !== optionsId) el.classList.remove('open');
+            });
+            document.querySelectorAll('.custom-select-trigger.active').forEach(el => {
+                if(!wrapperElement.contains(el)) el.classList.remove('active');
+            });
+
+            const options = document.getElementById(optionsId);
+            const trigger = wrapperElement.querySelector('.custom-select-trigger');
+            if(options) {
+                options.classList.toggle('open');
+                if(trigger) trigger.classList.toggle('active');
+            }
+        };
+
+        window.selectCustomOption = function(type, value, text, event) {
+            event.stopPropagation(); // Mencegah trigger parent (toggleCustomSelect) ikut tereksekusi
+            
+            // 1. Dapatkan parent containers
+            const optionsContainer = document.getElementById(`options-${type}`);
+            const triggerText = document.querySelector(`#trigger-${type} span`);
+            const trigger = document.getElementById(`trigger-${type}`);
+
+            // 2. Update status Visual Selected
+            if(optionsContainer) {
+                optionsContainer.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('selected'));
+                event.currentTarget.classList.add('selected');
+                optionsContainer.classList.remove('open');
+            }
+            if(trigger) trigger.classList.remove('active');
+
+            // 3. Update Text Dropdown
+            if(triggerText) triggerText.textContent = text;
+
+            // 4. Update State Variable / Filter Logic berdasarkan "type"
+            if (type === 'student-class') {
+                currentStudentClassFilter = value;
+                window.renderStudents();
+            } 
+            else if (type === 'student-sort') {
+                currentStudentSortOrder = value;
+                window.renderStudents();
+            }
+            else if (type === 'finance-class') {
+                currentFinanceClassFilter = value;
+                window.renderFinanceTable();
+            }
+            else if (type === 'finance-sort') {
+                currentFinanceSortOrder = value;
+                window.renderFinanceTable();
+            }
+            else if (type === 'modal-mutation') {
+                // Untuk form mutasi kelas di Modal Edit Santri
+                document.getElementById('hidden-student-mutation-class').value = value;
+            }
+        };
+
+        // Click outside listener
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-select-wrapper')) {
+                document.querySelectorAll('.custom-options.open').forEach(el => el.classList.remove('open'));
+                document.querySelectorAll('.custom-select-trigger.active').forEach(el => el.classList.remove('active'));
+            }
+        });
+
+        function populateCustomClassFilters() {
+            const sortedClasses = [...allDataClasses].sort((a,b) => (a.nama_kelas || a.name || '').localeCompare(b.nama_kelas || b.name || ''));
+            
+            // Re-usable HTML generator for class options
+            const generateClassOptions = (typeId, currentValue) => {
+                let html = `<div class="custom-option ${currentValue === 'all' ? 'selected' : ''}" onclick="window.selectCustomOption('${typeId}', 'all', 'Semua Kelas', event)">Semua Kelas <i data-lucide="check" class="custom-option-icon"></i></div>`;
+                html += `<div class="custom-option ${currentValue === 'unassigned' ? 'selected' : ''}" onclick="window.selectCustomOption('${typeId}', 'unassigned', 'Tanpa Kelas', event)">Tanpa Kelas <i data-lucide="check" class="custom-option-icon"></i></div>`;
+                
+                sortedClasses.forEach(c => {
+                    const isSelected = currentValue === c.id;
+                    const nama = c.nama_kelas || c.name;
+                    html += `<div class="custom-option ${isSelected ? 'selected' : ''}" onclick="window.selectCustomOption('${typeId}', '${c.id}', '${nama}', event)">${nama} <i data-lucide="check" class="custom-option-icon"></i></div>`;
+                });
+                return html;
+            };
+
+            // Inject to Student Tab
+            const containerStudent = document.getElementById('options-student-class');
+            if(containerStudent) containerStudent.innerHTML = generateClassOptions('student-class', currentStudentClassFilter);
+
+            // Inject to Finance Tab
+            const containerFinance = document.getElementById('options-finance-class');
+            if(containerFinance) containerFinance.innerHTML = generateClassOptions('finance-class', currentFinanceClassFilter);
+            
+            if(window.lucide) window.lucide.createIcons();
+        }
+
+
+        // ==========================================
+        // SEARCH LIVE LOGIC
+        // ==========================================
+        window.handleStudentSearch = function(el) {
+            currentStudentSearch = el.value.toLowerCase();
+            const btn = document.getElementById('clear-student-search-btn');
+            if(btn) btn.style.display = currentStudentSearch.length > 0 ? 'flex' : 'none';
+            window.renderStudents();
+        };
+        window.clearStudentSearch = function() {
+            const input = document.getElementById('student-search');
+            if(input) { input.value = ''; input.focus(); }
+            currentStudentSearch = '';
+            const btn = document.getElementById('clear-student-search-btn');
+            if(btn) btn.style.display = 'none';
+            window.renderStudents();
+        };
+
+        window.handleFinanceSearchInput = function(el) {
+            currentFinanceSearch = el.value.toLowerCase();
+            const btn = document.getElementById('clear-finance-search-btn');
+            if(btn) btn.style.display = currentFinanceSearch.length > 0 ? 'flex' : 'none';
+            window.renderFinanceTable();
+        };
+        window.clearFinanceSearch = function() {
+            const input = document.getElementById('finance-search');
+            if(input) { input.value = ''; input.focus(); }
+            currentFinanceSearch = '';
+            const btn = document.getElementById('clear-finance-search-btn'); 
+            if(btn) btn.style.display = 'none';
+            window.renderFinanceTable();
+        };
+        window.setFinanceFilter = function(status, btnElement) {
+            currentFinanceFilterStatus = status;
+            document.querySelectorAll('.pill-nav .pill-btn').forEach(btn => btn.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active'); window.renderFinanceTable();
+        };
+
+
+        // ==========================================
+        // CORE APPLICATION LOGIC
+        // ==========================================
 
         window.handleFotoSelect = function(event) {
             const file = event.target.files[0]; if (!file) return;
@@ -1115,30 +1355,33 @@
             window.openModal('modal-class-billing-details'); if(window.lucide) window.lucide.createIcons();
         };
 
-        window.handleSearchInput = function(el) {
-            const btn = document.getElementById('clear-search-btn');
-            if(btn) { if (el.value.length > 0) { btn.style.display = 'flex'; } else { btn.style.display = 'none'; } }
-            window.renderFinanceTable();
-        };
-        window.clearFinanceSearch = function() {
-            const input = document.getElementById('finance-search');
-            if(input) { input.value = ''; input.focus(); }
-            const btn = document.getElementById('clear-search-btn'); if(btn) btn.style.display = 'none';
-            window.renderFinanceTable();
-        };
-        window.setFinanceFilter = function(status, btnElement) {
-            currentFinanceFilterStatus = status;
-            document.querySelectorAll('.pill-nav .pill-btn').forEach(btn => btn.classList.remove('active'));
-            if(btnElement) btnElement.classList.add('active'); window.renderFinanceTable();
-        };
-
         window.renderFinanceTable = function() {
             const tbody = document.getElementById('table-finance'); if(!tbody) return;
-            const searchEl = document.getElementById('finance-search'); const searchQuery = searchEl ? searchEl.value.toLowerCase() : '';
-            let filteredStudents = allDataStudents;
+            let filteredStudents = [...allDataStudents];
+            
+            // 1. Tagihan Status Filter
             if (currentFinanceFilterStatus === 'lunas') { filteredStudents = filteredStudents.filter(s => s.pembayaranLunas === true); } 
             else if (currentFinanceFilterStatus === 'tunggak') { filteredStudents = filteredStudents.filter(s => s.pembayaranLunas !== true); }
-            if (searchQuery) { filteredStudents = filteredStudents.filter(s => { const name = (s.nama || s.name || '').toLowerCase(); const code = (s.kodeSiswa || '').toLowerCase(); return name.includes(searchQuery) || code.includes(searchQuery); }); }
+            
+            // 2. Class Filter
+            if (currentFinanceClassFilter !== 'all') {
+                if (currentFinanceClassFilter === 'unassigned') {
+                    filteredStudents = filteredStudents.filter(s => !s.kelas_id || !allDataClasses.find(c => c.id === s.kelas_id));
+                } else {
+                    filteredStudents = filteredStudents.filter(s => s.kelas_id === currentFinanceClassFilter);
+                }
+            }
+
+            // 3. Search Filter
+            if (currentFinanceSearch) { filteredStudents = filteredStudents.filter(s => { const name = (s.nama || s.name || '').toLowerCase(); const code = (s.kodeSiswa || '').toLowerCase(); return name.includes(currentFinanceSearch) || code.includes(currentFinanceSearch); }); }
+            
+            // 4. Alphabetical Sort Filter
+            if (currentFinanceSortOrder === 'az') {
+                filteredStudents.sort((a, b) => (a.nama || a.name || '').localeCompare(b.nama || b.name || ''));
+            } else if (currentFinanceSortOrder === 'za') {
+                filteredStudents.sort((a, b) => (b.nama || b.name || '').localeCompare(a.nama || a.name || ''));
+            }
+
             if(filteredStudents.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 30px;" class="text-muted"><i data-lucide="inbox" style="width: 32px; height: 32px; margin-bottom: 12px; color: var(--border-color); display: block; margin-left: auto; margin-right: auto;"></i> Tidak ada data tagihan yang sesuai kriteria.</td></tr>`; if(window.lucide) window.lucide.createIcons(); return; }
 
             tbody.innerHTML = filteredStudents.map(student => {
@@ -1249,6 +1492,7 @@
             if(event && event.currentTarget) event.currentTarget.classList.add('active');
             if (window.innerWidth <= 768) { window.toggleSidebar(); }
             if (tabId === 'finance') { window.renderFinanceTable(); if(window.financeChartObj) { setTimeout(() => window.financeChartObj.resize(), 50); } }
+            if (tabId === 'students') { window.renderStudents(); }
         };
 
         window.logoutAdmin = function() {
@@ -1312,8 +1556,12 @@
             if(window.unsubscribeAdminClasses) window.unsubscribeAdminClasses();
             window.unsubscribeAdminClasses = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'classes')), (snapshot) => {
                 allDataClasses = []; snapshot.forEach(doc => allDataClasses.push({ id: doc.id, ...doc.data() }));
+                
+                populateCustomClassFilters(); // Regenerate custom dropdown options for classes
+                
                 renderClasses(); updateStats();
                 const tabFin = document.getElementById('tab-finance'); if(tabFin && tabFin.classList.contains('active')) window.renderFinanceTable();
+                const tabStd = document.getElementById('tab-students'); if(tabStd && tabStd.classList.contains('active')) window.renderStudents();
             });
 
             if(window.unsubscribeAdminTeachers) window.unsubscribeAdminTeachers();
@@ -1586,9 +1834,42 @@
 
         function renderStudents() {
             const tbody = document.getElementById('table-students'); if(!tbody) return;
-            if(allDataStudents.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;" class="text-muted">Direktori santri masih kosong.</td></tr>`; return; }
+            
+            let filtered = [...allDataStudents];
+            
+            // 1. Class Filter
+            if (currentStudentClassFilter !== 'all') {
+                if (currentStudentClassFilter === 'unassigned') {
+                    filtered = filtered.filter(s => !s.kelas_id || !allDataClasses.find(c => c.id === s.kelas_id));
+                } else {
+                    filtered = filtered.filter(s => s.kelas_id === currentStudentClassFilter);
+                }
+            }
+            
+            // 2. Search Filter
+            if (currentStudentSearch) {
+                filtered = filtered.filter(s => {
+                    const name = (s.nama || s.name || '').toLowerCase();
+                    const code = (s.kodeSiswa || '').toLowerCase();
+                    return name.includes(currentStudentSearch) || code.includes(currentStudentSearch);
+                });
+            }
+
+            // 3. Alphabetical Sort Filter
+            if (currentStudentSortOrder === 'az') {
+                filtered.sort((a, b) => (a.nama || a.name || '').localeCompare(b.nama || b.name || ''));
+            } else if (currentStudentSortOrder === 'za') {
+                filtered.sort((a, b) => (b.nama || b.name || '').localeCompare(a.nama || a.name || ''));
+            }
+
+            if(filtered.length === 0) { 
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 30px;" class="text-muted"><i data-lucide="inbox" style="width: 32px; height: 32px; margin-bottom: 12px; color: var(--border-color); display: block; margin-left: auto; margin-right: auto;"></i> Tidak ada data santri yang sesuai kriteria.</td></tr>`; 
+                if(window.lucide) window.lucide.createIcons(); 
+                return; 
+            }
+            
             const isCetakKartuActive = globalSettings.isCetakKartuActive === true;
-            tbody.innerHTML = allDataStudents.map(student => {
+            tbody.innerHTML = filtered.map(student => {
                 const isPaid = student.pembayaranLunas === true; const isMidtrans = student.metodePembayaran === 'midtrans';
                 let badgePay = ''; if(isPaid) { if(isMidtrans) { badgePay = `<span class="badge badge-success" style="background:#DBEAFE; color:var(--primary); border-color:#BFDBFE;"><i data-lucide="credit-card" style="width:10px; margin-right:4px;"></i> Gateway</span>`; } else { badgePay = `<span class="badge badge-success"><i data-lucide="check-circle" style="width:10px; margin-right:4px;"></i> Tunai</span>`; } } else { badgePay = `<span class="badge badge-danger"><i data-lucide="alert-circle" style="width:10px; margin-right:4px;"></i> Tunggak</span>`; }
                 let btnPay = '';
@@ -1611,19 +1892,51 @@
             const photoUrl = student.fotoProfil || ''; document.getElementById('student-foto-url').value = photoUrl; document.getElementById('student-foto-b64').value = '';
             const prevImg = document.getElementById('preview-student-foto'); const prevIcon = document.getElementById('icon-student-foto');
             if(photoUrl) { prevImg.src = photoUrl; prevImg.style.display = 'block'; prevIcon.style.display = 'none'; } else { prevImg.src = ''; prevImg.style.display = 'none'; prevIcon.style.display = 'block'; }
-            const selectClass = document.getElementById('select-student-class');
-            if(selectClass) { selectClass.innerHTML = allDataClasses.map(cls => { const isSelected = cls.id === student.kelas_id ? 'selected' : ''; return `<option value="${cls.id}" ${isSelected}>${cls.nama_kelas || cls.name}</option>`; }).join(''); }
+            
+            // Populating Custom Dropdown for Modal
+            const optionsContainer = document.getElementById('options-modal-mutation');
+            const hiddenInput = document.getElementById('hidden-student-mutation-class');
+            const triggerText = document.querySelector('#trigger-modal-mutation span');
+            
+            if(optionsContainer && hiddenInput && triggerText) {
+                hiddenInput.value = student.kelas_id || '';
+                
+                let html = '';
+                const sortedClasses = [...allDataClasses].sort((a,b) => (a.nama_kelas || a.name || '').localeCompare(b.nama_kelas || b.name || ''));
+                
+                let foundClassName = 'Tanpa Kelas';
+                let isUnassigned = !student.kelas_id || !allDataClasses.find(c => c.id === student.kelas_id);
+                
+                html += `<div class="custom-option ${isUnassigned ? 'selected' : ''}" onclick="window.selectCustomOption('modal-mutation', 'unassigned', 'Tanpa Kelas', event)">Tanpa Kelas <i data-lucide="check" class="custom-option-icon"></i></div>`;
+                
+                sortedClasses.forEach(cls => {
+                    const isSelected = cls.id === student.kelas_id;
+                    const nama = cls.nama_kelas || cls.name;
+                    if(isSelected) foundClassName = nama;
+                    html += `<div class="custom-option ${isSelected ? 'selected' : ''}" onclick="window.selectCustomOption('modal-mutation', '${cls.id}', '${nama}', event)">${nama} <i data-lucide="check" class="custom-option-icon"></i></div>`;
+                });
+                
+                optionsContainer.innerHTML = html;
+                triggerText.textContent = foundClassName;
+            }
+
             window.openModal('modal-student');
         };
 
         window.saveStudent = async function() {
             const studentIdInput = document.getElementById('student-id'); const studentNameInput = document.getElementById('input-student-name');
-            const studentWaInput = document.getElementById('input-student-wa'); const studentClassSelect = document.getElementById('select-student-class');
+            const studentWaInput = document.getElementById('input-student-wa'); 
+            const studentClassHidden = document.getElementById('hidden-student-mutation-class');
             const btnSave = document.getElementById('btn-save-student');
-            if(!studentIdInput || !studentNameInput || !studentClassSelect) return;
+            
+            if(!studentIdInput || !studentNameInput || !studentClassHidden) return;
+            
             const id = studentIdInput.value; const nama = studentNameInput.value.trim(); let wa = studentWaInput ? studentWaInput.value.trim() : '';
-            const kelasId = studentClassSelect.value; let photoUrl = document.getElementById('student-foto-url').value; const photoB64 = document.getElementById('student-foto-b64').value;
+            const kelasId = studentClassHidden.value === 'unassigned' ? null : studentClassHidden.value; 
+            
+            let photoUrl = document.getElementById('student-foto-url').value; const photoB64 = document.getElementById('student-foto-b64').value;
             if(!nama) return window.showToast("Nama tidak boleh kosong!", true); if (wa && wa.startsWith('0')) wa = '62' + wa.slice(1);
+            
             btnSave.disabled = true; btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Menyimpan...'; if(window.lucide) window.lucide.createIcons();
             try {
                 if (photoB64) { btnSave.innerHTML = '<i data-lucide="loader-2" class="spinner"></i> Mengunggah Foto...'; photoUrl = await uploadPhotoToCloudinary(photoB64); }

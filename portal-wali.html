@@ -347,7 +347,7 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Waktu</th>
+                                    <th>Waktu & Tanggal</th>
                                     <th>Nama Santri</th>
                                     <th>Kelas</th>
                                     <th>WhatsApp Wali</th>
@@ -532,7 +532,9 @@
 
             if(siswaUrut.length > 0) {
                 const lastTime = new Date(siswaUrut[0].createdAt || Date.now());
-                document.getElementById('dash-val-waktu').textContent = lastTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                const lastJam = lastTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                const lastTgl = lastTime.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                document.getElementById('dash-val-waktu').innerHTML = `${lastJam} <span style="font-size:12px; font-weight:600; color:var(--text-muted); display:block; margin-top:2px;">${lastTgl}</span>`;
             } else {
                 document.getElementById('dash-val-waktu').textContent = '--:--';
             }
@@ -596,13 +598,18 @@
                 tBody.innerHTML = siswaUrut.map((s, index) => {
                     const kls = semuaKelas.find(k => k.id === s.kelas_id);
                     const namaKls = kls ? (kls.nama_kelas || kls.name) : '-';
-                    const jam = new Date(s.createdAt || Date.now()).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                    
+                    // Format waktu dengan penambahan tanggal yang cantik
+                    const dateObj = new Date(s.createdAt || Date.now());
+                    const tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                    const jam = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                    const waktuTampil = `<div style="display:flex; flex-direction:column; gap:2px;"><span style="color:var(--text-main); font-weight:600;">${tanggal}</span><span style="font-size:12px; color:var(--text-muted);">${jam} WIB</span></div>`;
                     
                     const rowClass = (index === 0 && hasNewStudent) ? 'row-new' : '';
                     
                     return `
                         <tr class="${rowClass}">
-                            <td class="td-time">${jam} WIB</td>
+                            <td class="td-time">${waktuTampil}</td>
                             <td style="font-weight: 700;">${s.nama}</td>
                             <td>${namaKls}</td>
                             <td>
