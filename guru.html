@@ -136,6 +136,12 @@
         .badge-terlambat { background: var(--warning-bg); color: var(--warning); border: 1px solid #FDE68A; }
         .badge-alpa { background: var(--danger-bg); color: var(--danger); border: 1px solid #FECACA; }
 
+        .pill { display: inline-flex; align-items: center; border-radius: var(--radius-md); font-weight: 600; border: 1px solid transparent; }
+        .pill-excelent { background: var(--success-bg); color: var(--success-text); border-color: #A7F3D0; }
+        .pill-good { background: var(--primary-light); color: var(--primary); border-color: var(--border-focus); }
+        .pill-fair { background: var(--warning-bg); color: var(--warning-text); border-color: #FDE68A; }
+        .pill-poor { background: var(--danger-bg); color: var(--danger-text); border-color: #FECACA; }
+
         .mini-progress-track { width: 100%; height: 4px; background: #E2E8F0; border-radius: var(--radius-full); overflow: hidden; margin-top: 8px; }
         .mini-progress-fill { height: 100%; background: var(--primary); border-radius: var(--radius-full); width: 0%; transition: width 1s ease; }
 
@@ -415,6 +421,9 @@
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
                 <span id="guru-nama-header" style="font-size: 13px; font-weight: 600; color: var(--text-main);">Nama Guru</span>
+                <button class="btn btn-ghost" onclick="window.bukaPengaturanGuru()" style="padding: 6px; font-size: 12px;" title="Pengaturan Preferensi">
+                    <i data-lucide="settings" style="width: 16px;"></i>
+                </button>
                 <button class="btn btn-ghost" onclick="window.keluarKeLogin()" style="padding: 6px 10px; font-size: 12px; font-weight: 600;">
                     <i data-lucide="log-out" style="width: 14px;"></i> Keluar
                 </button>
@@ -584,6 +593,33 @@
                 <span>Delegasi</span>
             </div>
         </nav>
+    </div>
+
+    <!-- MODAL PENGATURAN GURU (NEW) -->
+    <div id="modal-pengaturan-guru" class="modal-overlay">
+        <div class="card modal-container" style="max-width: 360px; padding: 0;">
+            <div class="modal-header">
+                <h3 style="font-size: 16px; margin: 0; display:flex; align-items:center; gap:8px;"><i data-lucide="settings" style="width: 18px; color: var(--primary);"></i> Pengaturan Preferensi</h3>
+                <button class="btn-ghost" onclick="window.tutupModal('modal-pengaturan-guru')" style="padding: 4px; border:none; background:transparent;"><i data-lucide="x" style="width: 18px;"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 24px; background: var(--bg-surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
+                <div class="input-group">
+                    <label class="input-label">Format Penilaian Hafalan</label>
+                    <div class="custom-select-wrapper">
+                        <div class="custom-select" id="cs-pref-metode">
+                            <div class="custom-select__trigger"><span id="trigger-pref-metode">Mengikuti Admin (Default)</span> <i data-lucide="chevron-down" class="arrow-icon"></i></div>
+                            <div class="custom-options" id="options-pref-metode">
+                                <span class="custom-option selected" data-value="default">Mengikuti Admin (Default)</span>
+                                <span class="custom-option" data-value="predikat">Predikat (Tombol)</span>
+                                <span class="custom-option" data-value="angka">Angka (0 - 100)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px; line-height: 1.4;">Tentukan format isian nilai saat Anda mengevaluasi hafalan. Memilih "Mengikuti Admin" berarti format otomatis menyesuaikan kebijakan yayasan saat ini.</p>
+                </div>
+                <button class="btn btn-primary" onclick="window.simpanPengaturanGuru()" style="width: 100%; padding: 12px; margin-top: 8px;">Simpan Preferensi</button>
+            </div>
+        </div>
     </div>
 
     <!-- MODAL PRE-SCAN (KONFIGURASI JAM MASUK) -->
@@ -831,22 +867,38 @@
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <label class="input-label">Predikat Kelancaran</label>
-                    <div class="chip-group" id="chip-group-kelancaran">
-                        <button type="button" class="chip-btn active" data-value="Mumtaz (Lancar Sekali)" onclick="window.pilihKelancaran('Mumtaz (Lancar Sekali)')">Mumtaz</button>
-                        <button type="button" class="chip-btn" data-value="Jayyid Jiddan (Lancar)" onclick="window.pilihKelancaran('Jayyid Jiddan (Lancar)')">Jayyid Jiddan</button>
-                        <button type="button" class="chip-btn" data-value="Jayyid (Cukup)" onclick="window.pilihKelancaran('Jayyid (Cukup)')">Jayyid</button>
-                        <button type="button" class="chip-btn" data-value="Dhaif (Kurang)" onclick="window.pilihKelancaran('Dhaif (Kurang)')">Dhaif</button>
+                <!-- PREDIKAT UI -->
+                <div id="ui-penilaian-predikat">
+                    <div class="input-group">
+                        <label class="input-label">Predikat Kelancaran</label>
+                        <div class="chip-group" id="chip-group-kelancaran">
+                            <button type="button" class="chip-btn active" data-value="Mumtaz (Lancar Sekali)" onclick="window.pilihKelancaran('Mumtaz (Lancar Sekali)')">Mumtaz</button>
+                            <button type="button" class="chip-btn" data-value="Jayyid Jiddan (Lancar)" onclick="window.pilihKelancaran('Jayyid Jiddan (Lancar)')">Jayyid Jiddan</button>
+                            <button type="button" class="chip-btn" data-value="Jayyid (Cukup)" onclick="window.pilihKelancaran('Jayyid (Cukup)')">Jayyid</button>
+                            <button type="button" class="chip-btn" data-value="Dhaif (Kurang)" onclick="window.pilihKelancaran('Dhaif (Kurang)')">Dhaif</button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Kualitas Tajwid</label>
+                        <div class="chip-group" id="chip-group-tajwid">
+                            <button type="button" class="chip-btn active" data-value="Sangat Baik" onclick="window.pilihTajwid('Sangat Baik')">Sangat Baik</button>
+                            <button type="button" class="chip-btn" data-value="Baik" onclick="window.pilihTajwid('Baik')">Baik</button>
+                            <button type="button" class="chip-btn" data-value="Perlu Perbaikan" onclick="window.pilihTajwid('Perlu Perbaikan')">Perlu Perbaikan</button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <label class="input-label">Kualitas Tajwid</label>
-                    <div class="chip-group" id="chip-group-tajwid">
-                        <button type="button" class="chip-btn active" data-value="Sangat Baik" onclick="window.pilihTajwid('Sangat Baik')">Sangat Baik</button>
-                        <button type="button" class="chip-btn" data-value="Baik" onclick="window.pilihTajwid('Baik')">Baik</button>
-                        <button type="button" class="chip-btn" data-value="Perlu Perbaikan" onclick="window.pilihTajwid('Perlu Perbaikan')">Perlu Perbaikan</button>
+                <!-- ANGKA UI -->
+                <div id="ui-penilaian-angka" style="display: none;">
+                    <div class="flex-row">
+                        <div class="input-group">
+                            <label class="input-label">Nilai Kelancaran (0-100)</label>
+                            <input type="number" id="input-nilai-kelancaran" class="input-field" min="0" max="100" placeholder="0 - 100" style="font-family: monospace; font-size: 16px; font-weight: bold; text-align: center;">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Nilai Tajwid (0-100)</label>
+                            <input type="number" id="input-nilai-tajwid" class="input-field" min="0" max="100" placeholder="0 - 100" style="font-family: monospace; font-size: 16px; font-weight: bold; text-align: center;">
+                        </div>
                     </div>
                 </div>
 
@@ -1051,7 +1103,8 @@
             isAbsensiQrActive: false, // Digunakan jika fallback basic
             isPremiumAttendanceActive: false, // Fitur Khusus Premium
             isTagihanAktif: true,
-            twibbonFrameUrl: null 
+            twibbonFrameUrl: null,
+            metodePenilaian: 'predikat' 
         };
         window.unsubscribeSettings = null;
         window.unsubscribeSaasMaster = null;
@@ -1126,6 +1179,7 @@
         let selectedTajwid = "Sangat Baik";
         let selectedGuruDelegasi = "";
         let selectedPresetMisi = ""; 
+        let selectedPrefMetode = "default";
         
         let activeClassId = null; 
         let loggedInTeacher = null;
@@ -1190,6 +1244,34 @@
                 else searchWrapper.classList.remove('scrolled');
             }
         });
+
+        // ==========================================
+        // PENGATURAN PREFERENSI GURU (NEW)
+        // ==========================================
+        window.bukaPengaturanGuru = function() {
+            if(!loggedInTeacher) return;
+            const currentPref = loggedInTeacher.preferenceMetodePenilaian || 'default';
+            let prefText = 'Mengikuti Admin (Default)';
+            if(currentPref === 'predikat') prefText = 'Predikat (Tombol)';
+            else if(currentPref === 'angka') prefText = 'Angka (0 - 100)';
+            
+            resetCustomDropdown('cs-pref-metode', currentPref, prefText);
+            window.bukaModal('modal-pengaturan-guru');
+        };
+
+        window.simpanPengaturanGuru = async function() {
+            if(!loggedInTeacher) return;
+            try {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teachers', loggedInTeacher.docId), {
+                    preferenceMetodePenilaian: selectedPrefMetode
+                });
+                loggedInTeacher.preferenceMetodePenilaian = selectedPrefMetode; 
+                window.tampilkanToast("Preferensi berhasil disimpan.");
+                window.tutupModal('modal-pengaturan-guru');
+            } catch(e) {
+                window.tampilkanToast("Gagal menyimpan preferensi.", true);
+            }
+        };
 
         // ==========================================
         // FITUR PRE-SCAN & SCANNER CERDAS (PREMIUM)
@@ -1828,7 +1910,7 @@
                     if(select.id === 'cs-login-guru') selectedLoginGuruId = value; 
                     if(select.id === 'cs-pilih-kelas') {
                         activeClassId = value;
-                        window.clearSearchInput(); 
+                        window.clearSearchInput(true); 
                         window.renderListGuru();
                     }
                     if(select.id === 'cs-preset-misi') {
@@ -1839,6 +1921,9 @@
                         } else {
                             customArea.style.display = 'none';
                         }
+                    }
+                    if(select.id === 'cs-pref-metode') {
+                        selectedPrefMetode = value;
                     }
                 }
             });
@@ -1857,6 +1942,7 @@
             if(id === 'cs-surah-akhir') selectedSurahAkhir = val;
             if(id === 'cs-guru-delegasi') selectedGuruDelegasi = val;
             if(id === 'cs-preset-misi') selectedPresetMisi = val;
+            if(id === 'cs-pref-metode') selectedPrefMetode = val;
         }
 
         const initAuth = async () => { 
@@ -1936,7 +2022,8 @@
                         isAbsensiQrActive: false,
                         isPremiumAttendanceActive: false,
                         isTagihanAktif: true,
-                        twibbonFrameUrl: null
+                        twibbonFrameUrl: null,
+                        metodePenilaian: 'predikat'
                     };
                 }
 
@@ -2024,6 +2111,12 @@
             window.unsubscribeGuru = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'teachers')), (snapshot) => {
                 semuaGuru = []; snapshot.forEach(doc => semuaGuru.push({ docId: doc.id, ...doc.data() }));
                 if (window.autoLoginTeacherId) prosesAutoLoginGuru();
+                
+                // Perbarui data guru jika sedang login (untuk preferensi)
+                if (loggedInTeacher) {
+                    const updatedMe = semuaGuru.find(g => g.docId === loggedInTeacher.docId);
+                    if (updatedMe) loggedInTeacher = updatedMe;
+                }
             });
 
             if (window.unsubscribeSholat) window.unsubscribeSholat();
@@ -2133,10 +2226,15 @@
             window.renderListGuru();
         };
 
-        window.clearSearchInput = function() {
-            document.getElementById('search-siswa').value = '';
-            document.getElementById('clear-search-btn').style.display = 'none';
-            document.getElementById('search-siswa').focus();
+        // FIXED: Ditambahkan preventFocus parameter agar keyboard tidak popping up otomatis di HP
+        window.clearSearchInput = function(preventFocus = false) {
+            const searchInput = document.getElementById('search-siswa');
+            if (searchInput) {
+                searchInput.value = '';
+                if (!preventFocus) searchInput.focus();
+            }
+            const clearBtn = document.getElementById('clear-search-btn');
+            if (clearBtn) clearBtn.style.display = 'none';
             window.renderListGuru();
         };
 
@@ -2453,8 +2551,25 @@
             document.getElementById('input-ayat-awal').value = nextAyatAwal; 
             document.getElementById('input-ayat-akhir').value = nextAyatAwal;
             
-            window.pilihKelancaran("Mumtaz (Lancar Sekali)");
-            window.pilihTajwid("Sangat Baik");
+            // Pengaturan Metode Penilaian: Menggabungkan Global AppSettings dengan Preferensi Personal Guru
+            let metodeApp = window.appSettings.metodePenilaian || 'predikat';
+            let effectiveMethod = metodeApp;
+            
+            if (loggedInTeacher && loggedInTeacher.preferenceMetodePenilaian && loggedInTeacher.preferenceMetodePenilaian !== 'default') {
+                effectiveMethod = loggedInTeacher.preferenceMetodePenilaian;
+            }
+
+            if (effectiveMethod === 'angka') {
+                document.getElementById('ui-penilaian-predikat').style.display = 'none';
+                document.getElementById('ui-penilaian-angka').style.display = 'block';
+                document.getElementById('input-nilai-kelancaran').value = '';
+                document.getElementById('input-nilai-tajwid').value = '';
+            } else {
+                document.getElementById('ui-penilaian-predikat').style.display = 'block';
+                document.getElementById('ui-penilaian-angka').style.display = 'none';
+                window.pilihKelancaran("Mumtaz (Lancar Sekali)");
+                window.pilihTajwid("Sangat Baik");
+            }
 
             window.bukaModal('modal-setoran');
         };
@@ -2465,7 +2580,24 @@
             const catatanKhusus = document.getElementById('input-catatan-siswa').value.trim();
             const sAwal = selectedSurahAwal; const aAwal = parseInt(document.getElementById('input-ayat-awal').value);
             const sAkhir = selectedSurahAkhir; const aAkhir = parseInt(document.getElementById('input-ayat-akhir').value);
-            const kelancaran = selectedKelancaran; const tajwid = selectedTajwid;
+            
+            let kelancaran = selectedKelancaran; 
+            let tajwid = selectedTajwid;
+
+            let metodeApp = window.appSettings.metodePenilaian || 'predikat';
+            let effectiveMethod = metodeApp;
+            if (loggedInTeacher && loggedInTeacher.preferenceMetodePenilaian && loggedInTeacher.preferenceMetodePenilaian !== 'default') {
+                effectiveMethod = loggedInTeacher.preferenceMetodePenilaian;
+            }
+
+            if (effectiveMethod === 'angka') {
+                const valK = parseInt(document.getElementById('input-nilai-kelancaran').value);
+                const valT = parseInt(document.getElementById('input-nilai-tajwid').value);
+                if (isNaN(valK) || valK < 0 || valK > 100) return window.tampilkanToast("Nilai kelancaran tidak valid (Harus 0 - 100).", true);
+                if (isNaN(valT) || valT < 0 || valT > 100) return window.tampilkanToast("Nilai tajwid tidak valid (Harus 0 - 100).", true);
+                kelancaran = valK.toString();
+                tajwid = valT.toString();
+            }
 
             if (aAwal < 1 || aAkhir < 1) return window.tampilkanToast("Rentang ayat tidak valid.", true);
 
@@ -2683,6 +2815,13 @@
                 
                 const getPillClass = (val) => {
                     if(!val) return 'pill-fair';
+                    if(!isNaN(parseInt(val))) {
+                        const num = parseInt(val);
+                        if(num >= 90) return 'pill-excelent';
+                        if(num >= 80) return 'pill-good';
+                        if(num >= 70) return 'pill-fair';
+                        return 'pill-poor';
+                    }
                     if(val.includes('Mumtaz') || val.includes('Sangat Baik')) return 'pill-excelent';
                     if(val.includes('Jayyid Jiddan') || val === 'Baik') return 'pill-good';
                     if(val.includes('Jayyid (Cukup)') || val.includes('Perlu Perbaikan')) return 'pill-fair';
@@ -2692,7 +2831,12 @@
                 
                 const classKelancaran = getPillClass(item.kelancaran);
                 const classTajwid = getPillClass(item.tajwid);
-                let strKelancaran = item.kelancaran.split(' (')[0];
+                
+                const isNumK = !isNaN(parseInt(item.kelancaran));
+                const isNumT = !isNaN(parseInt(item.tajwid));
+
+                const strKelancaran = isNumK ? item.kelancaran : item.kelancaran.split(' (')[0];
+                const strTajwid = isNumT ? item.tajwid : item.tajwid;
 
                 return `
                     <div class="timeline-item">
@@ -2701,7 +2845,7 @@
                                 <h5 style="margin-bottom: 8px; font-size: 15px;">${rentang}</h5>
                                 <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
                                     <span class="pill ${classKelancaran}" style="padding: 2px 6px; font-size: 11px;"><i data-lucide="mic" style="width:10px; margin-right:4px;"></i>${strKelancaran}</span>
-                                    <span class="pill ${classTajwid}" style="padding: 2px 6px; font-size: 11px;"><i data-lucide="book-open" style="width:10px; margin-right:4px;"></i>${item.tajwid}</span>
+                                    <span class="pill ${classTajwid}" style="padding: 2px 6px; font-size: 11px;"><i data-lucide="book-open" style="width:10px; margin-right:4px;"></i>${strTajwid}</span>
                                 </div>
                                 <span class="timeline-date"><i data-lucide="clock" style="width:12px;"></i> ${tgl}</span>
                             </div>
@@ -2800,14 +2944,23 @@
             
             riwayat.forEach(r => {
                 let kScore = 0; let tScore = 0;
-                if (r.kelancaran.includes('Mumtaz')) kScore = 100;
-                else if (r.kelancaran.includes('Jayyid Jiddan')) kScore = 85;
-                else if (r.kelancaran.includes('Jayyid')) kScore = 75;
-                else kScore = 60; 
                 
-                if (r.tajwid.includes('Sangat Baik')) tScore = 100;
-                else if (r.tajwid.includes('Baik')) tScore = 80;
-                else tScore = 60; 
+                if (!isNaN(parseInt(r.kelancaran))) {
+                    kScore = parseInt(r.kelancaran);
+                } else {
+                    if (r.kelancaran.includes('Mumtaz')) kScore = 100;
+                    else if (r.kelancaran.includes('Jayyid Jiddan')) kScore = 85;
+                    else if (r.kelancaran.includes('Jayyid')) kScore = 75;
+                    else kScore = 60; 
+                }
+                
+                if (!isNaN(parseInt(r.tajwid))) {
+                    tScore = parseInt(r.tajwid);
+                } else {
+                    if (r.tajwid.includes('Sangat Baik')) tScore = 100;
+                    else if (r.tajwid.includes('Baik')) tScore = 80;
+                    else tScore = 60; 
+                }
                 
                 totalKScore += kScore; totalTScore += tScore;
             });

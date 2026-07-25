@@ -475,9 +475,8 @@
                             </div>
                         </div>
                         
-                        <!-- FILTER BAR STUDENTS -->
+                        <!-- KOMPONEN SEARCH LIVE & CUSTOM FILTER KELAS -->
                         <div style="width: 100%; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-                            <!-- Live Search -->
                             <div class="input-group" style="margin: 0; flex: 1; min-width: 200px; max-width: 300px;">
                                 <div style="position: relative; height: 100%;">
                                     <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; color: var(--text-light);"></i>
@@ -485,7 +484,6 @@
                                     <button id="clear-student-search-btn" class="search-clear-btn" onclick="window.clearStudentSearch()" title="Hapus Pencarian" style="display: none; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer;"><i data-lucide="x" style="width: 14px; height: 14px;"></i></button>
                                 </div>
                             </div>
-                            <!-- Custom Select: Class Filter -->
                             <div class="custom-select-wrapper" id="wrapper-student-class" onclick="window.toggleCustomSelect('options-student-class', this)">
                                 <div class="custom-select-trigger" id="trigger-student-class">
                                     <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Semua Kelas</span>
@@ -494,10 +492,8 @@
                                 <div class="custom-options" id="options-student-class">
                                     <div class="custom-option selected" onclick="window.selectCustomOption('student-class', 'all', 'Semua Kelas', event)">Semua Kelas <i data-lucide="check" class="custom-option-icon"></i></div>
                                     <div class="custom-option" onclick="window.selectCustomOption('student-class', 'unassigned', 'Tanpa Kelas', event)">Tanpa Kelas <i data-lucide="check" class="custom-option-icon"></i></div>
-                                    <!-- Dynamic Classes Injected Here -->
                                 </div>
                             </div>
-                            <!-- Custom Select: Sort Filter -->
                             <div class="custom-select-wrapper" id="wrapper-student-sort" onclick="window.toggleCustomSelect('options-student-sort', this)">
                                 <div class="custom-select-trigger" id="trigger-student-sort">
                                     <span>Urutan Default</span>
@@ -663,9 +659,8 @@
                                 </div>
                             </div>
                             
-                            <!-- FILTER BAR FINANCE -->
+                            <!-- KOMPONEN SEARCH LIVE & CUSTOM FILTER KEUANGAN -->
                             <div style="width: 100%; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; padding-top: 8px; border-top: 1px dashed var(--border-color);">
-                                <!-- Live Search -->
                                 <div class="input-group" style="margin: 0; flex: 1; min-width: 200px; max-width: 300px;">
                                     <div style="position: relative; height: 100%;">
                                         <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; color: var(--text-light);"></i>
@@ -673,7 +668,6 @@
                                         <button id="clear-finance-search-btn" class="search-clear-btn" onclick="window.clearFinanceSearch()" title="Hapus Pencarian" style="display: none; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer;"><i data-lucide="x" style="width: 14px; height: 14px;"></i></button>
                                     </div>
                                 </div>
-                                <!-- Custom Select: Class Filter -->
                                 <div class="custom-select-wrapper" id="wrapper-finance-class" onclick="window.toggleCustomSelect('options-finance-class', this)">
                                     <div class="custom-select-trigger" id="trigger-finance-class">
                                         <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Semua Kelas</span>
@@ -682,10 +676,8 @@
                                     <div class="custom-options" id="options-finance-class">
                                         <div class="custom-option selected" onclick="window.selectCustomOption('finance-class', 'all', 'Semua Kelas', event)">Semua Kelas <i data-lucide="check" class="custom-option-icon"></i></div>
                                         <div class="custom-option" onclick="window.selectCustomOption('finance-class', 'unassigned', 'Tanpa Kelas', event)">Tanpa Kelas <i data-lucide="check" class="custom-option-icon"></i></div>
-                                        <!-- Dynamic Classes Injected Here -->
                                     </div>
                                 </div>
-                                <!-- Custom Select: Sort Filter -->
                                 <div class="custom-select-wrapper" id="wrapper-finance-sort" onclick="window.toggleCustomSelect('options-finance-sort', this)">
                                     <div class="custom-select-trigger" id="trigger-finance-sort">
                                         <span>Urutan Default</span>
@@ -737,6 +729,24 @@
                             </div>
                         </div>
 
+                        <!-- OPSI METODE PENILAIAN DITAMBAHKAN KEMBALI -->
+                        <div class="input-group" style="margin-bottom: 12px; padding: 12px; background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span>Metode Penilaian Tahfizh</span>
+                            </label>
+                            <div class="custom-select-wrapper" id="wrapper-metode-penilaian" onclick="window.toggleCustomSelect('options-metode-penilaian', this)" style="max-width: 100%;">
+                                <div class="custom-select-trigger" id="trigger-metode-penilaian">
+                                    <span>Predikat (Tombol)</span>
+                                    <i data-lucide="chevron-down" style="width: 16px; flex-shrink: 0; margin-left: 8px;"></i>
+                                </div>
+                                <div class="custom-options" id="options-metode-penilaian">
+                                    <div class="custom-option selected" onclick="window.selectCustomOption('metode-penilaian', 'predikat', 'Predikat (Tombol)', event)">Predikat (Tombol) <i data-lucide="check" class="custom-option-icon"></i></div>
+                                    <div class="custom-option" onclick="window.selectCustomOption('metode-penilaian', 'angka', 'Angka (0-100)', event)">Angka (0-100) <i data-lucide="check" class="custom-option-icon"></i></div>
+                                </div>
+                            </div>
+                            <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px; line-height: 1.4;">Tentukan format penilaian guru saat menyimak hafalan (tombol predikat atau input nilai angka 0-100).</p>
+                        </div>
+
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 12px; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius-md);">
                             <div>
                                 <span class="text-sm" style="font-weight: 700; color: #92400E;">Modul Absensi Sholat</span>
@@ -775,12 +785,16 @@
                             </div>
                         </div>
 
+                        <!-- KEMBALI MENGGUNAKAN CUSTOM TIME PICKER MODAL -->
                         <div class="input-group" style="margin-bottom: 16px; padding-top: 12px; border-top: 1px dashed var(--border-color);">
                             <label style="display: flex; justify-content: space-between; align-items: center;">
                                 Jam Masuk (Batas Presensi)
                                 <span class="badge badge-success" style="font-size: 10px; padding: 4px 8px; border: none; background: var(--success); color: white; display: flex; align-items: center; gap: 4px;"><i data-lucide="clock" style="width: 12px; height: 12px;"></i> Auto-Status</span>
                             </label>
-                            <input type="time" id="input-batas-presensi" class="form-control" value="07:00" autocomplete="off" style="font-size: 16px; font-weight: 700; font-family: 'Fira Code', monospace; text-align: center;">
+                            <div style="position: relative;" onclick="window.bukaTimePickerAdmin()">
+                                <input type="text" id="input-batas-presensi" class="form-control" value="07:00" readonly style="font-size: 16px; font-weight: 700; font-family: 'Fira Code', monospace; text-align: center; cursor: pointer; background: var(--bg-surface);">
+                                <i data-lucide="clock" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 18px; color: var(--text-light); pointer-events: none;"></i>
+                            </div>
                             <p class="text-xs text-muted" style="margin-top: 8px;">Batas waktu santri dinyatakan Tepat Waktu. Lewat dari jam ini otomatis dihitung Terlambat oleh scanner guru.</p>
                         </div>
 
@@ -824,6 +838,35 @@
             </div>
 
         </main>
+    </div>
+
+    <!-- MODAL CUSTOM TIME PICKER RESTORED -->
+    <div id="modal-time-picker" class="modal-overlay" style="z-index: 3000;">
+        <div class="modal-container" style="max-width: 320px; border-radius: var(--radius-lg); background: var(--bg-surface);">
+            <div class="modal-header">
+                <h3 style="font-size: 16px; margin: 0; display: flex; align-items: center; gap: 8px;"><i data-lucide="clock" style="width: 18px; color: var(--primary);"></i> Atur Batas Presensi</h3>
+                <button class="btn-ghost" onclick="window.closeModal('modal-time-picker')" style="padding: 4px;"><i data-lucide="x" style="width: 18px;"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 24px;">
+                <div class="time-spinner-row" style="border-top: none; padding: 0; background: transparent; display: flex; justify-content: center; gap: 16px;">
+                    <div class="time-col" style="display: flex; flex-direction: column; align-items: center;">
+                        <button onclick="window.changeCalTimeAdmin('h', 1)" style="background: transparent; border: none; cursor: pointer; color: var(--text-muted);"><i data-lucide="chevron-up" style="width: 32px; height: 32px;"></i></button>
+                        <div class="time-val" id="admin-val-h" style="font-size: 48px; font-weight: 800; font-family: 'Fira Code', monospace; margin: 8px 0; color: var(--text-main);">07</div>
+                        <button onclick="window.changeCalTimeAdmin('h', -1)" style="background: transparent; border: none; cursor: pointer; color: var(--text-muted);"><i data-lucide="chevron-down" style="width: 32px; height: 32px;"></i></button>
+                    </div>
+                    <div style="font-size: 48px; font-weight: 800; color: var(--text-light); margin-top: 36px; font-family: 'Fira Code', monospace;">:</div>
+                    <div class="time-col" style="display: flex; flex-direction: column; align-items: center;">
+                        <button onclick="window.changeCalTimeAdmin('m', 1)" style="background: transparent; border: none; cursor: pointer; color: var(--text-muted);"><i data-lucide="chevron-up" style="width: 32px; height: 32px;"></i></button>
+                        <div class="time-val" id="admin-val-m" style="font-size: 48px; font-weight: 800; font-family: 'Fira Code', monospace; margin: 8px 0; color: var(--text-main);">00</div>
+                        <button onclick="window.changeCalTimeAdmin('m', -1)" style="background: transparent; border: none; cursor: pointer; color: var(--text-muted);"><i data-lucide="chevron-down" style="width: 32px; height: 32px;"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="window.closeModal('modal-time-picker')" style="flex: 1;">Batal</button>
+                <button class="btn btn-primary" onclick="window.terapkanTimeAdmin()" style="flex: 1;">Terapkan</button>
+            </div>
+        </div>
     </div>
 
     <!-- MODAL FORMS -->
@@ -907,7 +950,6 @@
                     <input type="number" id="input-student-wa" class="form-control">
                 </div>
                 
-                <!-- CUSTOM DROPDOWN FOR MODAL -->
                 <div class="input-group" style="margin-bottom: 0;">
                     <label>Mutasi Kelas (Pindah Kelas)</label>
                     <input type="hidden" id="hidden-student-mutation-class">
@@ -917,7 +959,6 @@
                             <i data-lucide="chevron-down" style="width: 16px; flex-shrink: 0; margin-left: 8px;"></i>
                         </div>
                         <div class="custom-options" id="options-modal-mutation">
-                            <!-- Injected Via JS -->
                         </div>
                     </div>
                 </div>
@@ -1054,12 +1095,14 @@
         import { collection, doc, setDoc, getDoc, updateDoc, deleteDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         let allDataClasses = []; let allDataTeachers = []; let allDataStudents = [];
-        let globalSettings = { periodeTagihan: "Bulan Ini", nominalTagihan: 5000, nominalDenda: 2000, isSholatModuleActive: true, isAbsensiQrActive: false, isCetakKartuActive: false, adminPin: "admin123", idCardFrontJson: null, idCardBackJson: null, batasJamMasuk: "07:00" };
+        let globalSettings = { periodeTagihan: "Bulan Ini", nominalTagihan: 5000, nominalDenda: 2000, isSholatModuleActive: true, isAbsensiQrActive: false, isCetakKartuActive: false, adminPin: "admin123", idCardFrontJson: null, idCardBackJson: null, batasJamMasuk: "07:00", metodePenilaian: "predikat" };
         let confirmActionCallback = null; let confirmRequiredText = "1";
         
-        // FILTER STATES
         let currentStudentSearch = ''; let currentStudentClassFilter = 'all'; let currentStudentSortOrder = 'default';
         let currentFinanceSearch = ''; let currentFinanceFilterStatus = 'all'; let currentFinanceClassFilter = 'all'; let currentFinanceSortOrder = 'default';
+        let currentMetodePenilaian = 'predikat';
+
+        let calHourAdmin = 7; let calMinuteAdmin = 0;
 
         let totalDanaDisetorKePusat = 0; let globalSaaSSettings = { developerShare: 20 }; let siswaTerpilihCetak = null;
         
@@ -1140,6 +1183,8 @@
                 currentFinanceSortOrder = value; window.renderFinanceTable();
             } else if (type === 'modal-mutation') {
                 document.getElementById('hidden-student-mutation-class').value = value;
+            } else if (type === 'metode-penilaian') {
+                currentMetodePenilaian = value;
             }
         };
 
@@ -1164,9 +1209,51 @@
             if(containerStudent) containerStudent.innerHTML = generateClassOptions('student-class', currentStudentClassFilter);
             const containerFinance = document.getElementById('options-finance-class');
             if(containerFinance) containerFinance.innerHTML = generateClassOptions('finance-class', currentFinanceClassFilter);
+            
+            // Modal Mutation population
+            const containerMutation = document.getElementById('options-modal-mutation');
+            if(containerMutation) {
+                let mutHtml = `<div class="custom-option" onclick="window.selectCustomOption('modal-mutation', 'unassigned', 'Tanpa Kelas', event)">Tanpa Kelas <i data-lucide="check" class="custom-option-icon"></i></div>`;
+                sortedClasses.forEach(c => {
+                    const nama = c.nama_kelas || c.name;
+                    mutHtml += `<div class="custom-option" onclick="window.selectCustomOption('modal-mutation', '${c.id}', '${nama}', event)">${nama} <i data-lucide="check" class="custom-option-icon"></i></div>`;
+                });
+                containerMutation.innerHTML = mutHtml;
+            }
             if(window.lucide) window.lucide.createIcons();
         };
 
+        // ==========================================
+        // CUSTOM TIME PICKER LOGIC
+        // ==========================================
+        window.bukaTimePickerAdmin = function() {
+            const inputVal = document.getElementById('input-batas-presensi').value;
+            if (inputVal && inputVal.includes(':')) {
+                const parts = inputVal.split(':');
+                calHourAdmin = parseInt(parts[0]);
+                calMinuteAdmin = parseInt(parts[1]);
+            }
+            window.renderTimePickerAdmin();
+            window.openModal('modal-time-picker');
+        };
+
+        window.renderTimePickerAdmin = function() {
+            document.getElementById('admin-val-h').textContent = calHourAdmin.toString().padStart(2, '0');
+            document.getElementById('admin-val-m').textContent = calMinuteAdmin.toString().padStart(2, '0');
+        };
+
+        window.changeCalTimeAdmin = function(type, dir) {
+            if(type === 'h') { calHourAdmin += dir; if(calHourAdmin > 23) calHourAdmin = 0; if(calHourAdmin < 0) calHourAdmin = 23; } 
+            else { calMinuteAdmin += dir; if(calMinuteAdmin > 59) calMinuteAdmin = 0; if(calMinuteAdmin < 0) calMinuteAdmin = 59; }
+            window.renderTimePickerAdmin();
+        };
+
+        window.terapkanTimeAdmin = function() {
+            const hStr = calHourAdmin.toString().padStart(2, '0');
+            const mStr = calMinuteAdmin.toString().padStart(2, '0');
+            document.getElementById('input-batas-presensi').value = `${hStr}:${mStr}`;
+            window.closeModal('modal-time-picker');
+        };
 
         // ==========================================
         // SEARCH LIVE LOGIC
@@ -1205,7 +1292,6 @@
             document.querySelectorAll('.pill-nav .pill-btn').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active'); window.renderFinanceTable();
         };
-
 
         // ==========================================
         // CORE APPLICATION LOGIC
@@ -1373,7 +1459,7 @@
         window.togglePaymentFinance = async function(id, status) {
             const student = allDataStudents.find(s => s.id === id);
             if (student && student.metodePembayaran === 'midtrans' && status === false) return window.showToast("Akses Ditolak! Transaksi via Gateway tidak dapat dibatalkan manual.", true);
-            try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', id), { pembayaranLunas: status, metodePembayaran: status ? 'cash' : null }); window.showToast(status ? "Tagihan berhasil dilunasi (Tunai)." : "Status lunas dibatalkan."); syncStatsToMaster(); } catch(e) { window.showToast("Gagal memproses tagihan.", true); }
+            try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', id), { pembayaranLunas: status, metodePembayaran: status ? 'cash' : null }); window.showToast(status ? "Tagihan berhasil dilunasi (Tunai)." : "Status lunas dibatalkan."); window.syncStatsToMaster(); } catch(e) { window.showToast("Gagal memproses tagihan.", true); }
         };
 
         window.sendWAReminder = function(phone, namaSiswa) {
@@ -1408,7 +1494,8 @@
             const oldNominal = globalSettings.nominalTagihan !== undefined ? globalSettings.nominalTagihan : 5000;
             const isPriceChanged = nominal !== oldNominal;
             try {
-                const payload = { nominalDenda: denda, batasJamMasuk: batasMasuk }; if (!isPriceChanged) { payload.nominalTagihan = nominal; }
+                const payload = { nominalDenda: denda, batasJamMasuk: batasMasuk, metodePenilaian: currentMetodePenilaian }; 
+                if (!isPriceChanged) { payload.nominalTagihan = nominal; }
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), payload, { merge: true });
                 if (isPriceChanged) {
                     const approvalId = `req_${appId}_${Date.now()}`;
@@ -1426,9 +1513,7 @@
             const printArea = document.getElementById('print-area');
             const qrImg = document.getElementById('print-qr-img');
             
-            // Menyertakan App ID pada URL agar sesuai dengan harapan
             let targetUrl = window.location.origin + '/portal-wali?sekolah=' + appId; 
-            
             if(qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(targetUrl)}&color=0F172A&bgcolor=FFFFFF`;
             if(dashView) dashView.style.display = 'none'; 
             if(printArea) printArea.classList.add('active-print');
@@ -1501,114 +1586,6 @@
             } catch (e) { window.showToast("Gagal memvalidasi token. Periksa koneksi.", true); }
         };
 
-        function startRealtimeListeners() {
-            if(window.unsubscribeAdminSettings) window.unsubscribeAdminSettings();
-            window.unsubscribeAdminSettings = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data(); let oldNominal = globalSettings.nominalTagihan || 0;
-                    globalSettings = { ...globalSettings, ...data }; 
-                    const toggleQR = document.getElementById('qr-access-toggle'); if (toggleQR && data.isRegistrationOpen !== undefined) toggleQR.checked = data.isRegistrationOpen;
-                    const toggleBilling = document.getElementById('billing-status-toggle'); if (toggleBilling && data.isTagihanAktif !== undefined) toggleBilling.checked = data.isTagihanAktif;
-                    const toggleSholat = document.getElementById('sholat-module-toggle'); if (toggleSholat && data.isSholatModuleActive !== undefined) toggleSholat.checked = data.isSholatModuleActive;
-                    const inputPeriode = document.getElementById('input-periode-tagihan'); const inputNominal = document.getElementById('input-nominal-tagihan'); const inputDenda = document.getElementById('input-nominal-denda'); const inputBatasPresensi = document.getElementById('input-batas-presensi');
-                    if (inputPeriode && data.periodeTagihan !== undefined) { inputPeriode.value = data.periodeTagihan; const teksFinance = document.getElementById('teks-finance-periode'); if(teksFinance) teksFinance.textContent = `Pantau pembayaran mutaba'ah untuk periode: ${data.periodeTagihan}`; }
-                    if (inputNominal && data.nominalTagihan !== undefined) { inputNominal.value = data.nominalTagihan; }
-                    if (inputDenda && data.nominalDenda !== undefined) { inputDenda.value = data.nominalDenda; }
-                    if (inputBatasPresensi && data.batasJamMasuk !== undefined) { inputBatasPresensi.value = data.batasJamMasuk; }
-                    const isCetakKartuActive = data.isCetakKartuActive === true;
-                    const btnMassal = document.getElementById('btn-cetak-massal-id'); if(btnMassal) btnMassal.style.display = isCetakKartuActive ? 'inline-flex' : 'none';
-                    document.querySelectorAll('.btn-cetak-id-single').forEach(btn => { btn.style.display = isCetakKartuActive ? 'inline-flex' : 'none'; });
-                    window.updateStats(); if (oldNominal !== (globalSettings.nominalTagihan || 0)) { syncStatsToMaster(); }
-                }
-            });
-
-            if(window.unsubscribeAdminClasses) window.unsubscribeAdminClasses();
-            window.unsubscribeAdminClasses = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'classes')), (snapshot) => {
-                allDataClasses = []; snapshot.forEach(doc => allDataClasses.push({ id: doc.id, ...doc.data() }));
-                window.populateCustomClassFilters();
-                window.renderClasses(); window.updateStats();
-                const tabFin = document.getElementById('tab-finance'); if(tabFin && tabFin.classList.contains('active')) window.renderFinanceTable();
-                const tabStd = document.getElementById('tab-students'); if(tabStd && tabStd.classList.contains('active')) window.renderStudents();
-            });
-
-            if(window.unsubscribeAdminTeachers) window.unsubscribeAdminTeachers();
-            window.unsubscribeAdminTeachers = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'teachers')), (snapshot) => {
-                let countChanged = allDataTeachers.length !== snapshot.size;
-                allDataTeachers = []; snapshot.forEach(doc => allDataTeachers.push({ id: doc.id, ...doc.data() }));
-                window.renderTeachers(); window.updateStats(); if (countChanged) syncStatsToMaster();
-            });
-
-            if(window.unsubscribeAdminStudents) window.unsubscribeAdminStudents();
-            window.unsubscribeAdminStudents = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'students')), (snapshot) => {
-                let countChanged = allDataStudents.length !== snapshot.size;
-                allDataStudents = []; snapshot.forEach(doc => allDataStudents.push({ id: doc.id, ...doc.data() }));
-                window.renderStudents(); window.updateStats();
-                const tabFin = document.getElementById('tab-finance'); if(tabFin && tabFin.classList.contains('active')) window.renderFinanceTable();
-                if (countChanged) syncStatsToMaster();
-            });
-
-            if(window.unsubscribeSaasMaster) window.unsubscribeSaasMaster();
-            window.unsubscribeSaasMaster = onSnapshot(doc(db, 'saas_master', 'global_config'), (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    const maintenanceOverlay = document.getElementById('maintenance-overlay');
-                    if (data.maintenanceMode === true) { if (maintenanceOverlay) maintenanceOverlay.classList.add('active'); } else { if (maintenanceOverlay) maintenanceOverlay.classList.remove('active'); }
-                    if (isForceUpdateInitialized && data.forceUpdateTimestamp && data.forceUpdateTimestamp > appLoadTime) {
-                        const overlay = document.getElementById('system-update-overlay'); const overlayMsg = document.getElementById('system-update-msg');
-                        if (overlay && overlayMsg) { overlayMsg.innerHTML = `<strong>Versi ${data.version || 'Baru'}:</strong><br/>${data.updateMessage || 'Memuat pembaruan inti...'}`; overlay.classList.add('active'); }
-                        setTimeout(() => { window.location.reload(true); }, 3500);
-                    }
-                    isForceUpdateInitialized = true;
-                }
-            });
-
-            if(window.unsubscribeTenantSilo) window.unsubscribeTenantSilo();
-            window.unsubscribeTenantSilo = onSnapshot(doc(db, 'saas_master', 'clients', 'list', appId), (docSnap) => {
-                if (docSnap.exists()) {
-                    totalDanaDisetorKePusat = docSnap.data().totalDisetor || 0; window.tenantPhone = docSnap.data().phone || '';
-                    if (docSnap.data().developerShare !== undefined) { globalSaaSSettings.developerShare = docSnap.data().developerShare; }
-                    window.updateStats();
-                }
-            });
-            const appLoadTime = Date.now(); let isForceUpdateInitialized = false;
-        }
-
-        window.financeChartObj = null;
-        function updateFinanceChart(paid, unpaid) {
-            const ctx = document.getElementById('financeDoughnutChart'); if(!ctx) return;
-            const valEl = document.getElementById('chart-center-value'); if(valEl) valEl.textContent = paid.toLocaleString('id-ID');
-            if(window.financeChartObj) { window.financeChartObj.data.datasets[0].data = [paid, unpaid]; window.financeChartObj.update(); return; }
-            if(typeof Chart !== 'undefined') {
-                window.financeChartObj = new Chart(ctx, {
-                    type: 'doughnut', data: { labels: ['Lunas', 'Menunggak'], datasets: [{ data: [paid, unpaid], backgroundColor: ['#10B981', '#EF4444'], borderWidth: 0, hoverOffset: 6 }] },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, font: { family: 'Inter', size: 12, weight: '600' } } }, tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', titleFont: { family: 'Inter', size: 13 }, bodyFont: { family: 'Inter', size: 13, weight: '600' }, padding: 12, cornerRadius: 8 } } }
-                });
-            }
-        }
-
-        window.renderFinanceClassSummary = function() {
-            const container = document.getElementById('finance-class-summary-grid'); if (!container) return;
-            if (allDataClasses.length === 0 && allDataStudents.length === 0) { container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: var(--text-muted); background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">Belum ada data santri dan kelas untuk dianalisis.</div>`; return; }
-            let html = '';
-            allDataClasses.forEach(cls => {
-                const studentsInClass = allDataStudents.filter(s => s.kelas_id === cls.id); const total = studentsInClass.length; if (total === 0) return; 
-                const lunas = studentsInClass.filter(s => s.pembayaranLunas === true).length; const tunggak = total - lunas; const percent = total > 0 ? Math.round((lunas / total) * 100) : 0; const clsName = cls.nama_kelas || cls.name || 'Tanpa Nama';
-                html += generateClassFinanceCard(cls.id, clsName, total, lunas, tunggak, percent);
-            });
-            const unassignedStudents = allDataStudents.filter(s => !s.kelas_id || !allDataClasses.find(c => c.id === s.kelas_id));
-            if(unassignedStudents.length > 0) {
-                const total = unassignedStudents.length; const lunas = unassignedStudents.filter(s => s.pembayaranLunas === true).length; const tunggak = total - lunas; const percent = total > 0 ? Math.round((lunas / total) * 100) : 0;
-                html += generateClassFinanceCard('unassigned', 'Tanpa Kelas', total, lunas, tunggak, percent, true);
-            }
-            if(html === '') { container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: var(--text-muted); background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">Data santri kosong. Tambahkan santri untuk melihat analisis kelas.</div>`; } else { container.innerHTML = html; }
-            if(window.lucide) window.lucide.createIcons();
-        };
-
-        function generateClassFinanceCard(classId, title, total, lunas, tunggak, percent, isDanger = false) {
-            const titleColor = isDanger ? 'var(--danger)' : 'var(--text-main)'; const barColor = percent === 100 ? 'var(--success)' : (percent > 50 ? 'var(--warning)' : 'var(--danger)');
-            return `<div class="class-finance-card" style="cursor: pointer;" onclick="window.showClassBillingDetails('${classId}')"><div style="font-weight: 700; color: ${titleColor}; margin-bottom: 16px; font-size: 14px; display: flex; justify-content: space-between; align-items: center;"><span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px;">${title}</span><span class="badge badge-neutral" style="flex-shrink: 0;">${total} Santri</span></div><div class="class-finance-row"><span style="color: var(--text-muted);">Lunas</span><span style="font-weight: 700; color: var(--success);">${lunas}</span></div><div class="class-finance-row"><span style="color: var(--text-muted);">Tunggakan</span><span style="font-weight: 700; color: var(--danger);">${tunggak}</span></div><div class="progress-container" style="height: 6px; margin-top: 14px; background: #F1F5F9;"><div class="progress-bar" style="width: ${percent}%; background: ${barColor};"></div></div><div style="border-top: 1px dashed var(--border-color); margin-top: 16px; padding-top: 12px; text-align: right; font-size: 12px; font-weight: 600; color: var(--primary); display: flex; align-items: center; justify-content: flex-end; gap: 4px;">Lihat Daftar Santri <i data-lucide="chevron-right" style="width: 14px;"></i></div></div>`;
-        }
-
         window.updateStats = function() {
             const statKelas = document.getElementById('stat-kelas'); if(statKelas) statKelas.textContent = allDataClasses.length;
             const statPengajar = document.getElementById('stat-pengajar'); if(statPengajar) statPengajar.textContent = allDataTeachers.length;
@@ -1639,7 +1616,7 @@
                 if(collectionRate >= 80) bar.style.background = 'var(--success)'; else if(collectionRate >= 50) bar.style.background = 'var(--warning)'; else bar.style.background = 'var(--danger)';
             }
 
-            updateFinanceChart(paidStudents.length, unpaidStudents); window.renderFinanceClassSummary();
+            window.updateFinanceChart(paidStudents.length, unpaidStudents); window.renderFinanceClassSummary();
 
             const devSharePercent = globalSaaSSettings.developerShare !== undefined ? globalSaaSSettings.developerShare : 20;
             const yayasanSharePercent = 100 - devSharePercent;
@@ -1681,130 +1658,11 @@
             }
         };
 
-        window.customConfirm = function(title, desc, requiredText, callback, isDanger = false) {
-            const titleEl = document.getElementById('confirm-title'); const descEl = document.getElementById('confirm-desc');
-            const btnExec = document.getElementById('btn-execute-confirm'); const iconWrap = document.getElementById('confirm-icon-wrapper');
-            const icon = document.getElementById('confirm-icon'); const labelEl = document.getElementById('confirm-label'); const verifyInput = document.getElementById('input-confirm-verify');
-            if(titleEl) titleEl.innerHTML = title; if(descEl) descEl.innerHTML = desc;
-            if(isDanger) {
-                if(labelEl) labelEl.style.color = 'var(--danger)'; if(btnExec) btnExec.className = 'btn btn-danger';
-                if(iconWrap) { iconWrap.style.background = 'var(--danger-bg)'; iconWrap.style.color = 'var(--danger)'; }
-                if(icon) icon.setAttribute('data-lucide', 'skull');
-            } else {
-                if(labelEl) labelEl.style.color = 'var(--primary)'; if(btnExec) btnExec.className = 'btn btn-primary';
-                if(iconWrap) { iconWrap.style.background = 'var(--primary-light)'; iconWrap.style.color = 'var(--primary)'; }
-                if(icon) icon.setAttribute('data-lucide', 'alert-triangle');
-            }
-            if(window.lucide) window.lucide.createIcons();
-            if(labelEl) labelEl.textContent = `Ketik "${requiredText}" untuk menyetujui:`;
-            if(verifyInput) { verifyInput.value = ''; verifyInput.placeholder = requiredText; }
-            if(btnExec) btnExec.disabled = true;
-            confirmRequiredText = requiredText; confirmActionCallback = callback; window.openModal('modal-confirm');
-        };
-
-        window.checkConfirmVerify = function() {
-            const verifyInput = document.getElementById('input-confirm-verify'); const btnExec = document.getElementById('btn-execute-confirm');
-            if(!verifyInput || !btnExec) return;
-            if (verifyInput.value.trim() === confirmRequiredText) { btnExec.disabled = false; } else { btnExec.disabled = true; }
-        };
-
-        const executeConfirmBtn = document.getElementById('btn-execute-confirm');
-        if(executeConfirmBtn) {
-            executeConfirmBtn.addEventListener('click', async () => {
-                if (confirmActionCallback) { const isSuccess = await confirmActionCallback(); if(isSuccess) window.closeModal('modal-confirm'); }
-            });
-        }
-
-        window.openModalClass = function(id = null) {
-            const classIdInput = document.getElementById('class-id'); const classNameInput = document.getElementById('input-class-name'); const modalTitle = document.getElementById('class-modal-title');
-            if(classIdInput) classIdInput.value = id || '';
-            if (id) { const cls = allDataClasses.find(c => c.id === id); if(modalTitle) modalTitle.textContent = 'Edit Kelas'; if(classNameInput) classNameInput.value = cls.nama_kelas || cls.name || ''; } 
-            else { if(modalTitle) modalTitle.textContent = 'Tambah Kelas Baru'; if(classNameInput) classNameInput.value = ''; }
-            window.openModal('modal-class');
-        };
-
-        window.saveClass = async function() {
-            const classNameInput = document.getElementById('input-class-name'); if(!classNameInput) return;
-            const name = classNameInput.value.trim(); if(!name) return window.showToast("Nama kelas wajib diisi!", true);
-            const existingIdInput = document.getElementById('class-id'); const existingId = existingIdInput ? existingIdInput.value : '';
-            const docId = existingId || `class_${Date.now()}`;
-            try {
-                if (existingId) { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', docId), { name: name, nama_kelas: name }); window.showToast("Data kelas diperbarui."); } 
-                else { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', docId), { id: docId, name: name, nama_kelas: name, createdAt: Date.now() }); window.showToast("Kelas baru berhasil dibuat."); }
-                window.closeModal('modal-class');
-            } catch(e) { window.showToast("Gagal menyimpan kelas", true); }
-        };
-
-        window.renderClasses = function() {
-            const tbody = document.getElementById('table-classes'); if(!tbody) return;
-            if(allDataClasses.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;" class="text-muted">Belum ada data kelas.</td></tr>`; return; }
-            tbody.innerHTML = allDataClasses.map(cls => {
-                const namaKelas = cls.nama_kelas || cls.name || 'Tanpa Nama'; const totalSantri = allDataStudents.filter(s => s.kelas_id === cls.id).length;
-                return `<tr><td style="font-weight: 600; color: var(--primary);">${namaKelas}</td><td><span class="badge badge-neutral">${totalSantri} Santri</span></td><td class="text-muted text-sm">${new Date(cls.createdAt || Date.now()).toLocaleDateString('id-ID')}</td><td><div class="action-flex" style="justify-content: flex-end;"><button class="btn btn-outline" style="padding: 6px 10px;" onclick="window.openModalClass('${cls.id}')" title="Edit Kelas"><i data-lucide="edit-3" style="width:14px;"></i></button><button class="btn btn-outline" style="padding: 6px 10px; color: var(--danger);" onclick="window.executeDeleteClass('${cls.id}')" title="Hapus Kelas"><i data-lucide="trash-2" style="width:14px;"></i></button></div></td></tr>`}).join('');
-            if(window.lucide) window.lucide.createIcons();
-        };
-
-        window.executeDeleteClass = function(id) {
-            window.customConfirm("Hapus Kelas", "Apakah Anda yakin? Penghapusan kelas dapat menghilangkan rujukan data santri di dalamnya.", "1", async () => {
-                try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', id)); window.showToast("Kelas berhasil dihapus."); return true; } catch(e) { window.showToast("Gagal menghapus.", true); return false; }
-            }, true);
-        };
-
-        window.openModalTeacher = function(id = null) {
-            const teacherIdInput = document.getElementById('teacher-id'); if(teacherIdInput) teacherIdInput.value = id || '';
-            const checkboxContainer = document.getElementById('checkbox-classes-container');
-            if(checkboxContainer) {
-                if(allDataClasses.length === 0) { checkboxContainer.innerHTML = `<span class="text-muted text-xs">Belum ada kelas. Buat kelas terlebih dahulu.</span>`; } 
-                else { checkboxContainer.innerHTML = allDataClasses.map(cls => { const namaKelas = cls.nama_kelas || cls.name || 'Tanpa Nama'; return `<label class="checkbox-item"><input type="checkbox" name="assigned_classes" value="${cls.id}" style="width:16px; height:16px; accent-color: var(--primary);"> ${namaKelas}</label>`; }).join(''); }
-            }
-            const modalTitle = document.getElementById('teacher-modal-title'); const nameInput = document.getElementById('input-teacher-name'); const pinInput = document.getElementById('input-teacher-pin');
-            if (id) {
-                const teacher = allDataTeachers.find(t => t.id === id);
-                if(modalTitle) modalTitle.textContent = 'Edit Pengajar'; if(nameInput) nameInput.value = teacher.nama || teacher.name || ''; if(pinInput) pinInput.value = teacher.pin || '';
-                const assigned = teacher.kelas_ids || teacher.assignedClasses || [];
-                document.querySelectorAll('input[name="assigned_classes"]').forEach(cb => { if(assigned.includes(cb.value)) cb.checked = true; });
-            } else { if(modalTitle) modalTitle.textContent = 'Tambah Pengajar Baru'; if(nameInput) nameInput.value = ''; if(pinInput) pinInput.value = ''; }
-            window.openModal('modal-teacher');
-        };
-
-        window.saveTeacher = async function() {
-            const nameInput = document.getElementById('input-teacher-name'); const pinInput = document.getElementById('input-teacher-pin');
-            if(!nameInput || !pinInput) return;
-            const name = nameInput.value.trim(); const pin = pinInput.value.trim();
-            const checkedBoxes = document.querySelectorAll('input[name="assigned_classes"]:checked'); const assignedClasses = Array.from(checkedBoxes).map(cb => cb.value);
-            if(!name || !pin) return window.showToast("Nama dan PIN wajib diisi!", true); if(assignedClasses.length === 0) return window.showToast("Pilih minimal satu kelas otorisasi!", true);
-            const existingIdInput = document.getElementById('teacher-id'); const existingId = existingIdInput ? existingIdInput.value : '';
-            const docId = existingId || `teacher_${Date.now()}`; const payload = { name: name, nama: name, pin: pin, kelas_ids: assignedClasses };
-            try {
-                if (existingId) { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teachers', docId), payload); window.showToast("Profil pengajar diperbarui."); } 
-                else { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teachers', docId), { id: docId, ...payload, createdAt: Date.now() }); window.showToast("Pengajar berhasil didaftarkan."); }
-                window.closeModal('modal-teacher');
-            } catch(e) { window.showToast("Gagal menyimpan data pengajar", true); }
-        };
-
-        window.renderTeachers = function() {
-            const tbody = document.getElementById('table-teachers'); if(!tbody) return;
-            if(allDataTeachers.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;" class="text-muted">Belum ada pengajar.</td></tr>`; return; }
-            tbody.innerHTML = allDataTeachers.map(teacher => {
-                const assigned = teacher.kelas_ids || teacher.assignedClasses || [];
-                const classNames = assigned.map(cid => { const found = allDataClasses.find(c => c.id === cid); const namaK = found ? (found.nama_kelas || found.name) : 'Unknown'; return found ? `<span class="badge badge-neutral" style="margin-right:4px;">${namaK}</span>` : ''; }).join('');
-                const namaGuru = teacher.nama || teacher.name || 'Tanpa Nama';
-                return `<tr><td style="font-weight: 600;">${namaGuru}</td><td style="font-family: monospace; color: var(--primary); font-weight: 700; letter-spacing: 1px;">${teacher.pin}</td><td>${classNames}</td><td><div class="action-flex" style="justify-content: flex-end;"><button class="btn btn-outline" style="padding: 6px 10px;" onclick="window.openModalTeacher('${teacher.id}')" title="Edit Akses"><i data-lucide="user-cog" style="width:14px;"></i></button><button class="btn btn-outline" style="padding: 6px 10px; color: var(--danger);" onclick="window.executeDeleteTeacher('${teacher.id}')" title="Cabut Akses"><i data-lucide="user-minus" style="width:14px;"></i></button></div></td></tr>`}).join('');
-            if(window.lucide) window.lucide.createIcons();
-        };
-
-        window.executeDeleteTeacher = function(id) {
-            window.customConfirm("Cabut Akses Pengajar", "Apakah Anda yakin? Akun pengajar ini akan dihapus dan tidak bisa login kembali.", "1", async () => {
-                try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teachers', id)); window.showToast("Akses pengajar telah dicabut."); return true; } catch(e) { window.showToast("Gagal menghapus.", true); return false; }
-            }, true);
-        };
-
         window.renderStudents = function() {
             const tbody = document.getElementById('table-students'); if(!tbody) return;
             
             let filtered = [...allDataStudents];
             
-            // 1. Class Filter
             if (currentStudentClassFilter !== 'all') {
                 if (currentStudentClassFilter === 'unassigned') {
                     filtered = filtered.filter(s => !s.kelas_id || !allDataClasses.find(c => c.id === s.kelas_id));
@@ -1813,7 +1671,6 @@
                 }
             }
             
-            // 2. Search Filter
             if (currentStudentSearch) {
                 filtered = filtered.filter(s => {
                     const name = (s.nama || s.name || '').toLowerCase();
@@ -1822,7 +1679,6 @@
                 });
             }
 
-            // 3. Alphabetical Sort Filter
             if (currentStudentSortOrder === 'az') {
                 filtered.sort((a, b) => (a.nama || a.name || '').localeCompare(b.nama || b.name || ''));
             } else if (currentStudentSortOrder === 'za') {
@@ -1860,17 +1716,14 @@
             const prevImg = document.getElementById('preview-student-foto'); const prevIcon = document.getElementById('icon-student-foto');
             if(photoUrl) { prevImg.src = photoUrl; prevImg.style.display = 'block'; prevIcon.style.display = 'none'; } else { prevImg.src = ''; prevImg.style.display = 'none'; prevIcon.style.display = 'block'; }
             
-            // Populating Custom Dropdown for Modal
             const optionsContainer = document.getElementById('options-modal-mutation');
             const hiddenInput = document.getElementById('hidden-student-mutation-class');
             const triggerText = document.querySelector('#trigger-modal-mutation span');
             
             if(optionsContainer && hiddenInput && triggerText) {
                 hiddenInput.value = student.kelas_id || '';
-                
                 let html = '';
                 const sortedClasses = [...allDataClasses].sort((a,b) => (a.nama_kelas || a.name || '').localeCompare(b.nama_kelas || b.name || ''));
-                
                 let foundClassName = 'Tanpa Kelas';
                 let isUnassigned = !student.kelas_id || !allDataClasses.find(c => c.id === student.kelas_id);
                 
@@ -1882,7 +1735,6 @@
                     if(isSelected) foundClassName = nama;
                     html += `<div class="custom-option ${isSelected ? 'selected' : ''}" onclick="window.selectCustomOption('modal-mutation', '${cls.id}', '${nama}', event)">${nama} <i data-lucide="check" class="custom-option-icon"></i></div>`;
                 });
-                
                 optionsContainer.innerHTML = html;
                 triggerText.textContent = foundClassName;
             }
@@ -1912,17 +1764,134 @@
             } catch(e) { window.showToast(e.message || "Gagal memperbarui data santri.", true); } finally { btnSave.disabled = false; btnSave.innerHTML = 'Simpan Data'; }
         };
 
-        window.togglePayment = async function(id, status) {
-            const student = allDataStudents.find(s => s.id === id);
-            if (student && student.metodePembayaran === 'midtrans' && status === false) return window.showToast("Akses Ditolak! Transaksi via Gateway tidak dapat dibatalkan manual.", true);
-            try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', id), { pembayaranLunas: status, metodePembayaran: status ? 'cash' : null }); window.showToast(status ? "Tagihan dilunasi (Tunai)." : "Lunas dibatalkan."); } catch(e) { window.showToast("Gagal memproses tagihan.", true); }
+        window.executeMassUpdateStudents = async function(updateData, successMsg) {
+            try { window.showToast("Mengeksekusi perintah massal..."); const promises = allDataStudents.map(student => { return updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', student.id), updateData); }); await Promise.all(promises); window.showToast(successMsg); return true; } catch(e) { window.showToast("Gagal melakukan aksi massal.", true); return false; }
+        };
+        window.executeMassUpdateTeachers = async function(updateData, successMsg) {
+            try { window.showToast("Mereset PIN..."); const promises = allDataTeachers.map(teacher => { return updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teachers', teacher.id), updateData); }); await Promise.all(promises); window.showToast(successMsg); return true; } catch(e) { window.showToast("Gagal mereset PIN.", true); return false; }
+        };
+        window.executeMassDeleteStudents = async function() {
+            try { window.showToast("Memulai proses Wipe Out..."); const promises = allDataStudents.map(student => { return deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', student.id)); }); await Promise.all(promises); window.showToast("Database Santri berhasil dikosongkan."); return true; } catch(e) { window.showToast("Gagal mengosongkan database.", true); return false; }
         };
 
-        window.executeDeleteStudent = function(id) {
-            window.customConfirm("Keluarkan Santri", "Apakah Anda yakin? Seluruh data hafalan santri ini akan terhapus dari sistem.", "1", async () => {
-                try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', id)); window.showToast("Santri berhasil dikeluarkan."); return true; } catch(e) { window.showToast("Gagal menghapus.", true); return false; }
-            }, true);
+        function startRealtimeListeners() {
+            if(window.unsubscribeAdminSettings) window.unsubscribeAdminSettings();
+            window.unsubscribeAdminSettings = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data(); let oldNominal = globalSettings.nominalTagihan || 0;
+                    globalSettings = { ...globalSettings, ...data }; 
+                    const toggleQR = document.getElementById('qr-access-toggle'); if (toggleQR && data.isRegistrationOpen !== undefined) toggleQR.checked = data.isRegistrationOpen;
+                    const toggleBilling = document.getElementById('billing-status-toggle'); if (toggleBilling && data.isTagihanAktif !== undefined) toggleBilling.checked = data.isTagihanAktif;
+                    const toggleSholat = document.getElementById('sholat-module-toggle'); if (toggleSholat && data.isSholatModuleActive !== undefined) toggleSholat.checked = data.isSholatModuleActive;
+                    const inputPeriode = document.getElementById('input-periode-tagihan'); const inputNominal = document.getElementById('input-nominal-tagihan'); const inputDenda = document.getElementById('input-nominal-denda'); const inputBatasPresensi = document.getElementById('input-batas-presensi');
+                    if (inputPeriode && data.periodeTagihan !== undefined) { inputPeriode.value = data.periodeTagihan; const teksFinance = document.getElementById('teks-finance-periode'); if(teksFinance) teksFinance.textContent = `Pantau pembayaran mutaba'ah untuk periode: ${data.periodeTagihan}`; }
+                    if (inputNominal && data.nominalTagihan !== undefined) { inputNominal.value = data.nominalTagihan; }
+                    if (inputDenda && data.nominalDenda !== undefined) { inputDenda.value = data.nominalDenda; }
+                    if (inputBatasPresensi && data.batasJamMasuk !== undefined) { inputBatasPresensi.value = data.batasJamMasuk; }
+                    
+                    // Restore Penilaian Method
+                    if (data.metodePenilaian !== undefined) {
+                        currentMetodePenilaian = data.metodePenilaian;
+                        const triggerText = document.querySelector('#trigger-metode-penilaian span');
+                        if(triggerText) {
+                            if(currentMetodePenilaian === 'angka') triggerText.textContent = 'Angka (0-100)';
+                            else triggerText.textContent = 'Predikat (Tombol)';
+                        }
+                    }
+
+                    const isCetakKartuActive = data.isCetakKartuActive === true;
+                    const btnMassal = document.getElementById('btn-cetak-massal-id'); if(btnMassal) btnMassal.style.display = isCetakKartuActive ? 'inline-flex' : 'none';
+                    document.querySelectorAll('.btn-cetak-id-single').forEach(btn => { btn.style.display = isCetakKartuActive ? 'inline-flex' : 'none'; });
+                    window.updateStats(); if (oldNominal !== (globalSettings.nominalTagihan || 0)) { syncStatsToMaster(); }
+                }
+            });
+
+            if(window.unsubscribeAdminClasses) window.unsubscribeAdminClasses();
+            window.unsubscribeAdminClasses = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'classes')), (snapshot) => {
+                allDataClasses = []; snapshot.forEach(doc => allDataClasses.push({ id: doc.id, ...doc.data() }));
+                window.populateCustomClassFilters();
+                renderClasses(); window.updateStats();
+                const tabFin = document.getElementById('tab-finance'); if(tabFin && tabFin.classList.contains('active')) window.renderFinanceTable();
+                const tabStd = document.getElementById('tab-students'); if(tabStd && tabStd.classList.contains('active')) window.renderStudents();
+            });
+
+            if(window.unsubscribeAdminTeachers) window.unsubscribeAdminTeachers();
+            window.unsubscribeAdminTeachers = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'teachers')), (snapshot) => {
+                let countChanged = allDataTeachers.length !== snapshot.size;
+                allDataTeachers = []; snapshot.forEach(doc => allDataTeachers.push({ id: doc.id, ...doc.data() }));
+                renderTeachers(); window.updateStats(); if (countChanged) syncStatsToMaster();
+            });
+
+            if(window.unsubscribeAdminStudents) window.unsubscribeAdminStudents();
+            window.unsubscribeAdminStudents = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'students')), (snapshot) => {
+                let countChanged = allDataStudents.length !== snapshot.size;
+                allDataStudents = []; snapshot.forEach(doc => allDataStudents.push({ id: doc.id, ...doc.data() }));
+                window.renderStudents(); window.updateStats();
+                const tabFin = document.getElementById('tab-finance'); if(tabFin && tabFin.classList.contains('active')) window.renderFinanceTable();
+                if (countChanged) syncStatsToMaster();
+            });
+
+            if(window.unsubscribeSaasMaster) window.unsubscribeSaasMaster();
+            window.unsubscribeSaasMaster = onSnapshot(doc(db, 'saas_master', 'global_config'), (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const maintenanceOverlay = document.getElementById('maintenance-overlay');
+                    if (data.maintenanceMode === true) { if (maintenanceOverlay) maintenanceOverlay.classList.add('active'); } else { if (maintenanceOverlay) maintenanceOverlay.classList.remove('active'); }
+                    if (isForceUpdateInitialized && data.forceUpdateTimestamp && data.forceUpdateTimestamp > appLoadTime) {
+                        const overlay = document.getElementById('system-update-overlay'); const overlayMsg = document.getElementById('system-update-msg');
+                        if (overlay && overlayMsg) { overlayMsg.innerHTML = `<strong>Versi ${data.version || 'Baru'}:</strong><br/>${data.updateMessage || 'Memuat pembaruan inti...'}`; overlay.classList.add('active'); }
+                        setTimeout(() => { window.location.reload(true); }, 3500);
+                    }
+                    isForceUpdateInitialized = true;
+                }
+            });
+
+            if(window.unsubscribeTenantSilo) window.unsubscribeTenantSilo();
+            window.unsubscribeTenantSilo = onSnapshot(doc(db, 'saas_master', 'clients', 'list', appId), (docSnap) => {
+                if (docSnap.exists()) {
+                    totalDanaDisetorKePusat = docSnap.data().totalDisetor || 0; window.tenantPhone = docSnap.data().phone || '';
+                    if (docSnap.data().developerShare !== undefined) { globalSaaSSettings.developerShare = docSnap.data().developerShare; }
+                    window.updateStats();
+                }
+            });
+            const appLoadTime = Date.now(); let isForceUpdateInitialized = false;
+        }
+
+        window.financeChartObj = null;
+        window.updateFinanceChart = function(paid, unpaid) {
+            const ctx = document.getElementById('financeDoughnutChart'); if(!ctx) return;
+            const valEl = document.getElementById('chart-center-value'); if(valEl) valEl.textContent = paid.toLocaleString('id-ID');
+            if(window.financeChartObj) { window.financeChartObj.data.datasets[0].data = [paid, unpaid]; window.financeChartObj.update(); return; }
+            if(typeof Chart !== 'undefined') {
+                window.financeChartObj = new Chart(ctx, {
+                    type: 'doughnut', data: { labels: ['Lunas', 'Menunggak'], datasets: [{ data: [paid, unpaid], backgroundColor: ['#10B981', '#EF4444'], borderWidth: 0, hoverOffset: 6 }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, font: { family: 'Inter', size: 12, weight: '600' } } }, tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', titleFont: { family: 'Inter', size: 13 }, bodyFont: { family: 'Inter', size: 13, weight: '600' }, padding: 12, cornerRadius: 8 } } }
+                });
+            }
         };
+
+        window.renderFinanceClassSummary = function() {
+            const container = document.getElementById('finance-class-summary-grid'); if (!container) return;
+            if (allDataClasses.length === 0 && allDataStudents.length === 0) { container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: var(--text-muted); background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">Belum ada data santri dan kelas untuk dianalisis.</div>`; return; }
+            let html = '';
+            allDataClasses.forEach(cls => {
+                const studentsInClass = allDataStudents.filter(s => s.kelas_id === cls.id); const total = studentsInClass.length; if (total === 0) return; 
+                const lunas = studentsInClass.filter(s => s.pembayaranLunas === true).length; const tunggak = total - lunas; const percent = total > 0 ? Math.round((lunas / total) * 100) : 0; const clsName = cls.nama_kelas || cls.name || 'Tanpa Nama';
+                html += generateClassFinanceCard(cls.id, clsName, total, lunas, tunggak, percent);
+            });
+            const unassignedStudents = allDataStudents.filter(s => !s.kelas_id || !allDataClasses.find(c => c.id === s.kelas_id));
+            if(unassignedStudents.length > 0) {
+                const total = unassignedStudents.length; const lunas = unassignedStudents.filter(s => s.pembayaranLunas === true).length; const tunggak = total - lunas; const percent = total > 0 ? Math.round((lunas / total) * 100) : 0;
+                html += generateClassFinanceCard('unassigned', 'Tanpa Kelas', total, lunas, tunggak, percent, true);
+            }
+            if(html === '') { container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: var(--text-muted); background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">Data santri kosong. Tambahkan santri untuk melihat analisis kelas.</div>`; } else { container.innerHTML = html; }
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        function generateClassFinanceCard(classId, title, total, lunas, tunggak, percent, isDanger = false) {
+            const titleColor = isDanger ? 'var(--danger)' : 'var(--text-main)'; const barColor = percent === 100 ? 'var(--success)' : (percent > 50 ? 'var(--warning)' : 'var(--danger)');
+            return `<div class="class-finance-card" style="cursor: pointer;" onclick="window.showClassBillingDetails('${classId}')"><div style="font-weight: 700; color: ${titleColor}; margin-bottom: 16px; font-size: 14px; display: flex; justify-content: space-between; align-items: center;"><span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px;">${title}</span><span class="badge badge-neutral" style="flex-shrink: 0;">${total} Santri</span></div><div class="class-finance-row"><span style="color: var(--text-muted);">Lunas</span><span style="font-weight: 700; color: var(--success);">${lunas}</span></div><div class="class-finance-row"><span style="color: var(--text-muted);">Tunggakan</span><span style="font-weight: 700; color: var(--danger);">${tunggak}</span></div><div class="progress-container" style="height: 6px; margin-top: 14px; background: #F1F5F9;"><div class="progress-bar" style="width: ${percent}%; background: ${barColor};"></div></div><div style="border-top: 1px dashed var(--border-color); margin-top: 16px; padding-top: 12px; text-align: right; font-size: 12px; font-weight: 600; color: var(--primary); display: flex; align-items: center; justify-content: flex-end; gap: 4px;">Lihat Daftar Santri <i data-lucide="chevron-right" style="width: 14px;"></i></div></div>`;
+        }
 
         async function fetchImageToBase64(url) {
             return new Promise((resolve) => {
@@ -2133,16 +2102,6 @@
             else if (type === 'mass_pin') { window.customConfirm("Reset Engine PIN", "Anda akan mengembalikan PIN seluruh guru ke default (123456).", "1", async () => { return await executeMassUpdateTeachers({ pin: "123456" }, "Semua PIN guru berhasil direset."); }); }
             else if (type === 'mass_delete_students') { window.customConfirm("<span style='color:var(--danger);'>Wipe Database Permanent</span>", "<strong style='color:var(--danger);'>PERINGATAN BAHAYA:</strong> Anda akan menghapus permanen SEMUA data santri. Ketik kata sandi di bawah untuk melanjutkan.", "HAPUS SEMUA", async () => { return await executeMassDeleteStudents(); }, true); }
         };
-
-        async function executeMassUpdateStudents(updateData, successMsg) {
-            try { window.showToast("Mengeksekusi perintah massal..."); const promises = allDataStudents.map(student => { return updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', student.id), updateData); }); await Promise.all(promises); window.showToast(successMsg); return true; } catch(e) { window.showToast("Gagal melakukan aksi massal.", true); return false; }
-        }
-        async function executeMassUpdateTeachers(updateData, successMsg) {
-            try { window.showToast("Mereset PIN..."); const promises = allDataTeachers.map(teacher => { return updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'teachers', teacher.id), updateData); }); await Promise.all(promises); window.showToast(successMsg); return true; } catch(e) { window.showToast("Gagal mereset PIN.", true); return false; }
-        }
-        async function executeMassDeleteStudents() {
-            try { window.showToast("Memulai proses Wipe Out..."); const promises = allDataStudents.map(student => { return deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', student.id)); }); await Promise.all(promises); window.showToast("Database Santri berhasil dikosongkan."); return true; } catch(e) { window.showToast("Gagal mengosongkan database.", true); return false; }
-        }
     </script>
 </body>
 </html>

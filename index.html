@@ -2262,13 +2262,29 @@
 
             riwayat.forEach(r => {
                 try {
-                    const strT = r.tajwid || ''; const strK = r.kelancaran || '';
-                    if (strT.includes('Sangat Baik')) totalT += 100;
-                    else if (strT.includes('Baik')) totalT += 80; else totalT += 60;
+                    let valT = 0, valK = 0;
                     
-                    if (strK.includes('Mumtaz')) totalK += 100;
-                    else if (strK.includes('Jayyid Jiddan')) totalK += 85;
-                    else if (strK.includes('Jayyid')) totalK += 75; else totalK += 60;
+                    // Parse Tajwid
+                    if (!isNaN(parseInt(r.tajwid))) {
+                        valT = parseInt(r.tajwid);
+                    } else {
+                        const strT = r.tajwid || '';
+                        if (strT.includes('Sangat Baik')) valT = 100;
+                        else if (strT.includes('Baik')) valT = 80; else valT = 60;
+                    }
+
+                    // Parse Kelancaran
+                    if (!isNaN(parseInt(r.kelancaran))) {
+                        valK = parseInt(r.kelancaran);
+                    } else {
+                        const strK = r.kelancaran || '';
+                        if (strK.includes('Mumtaz')) valK = 100;
+                        else if (strK.includes('Jayyid Jiddan')) valK = 85;
+                        else if (strK.includes('Jayyid')) valK = 75; else valK = 60;
+                    }
+                    
+                    totalT += valT;
+                    totalK += valK;
 
                     const rBulan = new Date(r.timestamp).toISOString().slice(0, 7);
                     if (rBulan === thnBulanIni) setoranBulanIni++;
@@ -2504,11 +2520,20 @@
         }
 
         function getPillClass(val) {
-            if(!val || typeof val !== 'string') return 'q-pill-fair';
-            if(val.includes('Mumtaz') || val.includes('Sangat Baik')) return 'q-pill-excelent';
-            if(val.includes('Jayyid Jiddan') || val === 'Baik') return 'q-pill-good';
-            if(val.includes('Jayyid (Cukup)') || val.includes('Perlu Perbaikan')) return 'q-pill-fair';
-            if(val.includes('Dhaif')) return 'q-pill-poor';
+            if(val === undefined || val === null) return 'q-pill-fair';
+            if(!isNaN(parseInt(val))) {
+                const num = parseInt(val);
+                if(num >= 90) return 'q-pill-excelent';
+                if(num >= 80) return 'q-pill-good';
+                if(num >= 70) return 'q-pill-fair';
+                return 'q-pill-poor';
+            }
+            if(typeof val === 'string') {
+                if(val.includes('Mumtaz') || val.includes('Sangat Baik')) return 'q-pill-excelent';
+                if(val.includes('Jayyid Jiddan') || val === 'Baik') return 'q-pill-good';
+                if(val.includes('Jayyid (Cukup)') || val.includes('Perlu Perbaikan')) return 'q-pill-fair';
+                if(val.includes('Dhaif')) return 'q-pill-poor';
+            }
             return 'q-pill-fair';
         }
 
@@ -2667,10 +2692,13 @@
                         const rentang = sAwal === sAkhir 
                             ? `${sAwal} <span style="color:var(--text-light); font-weight:500; font-size:12px;">ayat</span> ${aAwal}-${aAkhir}` 
                             : `${sAwal}:${aAwal} <span style="color:var(--text-light); font-weight:500; font-size:12px;">s/d</span> ${sAkhir}:${aAkhir}`;
+                        
+                        const isNumK = !isNaN(parseInt(item.kelancaran));
+                        const isNumT = !isNaN(parseInt(item.tajwid));
                         const classKelancaran = getPillClass(item.kelancaran);
                         const classTajwid = getPillClass(item.tajwid);
-                        let strKelancaran = typeof item.kelancaran === 'string' ? item.kelancaran.split(' (')[0] : '-';
-                        let strTajwid = typeof item.tajwid === 'string' ? item.tajwid : '-';
+                        let strKelancaran = isNumK ? item.kelancaran : (typeof item.kelancaran === 'string' ? item.kelancaran.split(' (')[0] : '-');
+                        let strTajwid = isNumT ? item.tajwid : (typeof item.tajwid === 'string' ? item.tajwid : '-');
 
                         return `
                             <div class="timeline-item">
