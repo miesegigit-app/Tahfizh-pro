@@ -936,6 +936,45 @@
         </div>
     </div>
 
+    <!-- PWA Setup Script (Sinkronus/Standar untuk menangkap event lebih awal sebelum module load) -->
+    <script>
+        // Tangkap event instalasi sesegera mungkin di level window
+        window.eventInstallTertunda = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.eventInstallTertunda = e;
+            const tombolInstall = document.getElementById('pwa-install-btn');
+            if (tombolInstall) {
+                tombolInstall.style.display = 'inline-flex';
+            }
+        });
+
+        window.installPWA = async function() {
+            if (window.eventInstallTertunda) {
+                window.eventInstallTertunda.prompt();
+                const { outcome } = await window.eventInstallTertunda.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('PWA berhasil diinstal oleh pengguna');
+                }
+                window.eventInstallTertunda = null;
+                const tombolInstall = document.getElementById('pwa-install-btn');
+                if (tombolInstall) {
+                    tombolInstall.style.display = 'none';
+                }
+            }
+        };
+
+        // Inisialisasi Service Worker standar
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('Service Worker terdaftar', reg.scope))
+                    .catch(err => console.log('Gagal mendaftar SW', err));
+            });
+        }
+    </script>
+
     <script type="module">
         import { auth, db, appId } from "./firebase-config.js";
         import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -1048,7 +1087,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             if(window.lucide) window.lucide.createIcons();
             setGreeting();
-            inisialisasiServiceWorker();
+            // inisialisasiServiceWorker() telah dipindahkan ke script tag sinkronus di luar module
             pasangListenerSwipe();
             initTwibbonListeners();
             
@@ -1289,34 +1328,6 @@
                 if (indeksSaatIni > 0) window.switchTabParent(SWIPE_TABS[indeksSaatIni - 1], null, 'right');
             }
         }
-
-        let eventInstallTertunda = null;
-        
-        function inisialisasiServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('./service-worker.js')
-                        .catch(err => console.log('Gagal mendaftar SW', err));
-                });
-            }
-        }
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            eventInstallTertunda = e;
-            const tombolInstall = document.getElementById('pwa-install-btn');
-            if (tombolInstall) tombolInstall.style.display = 'inline-flex';
-        });
-
-        window.installPWA = async function() {
-            if (eventInstallTertunda) {
-                eventInstallTertunda.prompt();
-                await eventInstallTertunda.userChoice;
-                eventInstallTertunda = null;
-                const tombolInstall = document.getElementById('pwa-install-btn');
-                if (tombolInstall) tombolInstall.style.display = 'none';
-            }
-        };
 
         window.togglePinParent = function() {
             const pinInput = document.getElementById('login-kode-siswa');
