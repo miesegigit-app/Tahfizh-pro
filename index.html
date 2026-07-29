@@ -368,7 +368,7 @@
         .dashboard-container { max-width: 600px; margin: 0 auto; padding: 20px 16px calc(var(--bottom-nav-height) + 20px); display: flex; flex-direction: column; gap: 20px; min-height: 100vh; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--bottom-nav-height); background: var(--bg-surface); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; z-index: 100; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); padding-bottom: env(safe-area-inset-bottom); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--text-light); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; height: 100%; -webkit-tap-highlight-color: transparent; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--text-light); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; height: 100%; -webkit-tap-highlight-color: transparent; position: relative; }
         .nav-item:hover { color: var(--text-muted); }
         .nav-item.active { color: var(--primary); }
         .nav-item.active i { transform: scale(1.15); stroke-width: 2.5; }
@@ -391,7 +391,7 @@
             padding: 16px; 
             display: none; 
             align-items: flex-start; 
-            flex-direction: column; /* Modified to allow button below */
+            flex-direction: column; 
             gap: 12px; 
             box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.1), 0 4px 6px -4px rgba(239, 68, 68, 0.05);
             animation: slideDownGlass 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -614,7 +614,7 @@
                 </div>
             </div>
 
-            <!-- MODIFIED: Menambahkan Tombol Pembayaran Midtrans ke dalam Banner Tagihan -->
+            <!-- Menambahkan Tombol Pembayaran Midtrans ke dalam Banner Tagihan -->
             <div id="parent-billing-banner" class="billing-banner">
                 <div class="billing-content-wrapper">
                     <div style="background: rgba(239, 68, 68, 0.15); padding: 8px; border-radius: 50%; color: var(--danger); position: relative; z-index: 1;">
@@ -936,9 +936,8 @@
         </div>
     </div>
 
-    <!-- PWA Setup Script (Sinkronus/Standar untuk menangkap event lebih awal sebelum module load) -->
+    <!-- PWA Setup Script -->
     <script>
-        // Tangkap event instalasi sesegera mungkin di level window
         window.eventInstallTertunda = null;
 
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -965,7 +964,6 @@
             }
         };
 
-        // Inisialisasi Service Worker standar
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
@@ -980,7 +978,7 @@
         import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { collection, onSnapshot, query, doc, setDoc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // MENGATUR TAHUN DINAMIS PADA FOOTER SAAT HALAMAN DIMUAT
+        // MENGATUR TAHUN DINAMIS PADA FOOTER
         document.addEventListener('DOMContentLoaded', () => {
             const yearSpan = document.getElementById('dynamic-year');
             const yearSpanLock = document.getElementById('dynamic-year-lock');
@@ -989,26 +987,22 @@
             if (yearSpanLock) yearSpanLock.textContent = cYear;
         });
 
-        // =========================================================
-        // EKSEKUSI PENGECEKAN SAFETY NET (SaaS Tenant Router)
-        // =========================================================
+        // EKSEKUSI PENGECEKAN SAFETY NET
         if (window.SAAS_TENANT_MISSING) {
             document.getElementById('view-login').style.display = 'none';
             document.getElementById('safety-net-ui').style.display = 'flex';
         }
 
-        // Variabel Settings Global (Dengan Default State)
         window.appSettings = { 
             isTagihanAktif: true, 
             periodeTagihan: "Bulan Ini", 
             nominalTagihan: 5000, 
             nominalDenda: 2000, 
             isSholatModuleActive: true,
-            twibbonFrameUrl: null // Disiapkan untuk data dinamis dari developer/yayasan
+            twibbonFrameUrl: null 
         };
         window.unsubscribeSettings = null;
 
-        // Jadwal Sholat Statis Realtime (Estimasi WIB / Bandung)
         window.waktuSholatConfig = {
             subuh: '04:30',
             dzuhur: '12:00',
@@ -1087,7 +1081,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             if(window.lucide) window.lucide.createIcons();
             setGreeting();
-            // inisialisasiServiceWorker() telah dipindahkan ke script tag sinkronus di luar module
             pasangListenerSwipe();
             initTwibbonListeners();
             
@@ -1097,7 +1090,6 @@
                     if (docSnap.exists()) {
                         const data = docSnap.data();
 
-                        // HANDLER MAINTENANCE MODE
                         const maintenanceOverlay = document.getElementById('maintenance-overlay');
                         if (data.maintenanceMode === true) {
                             if (maintenanceOverlay) maintenanceOverlay.classList.add('active');
@@ -1105,7 +1097,6 @@
                             if (maintenanceOverlay) maintenanceOverlay.classList.remove('active');
                         }
                         
-                        // Menangani tautan WhatsApp CTA Sales Dinamis
                         if (data.salesWaNumber) {
                             const btnSales = document.getElementById('btn-cta-sales');
                             if (btnSales) {
@@ -1129,7 +1120,7 @@
         });
 
         // =========================================================
-        // LOGIKA INTEGRASI PEMBAYARAN MIDTRANS (CUSTOM UI & FETCH)
+        // LOGIKA INTEGRASI PEMBAYARAN MIDTRANS
         // =========================================================
         
         window.bukaModalPembayaran = function(status, data = null) {
@@ -1185,7 +1176,6 @@
         window.tutupModalPembayaran = function(reloadUi = false) {
             document.getElementById('modal-status-pembayaran').classList.remove('active');
             if(reloadUi && window.activeSiswaDocId) {
-                // Refresh data if success
                 const siswaAktif = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
                 if(siswaAktif) renderDasborOrangTua(siswaAktif);
             }
@@ -1202,18 +1192,14 @@
                 return;
             }
 
-            // Tampilkan UI Loading yang indah dan menenangkan
             window.bukaModalPembayaran('loading');
 
             try {
-                // [PENTING] Mengambil Snap Token dari Backend Server Anda (Firebase Cloud Functions / Node.js dll)
-                // Menggantikan pemanggilan langsung ke API Midtrans untuk menjaga kerahasiaan Server Key.
                 const backendEndpointUrl = 'https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/createMidtransTransaction';
-                
                 const payload = {
                     siswaId: siswa.docId,
                     nama: siswa.nama,
-                    email: "wali.murid@example.com", // Opsional
+                    email: "wali.murid@example.com", 
                     jumlahTagihan: infoTagihan.totalTagihan,
                     periode: infoTagihan.periode
                 };
@@ -1229,32 +1215,19 @@
                 }
 
                 const data = await response.json();
-                const snapToken = data.token; // Token didapat dari Backend Anda
+                const snapToken = data.token; 
 
-                // Sembunyikan loading, lalu eksekusi Snap Midtrans
                 document.getElementById('modal-status-pembayaran').classList.remove('active');
 
                 window.snap.pay(snapToken, {
-                    onSuccess: function(result){
-                        window.bukaModalPembayaran('success', result);
-                        // Catatan: Lakukan update status pembayaran via Webhook di Backend, bukan disini.
-                    },
-                    onPending: function(result){
-                        window.bukaModalPembayaran('pending', result);
-                    },
-                    onError: function(result){
-                        window.bukaModalPembayaran('error', result);
-                    },
-                    onClose: function(){
-                        window.tampilkanToast("Jendela pembayaran ditutup tanpa menyelesaikan transaksi.", true);
-                    }
+                    onSuccess: function(result){ window.bukaModalPembayaran('success', result); },
+                    onPending: function(result){ window.bukaModalPembayaran('pending', result); },
+                    onError: function(result){ window.bukaModalPembayaran('error', result); },
+                    onClose: function(){ window.tampilkanToast("Jendela pembayaran ditutup tanpa menyelesaikan transaksi.", true); }
                 });
 
             } catch (error) {
-                // Menangani error jika Backend belum di-deploy atau error koneksi
-                window.bukaModalPembayaran('error', { 
-                    status_message: error.message + " Pastikan Endpoint Cloud Function telah di-deploy dengan Server Key Midtrans." 
-                });
+                window.bukaModalPembayaran('error', { status_message: error.message + " Pastikan Endpoint Cloud Function telah di-deploy dengan Server Key Midtrans." });
             }
         };
 
@@ -1273,7 +1246,10 @@
             }, 300);
         };
 
-        window.switchTabParent = function(tabId, element, animasi = 'fade') {
+        // =========================================================
+        // LOGIKA PENYESUAIAN FITUR FEEDBACK SHOLAT GURU
+        // =========================================================
+        window.switchTabParent = async function(tabId, element, animasi = 'fade') {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active', 'slide-left', 'slide-right');
             });
@@ -1294,9 +1270,39 @@
             if(tabId === 'tab-analisis' && window.radarChartObj) {
                 setTimeout(() => { window.radarChartObj.resize(); }, 50);
             }
+
+            // Fitur Sinkronisasi "Read Status" Pesan dari Guru 
             if(tabId === 'tab-pesan') {
                 const chatContainer = document.getElementById('chat-history-container');
                 if(chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                if (window.activeSiswaDocId) {
+                    const siswaAktif = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
+                    if (siswaAktif && siswaAktif.bukuPenghubung) {
+                        let hasUnread = false;
+                        const updatedChat = siswaAktif.bukuPenghubung.map(msg => {
+                            // Tandai pesan dari guru menjadi Terbaca ketika tab pesan dibuka
+                            if (msg.sender === 'guru' && msg.read === false) {
+                                hasUnread = true;
+                                return { ...msg, read: true };
+                            }
+                            return msg;
+                        });
+                        
+                        if (hasUnread) {
+                            try {
+                                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', siswaAktif.docId), { bukuPenghubung: updatedChat });
+                                
+                                // Hilangkan badge notifikasi setelah di read
+                                const navPesan = document.querySelector('.nav-item[onclick*="tab-pesan"]');
+                                if (navPesan) {
+                                    const badge = navPesan.querySelector('.nav-badge');
+                                    if(badge) badge.remove();
+                                }
+                            } catch(e) {}
+                        }
+                    }
+                }
             }
         };
 
@@ -1385,29 +1391,22 @@
         });
 
         function mulaiListenData() {
-            // MENDENGARKAN PENGATURAN GLOBAL SECARA REAL-TIME
             const dbSettings = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
             if (window.unsubscribeSettings) window.unsubscribeSettings();
             window.unsubscribeSettings = onSnapshot(dbSettings, (docSnap) => {
                 if (docSnap.exists()) {
                     window.appSettings = { ...window.appSettings, ...docSnap.data() };
-                    
-                    // Trigger UI Update jika siswa sedang aktif
                     if (window.activeSiswaDocId) {
                         const siswaAktif = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
                         if (siswaAktif) renderDasborOrangTua(siswaAktif);
                     }
-                    
                     const sholatContainer = document.getElementById('sholat-module-container');
                     if (sholatContainer) {
                         sholatContainer.style.display = window.appSettings.isSholatModuleActive !== false ? 'block' : 'none';
                     }
                 }
-            }, (error) => {
-                console.error("Gagal memuat pengaturan: ", error);
-            });
+            }, (error) => { console.error("Gagal memuat pengaturan: ", error); });
 
-            // MENDENGARKAN DATA SISWA
             const dbStudents = collection(db, 'artifacts', appId, 'public', 'data', 'students');
             if (window.unsubscribeSiswa) window.unsubscribeSiswa();
             window.unsubscribeSiswa = onSnapshot(dbStudents, (snapshot) => {
@@ -1419,11 +1418,8 @@
                     const siswaUpdated = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
                     if (siswaUpdated) renderDasborOrangTua(siswaUpdated);
                 }
-            }, (error) => {
-                console.error("Gagal memuat data santri: ", error);
-            });
+            }, (error) => { console.error("Gagal memuat data santri: ", error); });
 
-            // MENDENGARKAN DATA KELAS
             const dbClasses = collection(db, 'artifacts', appId, 'public', 'data', 'classes');
             if (window.unsubscribeKelas) window.unsubscribeKelas();
             window.unsubscribeKelas = onSnapshot(dbClasses, (snapshot) => {
@@ -1438,9 +1434,7 @@
                         if (el) el.textContent = klsObj ? (klsObj.nama_kelas || klsObj.name) : "Kelas Aktif";
                     }
                 }
-            }, (error) => {
-                console.error("Gagal memuat data kelas: ", error);
-            });
+            }, (error) => { console.error("Gagal memuat data kelas: ", error); });
         }
 
         async function periksaSesiLoginOtomatis(uid) {
@@ -1489,24 +1483,13 @@
             document.getElementById('view-login').classList.add('active');
             document.getElementById('login-kode-siswa').value = '';
             
-            if(window.unsubscribeSholat) {
-                window.unsubscribeSholat();
-                window.unsubscribeSholat = null;
-            }
-            if(window.unsubscribeSettings) {
-                window.unsubscribeSettings();
-                window.unsubscribeSettings = null;
-            }
+            if(window.unsubscribeSholat) { window.unsubscribeSholat(); window.unsubscribeSholat = null; }
+            if(window.unsubscribeSettings) { window.unsubscribeSettings(); window.unsubscribeSettings = null; }
         };
 
         window.loginOrangTua = async function() {
-            if (window.SAAS_TENANT_MISSING) {
-                return window.tampilkanToast("Akses dikunci. Gunakan tautan khusus sekolah Anda.", true);
-            }
-
-            if (!isDataReady && semuaSiswa.length === 0) {
-                return window.tampilkanToast("Menyinkronkan data dengan server. Klik lagi dalam 2 detik...", false);
-            }
+            if (window.SAAS_TENANT_MISSING) return window.tampilkanToast("Akses dikunci. Gunakan tautan khusus sekolah Anda.", true);
+            if (!isDataReady && semuaSiswa.length === 0) return window.tampilkanToast("Menyinkronkan data dengan server. Klik lagi dalam 2 detik...", false);
 
             const kode = document.getElementById('login-kode-siswa').value.trim();
             if (!kode) return window.tampilkanToast("ID Siswa wajib diisi!", true);
@@ -1526,24 +1509,16 @@
                 document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
                 document.getElementById('view-parent').classList.add('active');
                 window.switchTabParent('tab-beranda', document.querySelector('.nav-item'));
-            } catch(e) {
-                window.tampilkanToast("Terjadi kesalahan saat memuat data.", true);
-            }
+            } catch(e) { window.tampilkanToast("Terjadi kesalahan saat memuat data.", true); }
         };
 
         function renderSiblingSelector(siswaAktif) {
             const selectorContainer = document.getElementById('multi-child-selector');
             const chipsContainer = document.getElementById('sibling-chips-container');
 
-            if (!siswaAktif.waOrtu || siswaAktif.waOrtu.trim() === '') {
-                selectorContainer.style.display = 'none';
-                return;
-            }
+            if (!siswaAktif.waOrtu || siswaAktif.waOrtu.trim() === '') { selectorContainer.style.display = 'none'; return; }
             const siblings = semuaSiswa.filter(s => s.waOrtu === siswaAktif.waOrtu);
-            if (siblings.length <= 1) {
-                selectorContainer.style.display = 'none';
-                return;
-            }
+            if (siblings.length <= 1) { selectorContainer.style.display = 'none'; return; }
 
             selectorContainer.style.display = 'block';
             chipsContainer.innerHTML = siblings.map(s => {
@@ -1594,10 +1569,7 @@
         }
 
         function listenSholatData(siswaId) {
-            if (window.unsubscribeSholat) {
-                window.unsubscribeSholat();
-                window.unsubscribeSholat = null;
-            }
+            if (window.unsubscribeSholat) { window.unsubscribeSholat(); window.unsubscribeSholat = null; }
             
             const dateStr = getTodayDateString();
             const docId = `${siswaId}_${dateStr}`;
@@ -1606,15 +1578,12 @@
             window.unsubscribeSholat = onSnapshot(sholatRef, (docSnap) => {
                 if (docSnap.exists()) {
                     window.currentSholatData = docSnap.data();
-                    
                     ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'].forEach(w => {
                         let val = window.currentSholatData[w];
                         if (val === true || val === 'sudah') window.currentSholatData[w] = 'berjamaah';
                         else if (val === false || val === 'belum') window.currentSholatData[w] = 'tidak';
                     });
-                } else {
-                    window.currentSholatData = { subuh: null, dzuhur: null, ashar: null, maghrib: null, isya: null };
-                }
+                } else { window.currentSholatData = { subuh: null, dzuhur: null, ashar: null, maghrib: null, isya: null }; }
                 
                 renderSholatUI();
                 cekReminderSholat(window.currentSholatData, siswaId, dateStr);
@@ -1638,15 +1607,12 @@
             if (unfilledPassed.length > 0) {
                 const teksEl = document.getElementById('teks-reminder-sholat');
                 teksEl.innerHTML = `Jadwal sholat <strong>${unfilledPassed.join(', ')}</strong> sudah lewat waktunya namun belum dilaporkan pelaksanaannya. Mohon lengkapi catatan ananda sekarang.`;
-                
                 document.getElementById('modal-reminder-sholat').classList.add('active');
                 sessionStorage.setItem(sessionKey, 'true');
             }
         }
 
-        window.tutupModalReminder = function() {
-            document.getElementById('modal-reminder-sholat').classList.remove('active');
-        };
+        window.tutupModalReminder = function() { document.getElementById('modal-reminder-sholat').classList.remove('active'); };
 
         window.tindakLanjutReminder = function() {
             window.tutupModalReminder();
@@ -1655,19 +1621,14 @@
                 if (sholatCard) {
                     sholatCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     sholatCard.classList.add('highlight-pulse');
-                    setTimeout(() => {
-                        sholatCard.classList.remove('highlight-pulse');
-                    }, 2500); 
+                    setTimeout(() => { sholatCard.classList.remove('highlight-pulse'); }, 2500); 
                 }
             }, 300);
         };
 
         function renderSholatUI() {
             const moduleContainer = document.getElementById('sholat-module-container');
-            if (window.appSettings.isSholatModuleActive === false) {
-                moduleContainer.style.display = 'none';
-                return;
-            }
+            if (window.appSettings.isSholatModuleActive === false) { moduleContainer.style.display = 'none'; return; }
             moduleContainer.style.display = 'block';
             
             const dateStr = getTodayDateString();
@@ -1720,9 +1681,7 @@
             document.getElementById('label-waktu-sholat').textContent = waktu;
             
             const currentStatus = window.currentSholatData[waktu];
-            document.querySelectorAll('.sholat-option-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            document.querySelectorAll('.sholat-option-btn').forEach(btn => { btn.classList.remove('active'); });
 
             if(currentStatus) {
                 const activeBtn = document.querySelector(`.opt-${currentStatus}`);
@@ -1732,9 +1691,7 @@
             document.getElementById('modal-opsi-sholat').classList.add('active');
         };
 
-        window.tutupModalSholat = function() {
-            document.getElementById('modal-opsi-sholat').classList.remove('active');
-        };
+        window.tutupModalSholat = function() { document.getElementById('modal-opsi-sholat').classList.remove('active'); };
 
         window.simpanStatusSholat = async function(statusPilihan) {
             if (!window.activeSiswaDocId) return;
@@ -1757,12 +1714,7 @@
             const sholatRef = doc(db, 'artifacts', appId, 'public', 'data', 'sholat_records', docId);
 
             try {
-                await setDoc(sholatRef, {
-                    [waktu]: statusFinal,
-                    siswaId: window.activeSiswaDocId,
-                    date: dateStr,
-                    updatedAt: Date.now()
-                }, { merge: true });
+                await setDoc(sholatRef, { [waktu]: statusFinal, siswaId: window.activeSiswaDocId, date: dateStr, updatedAt: Date.now() }, { merge: true });
             } catch (error) {
                 window.tampilkanToast("Gagal menyimpan data sholat.", true);
                 listenSholatData(window.activeSiswaDocId); 
@@ -1817,9 +1769,7 @@
 
             let targetAyat = new Set();
             (misiAktif.rentangAyat || []).forEach(rentang => {
-                for (let a = rentang.dariAyat; a <= rentang.sampaiAyat; a++) {
-                    targetAyat.add(`${rentang.surah}:${a}`);
-                }
+                for (let a = rentang.dariAyat; a <= rentang.sampaiAyat; a++) { targetAyat.add(`${rentang.surah}:${a}`); }
             });
 
             let match = 0;
@@ -1842,28 +1792,22 @@
                     }
 
                     const canvas = document.createElement('canvas');
-                    canvas.width = 1080;
-                    canvas.height = 1080;
+                    canvas.width = 1080; canvas.height = 1080;
                     const ctx = canvas.getContext('2d');
 
                     ctx.fillStyle = '#1E293B';
                     ctx.fillRect(0, 0, 1080, 1080);
-
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillStyle = '#334155';
                     ctx.font = 'bold 80px Montserrat, sans-serif';
                     ctx.fillText('TAHFIZHPRO', 540, 500);
 
-                    // ==========================================
-                    // PERUBAHAN: PENGAMBILAN FRAME DINAMIS DENGAN CORS
-                    // ==========================================
                     const frame = new Image();
-                    frame.crossOrigin = "anonymous"; // WAJIB untuk Cloudinary / Domain Eksternal
+                    frame.crossOrigin = "anonymous"; 
                     
                     frame.onload = () => {
                         ctx.drawImage(frame, 0, 0, 1080, 1080);
-
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle'; 
                         
@@ -1871,44 +1815,27 @@
                             let fontSize = maxFontSize;
                             ctx.font = `800 ${fontSize}px ${fontFace}`;
                             while (ctx.measureText(text).width > maxWidth && fontSize > 16) {
-                                fontSize -= 1;
-                                ctx.font = `800 ${fontSize}px ${fontFace}`;
+                                fontSize -= 1; ctx.font = `800 ${fontSize}px ${fontFace}`;
                             }
                             ctx.fillText(text, x, y, maxWidth);
                         }
                         
-                        // Render Nama
-                        ctx.shadowColor = 'rgba(0,0,0,0.7)';
-                        ctx.shadowBlur = 12;
-                        ctx.shadowOffsetX = 0;
-                        ctx.shadowOffsetY = 4;
-                        ctx.fillStyle = '#FFFFFF';
+                        ctx.shadowColor = 'rgba(0,0,0,0.7)'; ctx.shadowBlur = 12; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4; ctx.fillStyle = '#FFFFFF';
                         fillTextToFit(ctx, namaAnak.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
                         
-                        // Render Nama Kelas
                         if (kelasNama) {
-                            ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                            ctx.shadowBlur = 8;
-                            ctx.shadowOffsetX = 0;
-                            ctx.shadowOffsetY = 2;
-                            ctx.fillStyle = '#E2E8F0'; 
+                            ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 8; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 2; ctx.fillStyle = '#E2E8F0'; 
                             fillTextToFit(ctx, kelasNama.toUpperCase(), 540, 805, 24, 400, '"Inter", sans-serif');
                         }
 
-                        // Render Misi/Capaian
                         let teksMisiBersih = namaMisi || '';
                         teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
                         teksMisiBersih = `Lulus: ${teksMisiBersih}`;
                         
-                        ctx.shadowColor = 'rgba(255,255,255,0.8)';
-                        ctx.shadowBlur = 6;
-                        ctx.shadowOffsetX = 0;
-                        ctx.shadowOffsetY = 0;
-                        ctx.fillStyle = '#D97706'; 
+                        ctx.shadowColor = 'rgba(255,255,255,0.8)'; ctx.shadowBlur = 6; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; ctx.fillStyle = '#D97706'; 
                         fillTextToFit(ctx, teksMisiBersih, 540, 860, 34, 450, '"Montserrat", sans-serif');
                         
-                        ctx.shadowColor = 'transparent';
-                        ctx.shadowBlur = 0;
+                        ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
 
                         const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
                         const link = document.createElement('a');
@@ -1919,13 +1846,9 @@
                         window.tampilkanToast("E-Poster berhasil diunduh ke perangkat Anda!");
                     };
                     frame.onerror = () => { window.tampilkanToast("Gagal memuat frame gambar dari server.", true); };
-                    
-                    // Gunakan URL dari Database (Settings Global) atau fallback lokal
                     frame.src = window.appSettings.twibbonFrameUrl || 'frame.png';
                     
-                } catch (err) {
-                    window.tampilkanToast("Gagal memproses poster.", true);
-                }
+                } catch (err) { window.tampilkanToast("Gagal memproses poster.", true); }
             }, 800);
         };
 
@@ -1951,23 +1874,16 @@
             twibbonState.imgUser = null;
             document.getElementById('modal-studio-twibbon').classList.add('active');
             
-            // ==========================================
-            // PERUBAHAN: PENGAMBILAN FRAME DINAMIS DENGAN CORS (STUDIO)
-            // ==========================================
             const urlFrameTerbaru = window.appSettings.twibbonFrameUrl || 'frame.png';
-            
-            // Re-inisialisasi gambar jika URL berubah (Cegah stale cache jika Dev mengganti URL)
             if(!twibbonState.imgFrame || twibbonState.imgFrame.dataset.source !== urlFrameTerbaru) {
                 twibbonState.imgFrame = new Image();
-                twibbonState.imgFrame.crossOrigin = "anonymous"; // WAJIB untuk Cloudinary
+                twibbonState.imgFrame.crossOrigin = "anonymous";
                 twibbonState.imgFrame.dataset.source = urlFrameTerbaru;
                 twibbonState.imgFrame.src = urlFrameTerbaru;
             }
         };
 
-        window.tutupModalTwibbon = function() {
-            document.getElementById('modal-studio-twibbon').classList.remove('active');
-        };
+        window.tutupModalTwibbon = function() { document.getElementById('modal-studio-twibbon').classList.remove('active'); };
 
         window.handleFotoTwibbon = function(event) {
             const file = event.target.files[0];
@@ -1984,8 +1900,7 @@
         function setupInitialTwibbon() {
             const canvas = document.getElementById('twibbon-canvas');
             const img = twibbonState.imgUser;
-            const scaleX = 1080 / img.width;
-            const scaleY = 1080 / img.height;
+            const scaleX = 1080 / img.width; const scaleY = 1080 / img.height;
             twibbonState.baseScale = Math.max(scaleX, scaleY);
             twibbonState.scaleMultiplier = 1;
             twibbonState.x = (1080 - (img.width * twibbonState.baseScale)) / 2;
@@ -1993,8 +1908,7 @@
             document.getElementById('twibbon-placeholder').style.display = 'none';
             document.getElementById('twibbon-controls').style.display = 'block';
             document.getElementById('btn-unduh-twibbon').style.display = 'flex';
-            canvas.style.display = 'block';
-            document.getElementById('twibbon-zoom').value = 1;
+            canvas.style.display = 'block'; document.getElementById('twibbon-zoom').value = 1;
             renderInteractiveTwibbon();
         }
 
@@ -2003,8 +1917,7 @@
             const slider = document.getElementById('twibbon-zoom');
 
             slider.addEventListener('input', (e) => {
-                const newMult = parseFloat(e.target.value);
-                const center1080 = 540;
+                const newMult = parseFloat(e.target.value); const center1080 = 540;
                 const relX = (center1080 - twibbonState.x) / twibbonState.scaleMultiplier;
                 const relY = (center1080 - twibbonState.y) / twibbonState.scaleMultiplier;
                 twibbonState.scaleMultiplier = newMult;
@@ -2017,101 +1930,69 @@
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
+                const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;
                 return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
             }
 
             const startDrag = (e) => {
                 if(!twibbonState.imgUser) return;
-                e.preventDefault();
-                twibbonState.isDragging = true;
+                e.preventDefault(); twibbonState.isDragging = true;
                 const pos = getPointerPos(e);
-                twibbonState.startX = pos.x - twibbonState.x;
-                twibbonState.startY = pos.y - twibbonState.y;
+                twibbonState.startX = pos.x - twibbonState.x; twibbonState.startY = pos.y - twibbonState.y;
             };
 
             const doDrag = (e) => {
                 if (!twibbonState.isDragging || !twibbonState.imgUser) return;
                 e.preventDefault();
                 const pos = getPointerPos(e);
-                twibbonState.x = pos.x - twibbonState.startX;
-                twibbonState.y = pos.y - twibbonState.startY;
+                twibbonState.x = pos.x - twibbonState.startX; twibbonState.y = pos.y - twibbonState.startY;
                 renderInteractiveTwibbon();
             };
 
             const endDrag = () => { twibbonState.isDragging = false; };
-            canvas.addEventListener('mousedown', startDrag);
-            canvas.addEventListener('mousemove', doDrag);
-            window.addEventListener('mouseup', endDrag);
-            canvas.addEventListener('touchstart', startDrag, {passive: false});
-            canvas.addEventListener('touchmove', doDrag, {passive: false});
-            window.addEventListener('touchend', endDrag);
+            canvas.addEventListener('mousedown', startDrag); canvas.addEventListener('mousemove', doDrag); window.addEventListener('mouseup', endDrag);
+            canvas.addEventListener('touchstart', startDrag, {passive: false}); canvas.addEventListener('touchmove', doDrag, {passive: false}); window.addEventListener('touchend', endDrag);
         }
 
         function renderInteractiveTwibbon() {
-            const canvas = document.getElementById('twibbon-canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = "#E2E8F0";
-            ctx.fillRect(0, 0, 1080, 1080);
+            const canvas = document.getElementById('twibbon-canvas'); const ctx = canvas.getContext('2d');
+            ctx.fillStyle = "#E2E8F0"; ctx.fillRect(0, 0, 1080, 1080);
             
             if (twibbonState.imgUser) {
                 const currentScale = twibbonState.baseScale * twibbonState.scaleMultiplier;
-                const dw = twibbonState.imgUser.width * currentScale;
-                const dh = twibbonState.imgUser.height * currentScale;
-                ctx.drawImage(twibbonState.imgUser, twibbonState.x, twibbonState.y, dw, dh);
+                ctx.drawImage(twibbonState.imgUser, twibbonState.x, twibbonState.y, twibbonState.imgUser.width * currentScale, twibbonState.imgUser.height * currentScale);
             }
-            
             if (twibbonState.imgFrame) ctx.drawImage(twibbonState.imgFrame, 0, 0, 1080, 1080);
             
             const namaAnak = document.getElementById('twibbon-nama-anak').value || 'Nama Ananda';
             const namaMisiRaw = document.getElementById('twibbon-nama-misi').value || 'Pencapaian';
             const kelasNama = document.getElementById('twibbon-nama-kelas').value || '';
             
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle'; 
-            
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; 
             function fillTextToFit(ctx, text, x, y, maxFontSize, maxWidth, fontFace) {
-                let fontSize = maxFontSize;
-                ctx.font = `800 ${fontSize}px ${fontFace}`;
+                let fontSize = maxFontSize; ctx.font = `800 ${fontSize}px ${fontFace}`;
                 while (ctx.measureText(text).width > maxWidth && fontSize > 16) {
                     fontSize -= 1; ctx.font = `800 ${fontSize}px ${fontFace}`;
                 }
                 ctx.fillText(text, x, y, maxWidth);
             }
             
-            // Render Nama
-            ctx.shadowColor = 'rgba(0,0,0,0.8)'; 
-            ctx.shadowBlur = 12; 
-            ctx.shadowOffsetX = 0; 
-            ctx.shadowOffsetY = 4; 
-            ctx.fillStyle = '#FFFFFF';
+            ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 12; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4; ctx.fillStyle = '#FFFFFF';
             fillTextToFit(ctx, namaAnak.toUpperCase(), 540, 755, 52, 420, '"Cinzel", serif');
 
-            // Render Kelas
             if (kelasNama) {
-                ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                ctx.shadowBlur = 8;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 2;
-                ctx.fillStyle = '#E2E8F0'; 
+                ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 8; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 2; ctx.fillStyle = '#E2E8F0'; 
                 fillTextToFit(ctx, kelasNama.toUpperCase(), 540, 805, 24, 400, '"Inter", sans-serif');
             }
 
-            // Render Misi
             let teksMisiBersih = namaMisiRaw || 'Pencapaian';
             teksMisiBersih = teksMisiBersih.replace(/^(Lulus:\s*|Lulus Misi:\s*)+/gi, '').trim();
             teksMisiBersih = `Lulus: ${teksMisiBersih}`;
             
-            ctx.shadowColor = 'rgba(255,255,255,0.7)'; 
-            ctx.shadowBlur = 6; 
-            ctx.shadowOffsetX = 0; 
-            ctx.shadowOffsetY = 0; 
-            ctx.fillStyle = '#D97706'; 
+            ctx.shadowColor = 'rgba(255,255,255,0.7)'; ctx.shadowBlur = 6; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; ctx.fillStyle = '#D97706'; 
             fillTextToFit(ctx, teksMisiBersih, 540, 860, 34, 450, '"Montserrat", sans-serif');
             
-            ctx.shadowColor = 'transparent'; 
-            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
         }
 
         window.unduhTwibbonOrtu = function() {
@@ -2121,8 +2002,7 @@
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
                 const link = document.createElement('a');
                 link.download = `Twibbon-${namaAnak.replace(/\s+/g, '-')}-${Date.now()}.jpg`;
-                link.href = dataUrl;
-                link.click();
+                link.href = dataUrl; link.click();
                 window.tampilkanToast("Gambar berhasil disimpan ke Galeri HP!");
                 setTimeout(() => window.tutupModalTwibbon(), 1500);
             } catch(e) { window.tampilkanToast("Gagal menyimpan gambar.", true); }
@@ -2139,9 +2019,7 @@
             if (umurLencana < 86400000) {
                 document.getElementById('notif-lencana-teks').textContent = `Ananda baru saja meraih lencana: "${lencanaTerbaru.namaLencana}". Barakallah!`;
                 notifBox.style.display = 'flex';
-            } else {
-                notifBox.style.display = 'none';
-            }
+            } else { notifBox.style.display = 'none'; }
         }
 
         function renderGaleriLencana(siswa) {
@@ -2149,8 +2027,7 @@
             const totalTeks = document.getElementById('teks-total-lencana');
             const lencanaSiswa = siswa.lencana || [];
             const totalAyatDihafal = hitungProgresAlQuran(siswa.riwayat || []);
-            let totalDiraih = 0;
-            container.innerHTML = '';
+            let totalDiraih = 0; container.innerHTML = '';
 
             DAFTAR_LENCANA_PRESET.forEach(preset => {
                 const acquired = lencanaSiswa.find(l => l.id === preset.id);
@@ -2160,9 +2037,7 @@
                 let dateHtml = ''; let btnHtml = '';
                 if (isUnlocked) {
                     let dateStr = "Tercapai";
-                    if (acquired && acquired.tanggal) {
-                        dateStr = new Date(acquired.tanggal).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
-                    }
+                    if (acquired && acquired.tanggal) { dateStr = new Date(acquired.tanggal).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' }); }
                     dateHtml = `<div class="trophy-date">${dateStr}</div>`;
                     btnHtml = `<button class="btn-twibbon-mini" onclick="window.bukaModalTwibbon('${siswa.nama}', '${preset.nama}')"><i data-lucide="image" style="width:14px;"></i> Buat Twibbon</button>`;
                 } else {
@@ -2274,28 +2149,22 @@
             riwayat.forEach(r => {
                 try {
                     let valT = 0, valK = 0;
-                    
-                    // Parse Tajwid
-                    if (!isNaN(parseInt(r.tajwid))) {
-                        valT = parseInt(r.tajwid);
-                    } else {
+                    if (!isNaN(parseInt(r.tajwid))) { valT = parseInt(r.tajwid); } 
+                    else {
                         const strT = r.tajwid || '';
                         if (strT.includes('Sangat Baik')) valT = 100;
                         else if (strT.includes('Baik')) valT = 80; else valT = 60;
                     }
 
-                    // Parse Kelancaran
-                    if (!isNaN(parseInt(r.kelancaran))) {
-                        valK = parseInt(r.kelancaran);
-                    } else {
+                    if (!isNaN(parseInt(r.kelancaran))) { valK = parseInt(r.kelancaran); } 
+                    else {
                         const strK = r.kelancaran || '';
                         if (strK.includes('Mumtaz')) valK = 100;
                         else if (strK.includes('Jayyid Jiddan')) valK = 85;
                         else if (strK.includes('Jayyid')) valK = 75; else valK = 60;
                     }
                     
-                    totalT += valT;
-                    totalK += valK;
+                    totalT += valT; totalK += valK;
 
                     const rBulan = new Date(r.timestamp).toISOString().slice(0, 7);
                     if (rBulan === thnBulanIni) setoranBulanIni++;
@@ -2385,7 +2254,6 @@
             const riwayat = siswa.riwayat || [];
             const totalAyat = hitungProgresAlQuran(riwayat);
             
-            // 1. Tangani Kondisi Kurang Data (Learning State) agar UI Tetap Konsisten dan Muncul
             if (riwayat.length < 3 || totalAyat === 0) { 
                 let sisaButuh = 3 - riwayat.length;
                 if (sisaButuh < 1) sisaButuh = 1;
@@ -2410,7 +2278,6 @@
                 return; 
             }
 
-            // 2. Jika Data Cukup, Lakukan Perhitungan Normal
             cont.style.display = 'flex';
             const sortedRiwayat = [...riwayat].sort((a,b) => a.timestamp - b.timestamp);
             const firstDate = new Date(sortedRiwayat[0].timestamp);
@@ -2419,9 +2286,8 @@
             let monthsDiff = (lastDate.getFullYear() - firstDate.getFullYear()) * 12 + (lastDate.getMonth() - firstDate.getMonth());
             if(monthsDiff < 1) monthsDiff = 1; 
 
-            // Intensitas (ayat per bulan/hari)
             const ayatPerMonth = Math.round(totalAyat / monthsDiff);
-            const kecepatanPerHari = Math.max(Math.round(ayatPerMonth / 30), 1); // minimal 1 ayat
+            const kecepatanPerHari = Math.max(Math.round(ayatPerMonth / 30), 1); 
 
             let targetName = "Khatam Al-Quran";
             let ayatSisa = 6236 - totalAyat;
@@ -2450,7 +2316,6 @@
             if(m.d < 60) aiText += " <em>Tingkatkan kedisiplinan setoran agar target tercapai lebih cepat!</em>";
             else if (m.d > 85) aiText += " <em>MasyaAllah, ritme hafalan sangat istiqomah. Prediksi ini bisa tercapai lebih cepat!</em>";
 
-            // 3. Render Card yang Cantik dan Estetik
             cont.innerHTML = `
                 <div class="ai-forecast-header">
                     <div class="ai-icon-wrapper"><i data-lucide="zap" style="width: 22px;"></i></div>
@@ -2566,7 +2431,7 @@
             const siswaAktif = semuaSiswa.find(s => s.docId === window.activeSiswaDocId);
             if(!siswaAktif) return;
 
-            const pesanBaru = { id: `msg_${Date.now()}`, sender: 'ortu', text: teksPesan, timestamp: Date.now() };
+            const pesanBaru = { id: `msg_${Date.now()}`, sender: 'ortu', text: teksPesan, timestamp: Date.now(), read: false };
             const chatLama = siswaAktif.bukuPenghubung || [];
             const chatBaru = [...chatLama, pesanBaru];
 
@@ -2576,6 +2441,9 @@
             } catch(e) { window.tampilkanToast("Gagal mengirim pesan.", true); }
         };
 
+        // ==========================================
+        // RENDER CHAT BUKU PENGHUBUNG & SHOLAT CARD
+        // ==========================================
         function renderChatBukuPenghubung(chatArray) {
             const chatContainer = document.getElementById('chat-history-container');
             if(!chatArray || chatArray.length === 0) {
@@ -2584,19 +2452,37 @@
                 return;
             }
             const sortedChat = [...chatArray].sort((a,b) => a.timestamp - b.timestamp);
+            
             chatContainer.innerHTML = sortedChat.map(msg => {
                 const dateObj = new Date(msg.timestamp);
                 const wktFormat = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
                 const isOrtu = msg.sender === 'ortu';
                 const alignClass = isOrtu ? 'ortu' : 'guru';
                 const metaText = isOrtu ? `Anda • ${wktFormat}` : `Pengajar • ${wktFormat}`;
+                
+                let messageText = msg.text || '';
+                let customBubbleStyle = "";
+                let iconHtml = "";
+
+                // Tangkap Tag Teguran Sholat dari Portal Guru
+                if (!isOrtu && messageText.includes('[Info Mutaba\'ah Sholat]')) {
+                    messageText = messageText.replace(/\*?\[Info Mutaba'ah Sholat\]\*?\n?/g, '');
+                    customBubbleStyle = "background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E; border-radius: 12px 12px 12px 2px;";
+                    iconHtml = `<div style="display: flex; align-items: center; gap: 6px; font-weight: 800; color: #D97706; margin-bottom: 6px; font-size: 12px; border-bottom: 1px dashed #FDE68A; padding-bottom: 6px;"><i data-lucide="alert-circle" style="width: 14px;"></i> Evaluasi Sholat Ananda</div>`;
+                }
+
                 return `
                     <div class="chat-row ${alignClass}">
-                        <div class="chat-bubble"><p>${msg.text.replace(/\n/g, '<br>')}</p></div>
+                        <div class="chat-bubble" ${customBubbleStyle ? `style="${customBubbleStyle}"` : ''}>
+                            ${iconHtml}
+                            <p style="margin: 0;">${messageText.replace(/\n/g, '<br>')}</p>
+                        </div>
                         <div class="chat-meta">${metaText}</div>
                     </div>
                 `;
             }).join('');
+            
+            if(window.lucide) window.lucide.createIcons();
             setTimeout(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }, 100);
         }
 
@@ -2648,7 +2534,6 @@
                     if(infoTagihan.jumlahBulan > 1) pPeriode.innerHTML = `Administrasi mutaba'ah tertunggak selama <strong>${infoTagihan.jumlahBulan} Bulan</strong> (Hingga ${infoTagihan.periode}). Mohon segera diselesaikan.`;
                     else pPeriode.innerHTML = `Administrasi mutaba'ah periode <strong>${infoTagihan.periode}</strong> belum diselesaikan.`;
                 }
-                
                 if(pNominal) pNominal.textContent = `Rp ${infoTagihan.totalTagihan.toLocaleString('id-ID')}`;
 
                 if(pDenda) {
@@ -2673,6 +2558,18 @@
             cekNotifikasiLencanaBaru(siswa);
             renderRadarChart(siswa, semuaSiswaKelas, window.activeTimeframe);
             renderChatBukuPenghubung(siswa.bukuPenghubung);
+
+            // Tampilkan Notifikasi Merah jika ada pesan Guru belum dibaca
+            const unreadGuruCount = (siswa.bukuPenghubung || []).filter(m => m.sender === 'guru' && !m.read).length;
+            const navPesan = document.querySelector('.nav-item[onclick*="tab-pesan"]');
+            if (navPesan) {
+                let badge = navPesan.querySelector('.nav-badge');
+                if (unreadGuruCount > 0) {
+                    if (!badge) { navPesan.innerHTML += `<div class="nav-badge" style="position:absolute; top:8px; right:calc(50% - 16px); width:10px; height:10px; background:var(--danger); border-radius:50%; border:2px solid var(--bg-surface);"></div>`; }
+                } else {
+                    if (badge) badge.remove();
+                }
+            }
 
             const totalAyatDihafal = hitungProgresAlQuran(siswa.riwayat || []); 
             const persen = (totalAyatDihafal / TOTAL_AYAT_ALQURAN) * 100;
