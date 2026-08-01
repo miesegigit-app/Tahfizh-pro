@@ -1122,7 +1122,6 @@
         // =========================================================
         // LOGIKA INTEGRASI PEMBAYARAN MIDTRANS
         // =========================================================
-        
         window.bukaModalPembayaran = function(status, data = null) {
             const modal = document.getElementById('modal-status-pembayaran');
             const konten = document.getElementById('konten-status-pembayaran');
@@ -2441,9 +2440,6 @@
             } catch(e) { window.tampilkanToast("Gagal mengirim pesan.", true); }
         };
 
-        // ==========================================
-        // RENDER CHAT BUKU PENGHUBUNG & SHOLAT CARD
-        // ==========================================
         function renderChatBukuPenghubung(chatArray) {
             const chatContainer = document.getElementById('chat-history-container');
             if(!chatArray || chatArray.length === 0) {
@@ -2489,16 +2485,30 @@
         function kalkulasiTagihanDinamis(siswa) {
             const nominalPokok = window.appSettings.nominalTagihan || 5000;
             const periodeGlobal = window.appSettings.periodeTagihan || "Bulan Ini";
-            let bulanTertunggak = 1; let totalDenda = 0; let teksDenda = "";
+            
+            // Ambil data aktual dari database hasil hitungan Developer Console
+            let bulanTertunggak = siswa.bulanTunggakan ? parseInt(siswa.bulanTunggakan) : 1;
+            
+            // PRIORITAS UTAMA: Gunakan akumulasiTunggakan dari database langsung
+            let totalTagihan = siswa.akumulasiTunggakan !== undefined ? parseFloat(siswa.akumulasiTunggakan) : (bulanTertunggak * nominalPokok);
+                               
+            let totalDenda = 0; 
+            let teksDenda = "";
 
-            if (siswa.bulanTunggakan && parseInt(siswa.bulanTunggakan) > 1) {
-                bulanTertunggak = parseInt(siswa.bulanTunggakan);
+            // UI Detail (Visual) untuk menampilkan denda
+            if (bulanTertunggak > 1) {
                 const nominalDendaPerBulan = window.appSettings.nominalDenda || 2000;
                 totalDenda = (bulanTertunggak - 1) * nominalDendaPerBulan; 
-                teksDenda = `<i data-lucide="alert-octagon" style="width:12px; margin-right:2px; display:inline-block; vertical-align:middle;"></i> Denda Keterlambatan: + Rp ${totalDenda.toLocaleString('id-ID')}`;
+                teksDenda = `<i data-lucide="alert-octagon" style="width:12px; margin-right:2px; display:inline-block; vertical-align:middle;"></i> Termasuk Denda Keterlambatan: Rp ${totalDenda.toLocaleString('id-ID')}`;
             }
-            const totalTagihan = (bulanTertunggak * nominalPokok) + totalDenda;
-            return { periode: periodeGlobal, jumlahBulan: bulanTertunggak, totalTagihan: totalTagihan, teksDenda: teksDenda, adaDenda: totalDenda > 0 };
+            
+            return { 
+                periode: periodeGlobal, 
+                jumlahBulan: bulanTertunggak, 
+                totalTagihan: totalTagihan, 
+                teksDenda: teksDenda, 
+                adaDenda: totalDenda > 0 
+            };
         }
 
         function renderDasborOrangTua(siswa) {
