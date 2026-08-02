@@ -17,6 +17,8 @@
     <!-- Ikon Aplikasi -->
     <link rel="icon" href="./logo.png" type="image/png">
     <link rel="apple-touch-icon" href="./logo.png">
+    
+    <!-- Catatan: File Developer sengaja TIDAK diberikan manifest.json agar tidak bisa diinstal sebagai PWA -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,6 +107,7 @@
         .pwd-toggle-btn { position: absolute; right: 16px; top: 40px; background: none; border: none; padding: 0; color: var(--text-light); cursor: pointer; transition: color 0.2s; display: flex; align-items: center; justify-content: center; }
         .pwd-toggle-btn:hover { color: white; }
 
+        /* Unified Custom Dropdown Component */
         .custom-dropdown { position: relative; width: 100%; user-select: none; }
         .dropdown-selected { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; font-size: 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #0F172A; color: var(--text-main); cursor: pointer; transition: all 0.2s; }
         .dropdown-selected:hover { border-color: var(--text-muted); }
@@ -467,20 +470,6 @@
                     </div>
                 </div>
 
-                <div class="data-card" style="margin-top: 24px; border-color: rgba(239, 68, 68, 0.4);">
-                    <div class="data-header" style="background: rgba(239, 68, 68, 0.1); border-bottom: 1px solid rgba(239, 68, 68, 0.2);">
-                        <h2 style="font-size: 18px; color: var(--danger); display: flex; align-items: center; gap: 8px;">
-                            <i data-lucide="wrench" style="width: 20px;"></i> Alat Pemulihan Data (Emergency Recovery)
-                        </h2>
-                    </div>
-                    <div style="padding: 24px;">
-                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Gunakan alat ini untuk memulihkan / merekonstruksi angka <strong>Bulan Tunggakan</strong> siswa berdasarkan total uang yang tertunggak. Sangat berguna untuk memperbaiki data tagihan pasca-bug.</p>
-                        <button class="btn btn-danger" style="width: 100%; padding: 14px;" onclick="window.confirmFixBulanTunggakan()">
-                            <i data-lucide="activity" style="width: 16px;"></i> Rekonstruksi Bulan Tunggakan Global
-                        </button>
-                    </div>
-                </div>
-
                 <div class="data-card" style="margin-top: 24px; border-color: rgba(245, 158, 11, 0.4);">
                     <div class="data-header" style="background: rgba(245, 158, 11, 0.1); border-bottom: 1px solid rgba(245, 158, 11, 0.2);">
                         <h2 style="font-size: 18px; color: var(--warning); display: flex; align-items: center; gap: 8px;">
@@ -506,7 +495,7 @@
                     <div class="data-header">
                         <div>
                             <h2 style="font-size: 20px; color: white;">Manajemen Klien (Tenant)</h2>
-                            <p class="text-muted text-sm" style="margin-top: 4px;">Kelola instansi, tentukan Bagi Hasil, Jatuh Tempo, dan lakukan pencairan hak hasil bulanan Anda di sini.</p>
+                            <p class="text-muted text-sm" style="margin-top: 4px;">Kelola instansi, tentukan Bagi Hasil, Jatuh Tempo, Masa Tenggang (Grace Period), dan Pencairan Hak.</p>
                         </div>
                         <div style="display: flex; gap: 12px;">
                             <button class="btn btn-primary" onclick="window.openModalClient()">
@@ -704,8 +693,17 @@
                 <!-- TAMBAHAN GRACE PERIOD -->
                 <div class="input-group" style="margin-bottom: 20px; margin-top: 20px; border-top: 1px dashed var(--border-color); padding-top: 20px;">
                     <label style="color: var(--success); display: flex; align-items: center; gap: 6px;"><i data-lucide="calendar-check" style="width: 14px;"></i> Bebas Tagihan Sampai (Grace Period)</label>
-                    <input type="month" id="input-client-graceperiod" class="form-control" style="font-weight: 700;">
-                    <p class="text-xs text-muted" style="margin-top: 6px;">Biarkan kosong jika tidak ada masa tenggang. Sistem Auto-Billing akan melewati klien ini hingga bulan yang ditentukan terlewati.</p>
+                    <div class="custom-dropdown" id="dropdown-grace-period">
+                        <div class="dropdown-selected" onclick="window.toggleGracePeriodDropdown()">
+                            <span id="dropdown-selected-grace" style="display:flex; align-items:center; gap:8px;"><i data-lucide="x-circle" style="width: 16px; color: var(--text-muted);"></i> Tidak Ada Masa Tenggang</span>
+                            <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                        </div>
+                        <div class="dropdown-options" id="options-grace-period" style="max-height: 220px; overflow-y: auto;">
+                            <!-- Generated by JS -->
+                        </div>
+                        <input type="hidden" id="select-client-graceperiod" value="">
+                    </div>
+                    <p class="text-xs text-muted" style="margin-top: 6px;">Pilih batas bulan. Sistem Auto-Billing akan melewati klien ini hingga bulan yang ditentukan terlewati.</p>
                 </div>
             </div><div class="modal-footer"><button class="btn btn-outline" onclick="window.closeModal('modal-client')">Batal</button><button class="btn btn-primary" onclick="window.saveClient()">Simpan Registrasi</button></div></div></div>
 
@@ -759,6 +757,10 @@
                 
                 const dropdownPlan = document.getElementById('dropdown-client-plan');
                 if (dropdownPlan && !dropdownPlan.contains(e.target)) dropdownPlan.classList.remove('open');
+                
+                // Add click outside listener for new Grace Period dropdown
+                const dropdownGrace = document.getElementById('dropdown-grace-period');
+                if (dropdownGrace && !dropdownGrace.contains(e.target)) dropdownGrace.classList.remove('open');
             });
             setupImageErrorListeners();
         });
@@ -771,6 +773,52 @@
             document.getElementById('select-client-plan').value = value;
             document.getElementById('dropdown-selected-plan').innerHTML = `<span style="display:flex; align-items:center; gap:8px;"><i data-lucide="${icon}" style="width: 16px; color: ${color};"></i> ${text}</span>`;
             document.getElementById('dropdown-client-plan').classList.remove('open');
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        // NEW: Custom Dropdown logic for Grace Period
+        window.toggleGracePeriodDropdown = function() {
+            document.getElementById('dropdown-grace-period').classList.toggle('open');
+        };
+
+        window.selectGracePeriodOption = function(val, text, icon, color) {
+            document.getElementById('select-client-graceperiod').value = val;
+            document.getElementById('dropdown-selected-grace').innerHTML = `<span style="display:flex; align-items:center; gap:8px;"><i data-lucide="${icon}" style="width: 16px; color: ${color};"></i> ${text}</span>`;
+            document.getElementById('dropdown-grace-period').classList.remove('open');
+            if(window.lucide) window.lucide.createIcons();
+        };
+
+        window.populateGracePeriodOptions = function(selectedValue) {
+            const container = document.getElementById('options-grace-period');
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const now = new Date();
+            let currentY = now.getFullYear();
+            let currentM = now.getMonth();
+
+            let html = `<div class="dropdown-option" onclick="window.selectGracePeriodOption('', 'Tidak Ada Masa Tenggang', 'x-circle', 'var(--text-muted)')"><i data-lucide="x-circle" style="width: 16px; color: var(--text-muted);"></i> Tidak Ada Masa Tenggang</div>`;
+            
+            let found = false;
+
+            for(let i=0; i<=24; i++) {
+                let m = (currentM + i) % 12;
+                let y = currentY + Math.floor((currentM + i) / 12);
+                
+                let val = `${y}-${(m+1).toString().padStart(2, '0')}`;
+                let label = `Sampai ${monthNames[m]} ${y}`;
+                
+                if (val === selectedValue) {
+                    found = true;
+                    document.getElementById('dropdown-selected-grace').innerHTML = `<span style="display:flex; align-items:center; gap:8px;"><i data-lucide="calendar-check" style="width: 16px; color: var(--success);"></i> ${label}</span>`;
+                }
+
+                html += `<div class="dropdown-option" onclick="window.selectGracePeriodOption('${val}', '${label}', 'calendar', 'var(--primary)')"><i data-lucide="calendar" style="width: 16px; color: var(--primary);"></i> ${label}</div>`;
+            }
+            
+            if (!found) {
+                document.getElementById('dropdown-selected-grace').innerHTML = `<span style="display:flex; align-items:center; gap:8px;"><i data-lucide="x-circle" style="width: 16px; color: var(--text-muted);"></i> Tidak Ada Masa Tenggang</span>`;
+            }
+            
+            container.innerHTML = html;
             if(window.lucide) window.lucide.createIcons();
         };
 
@@ -872,6 +920,16 @@
         }
 
         window.forceBillingPerTenant = function(clientId, tenantId, clientName) {
+            const client = allClients.find(c => c.id === clientId);
+            const now = new Date();
+            const currentMonthKey = now.getFullYear() + "-" + (now.getMonth() + 1).toString().padStart(2, '0');
+            
+            // CEK GRACE PERIOD SAAT MANUAL OVERRIDE
+            if (client && client.gracePeriod && client.gracePeriod >= currentMonthKey) {
+                window.showToast(`Ditolak: Yayasan ${clientName} sedang dalam masa Grace Period hingga ${client.gracePeriod}.`, true);
+                return;
+            }
+
             document.getElementById('confirm-title').textContent = "Manual Trigger Tagihan";
             document.getElementById('confirm-desc').innerHTML = `Anda mengeksekusi tagihan SPP secara manual untuk <strong>${clientName}</strong>.<br/><br/><span style="color:var(--danger);">Sistem me-reset status 'Lunas' seluruh pengguna yayasan ini.</span>`;
             document.getElementById('label-confirm-verify').textContent = 'Ketik "TAGIH" untuk konfirmasi:';
@@ -1773,8 +1831,10 @@
 
         window.openModalClient = function(id = null) {
             document.getElementById('client-id').value = id || '';
+            let c = null;
+
             if (id) {
-                const c = allClients.find(x => x.id === id);
+                c = allClients.find(x => x.id === id);
                 document.getElementById('client-modal-title').textContent = 'Edit Data Tenant';
                 document.getElementById('input-client-name').value = c.name || '';
                 document.getElementById('input-client-tenantId').value = c.tenantId || c.id || '';
@@ -1804,6 +1864,11 @@
                 window.selectClientStatusOption('active', 'Active (Akses Terbuka)', 'check-circle', 'var(--success)');
                 window.selectClientPlanOption('enterprise', 'Enterprise (All-in-One)', 'star', 'var(--warning)');
             }
+            
+            const gracePeriod = c ? (c.gracePeriod || '') : '';
+            document.getElementById('select-client-graceperiod').value = gracePeriod;
+            window.populateGracePeriodOptions(gracePeriod);
+
             window.openModal('modal-client');
         };
 
@@ -1815,6 +1880,7 @@
             const planType = document.getElementById('select-client-plan').value;
             const devShare = parseInt(document.getElementById('input-client-share').value);
             const jatuhTempo = parseInt(document.getElementById('input-client-jatuhtempo').value);
+            const gracePeriod = document.getElementById('select-client-graceperiod').value;
             const existingId = document.getElementById('client-id').value;
 
             if(!name || !tenantIdRaw) return window.showToast("Nama dan Tenant ID wajib diisi!", true);
@@ -1840,7 +1906,7 @@
                 };
             }
 
-            const payload = { name, tenantId, phone, status, planType, developerShare: devShare, jatuhTempo, updatedAt: Date.now(), ...appSubsObj };
+            const payload = { name, tenantId, phone, status, planType, developerShare: devShare, jatuhTempo, gracePeriod, updatedAt: Date.now(), ...appSubsObj };
 
             try {
                 if (!existingId) { payload.createdAt = Date.now(); payload.currentPrice = 0; payload.studentCount = 0; payload.totalDisetor = 0; }
@@ -1910,6 +1976,11 @@
                     <td style="color:var(--text-light); font-weight:600;">${rawSantri.toLocaleString('id-ID')} Pengguna</td>
                     <td>
                         <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
+                            <!-- TOMBOL ROLLBACK TAGIHAN -->
+                            <button class="btn btn-outline" style="padding: 6px 10px; color: var(--warning); border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05);" onclick="window.confirmRollbackBilling('${tenantId}', '${c.name.replace(/'/g, "\\'")}')" title="Rollback Tagihan (Mundur 1 Bulan)">
+                                <i data-lucide="rotate-ccw" style="width:14px;"></i>
+                            </button>
+
                             <button class="btn btn-outline" style="padding: 6px 10px; color: var(--success); border-color: rgba(16, 185, 129, 0.3);" onclick="window.forceBillingPerTenant('${c.id}', '${tenantId}', '${c.name.replace(/'/g, "\\'")}')" title="Trigger Penagihan Manual (Override)">
                                 <i data-lucide="play-circle" style="width:14px;"></i>
                             </button>
