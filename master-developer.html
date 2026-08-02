@@ -17,8 +17,6 @@
     <!-- Ikon Aplikasi -->
     <link rel="icon" href="./logo.png" type="image/png">
     <link rel="apple-touch-icon" href="./logo.png">
-    
-    <!-- Catatan: File Developer sengaja TIDAK diberikan manifest.json agar tidak bisa diinstal sebagai PWA -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -134,7 +132,6 @@
         .toggle-switch input:checked + .toggle-slider { background-color: var(--primary); }
         .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
 
-        /* Custom Radio Button Logic */
         .radio-card input[type="radio"] { opacity: 0; position: absolute; }
         .radio-card { position: relative; }
         .radio-card:has(input[type="radio"]:checked) { border-color: var(--primary) !important; background: rgba(59, 130, 246, 0.1) !important; box-shadow: 0 0 15px rgba(59, 130, 246, 0.15); }
@@ -703,7 +700,14 @@
     <!-- MODAL: HAK AKSES EKOSISTEM (SUBSCRIPTIONS & GATEKEEPER) -->
     <div id="modal-tenant-features" class="modal-overlay"><div class="modal-container" style="max-width: 500px; border: 1px solid var(--primary); box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);"><div class="modal-header" style="background: rgba(59, 130, 246, 0.05); border-bottom: 1px solid rgba(59, 130, 246, 0.2);"><div style="display: flex; align-items: center; gap: 10px;"><i data-lucide="sliders" style="color: var(--primary);"></i><h3 style="font-size: 16px; color: white;">Hak Akses Ekosistem (Subscriptions)</h3></div><button class="btn-ghost" onclick="window.closeModal('modal-tenant-features')" style="color: var(--primary);"><i data-lucide="x"></i></button></div><div class="modal-body"><p class="text-sm text-muted" style="margin-bottom: 24px; line-height: 1.5;">Aktifkan atau nonaktifkan aplikasi mandiri mana saja yang dapat diakses oleh <strong><span id="features-tenant-name" style="color:white;"></span></strong>. Modul yang dimatikan akan memblokir pengguna (Safety Net) secara <i>Real-time</i>.</p><input type="hidden" id="features-tenant-id"><div style="display: flex; flex-direction: column; gap: 16px;"><div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);"><div><span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="users" style="width:16px; color: var(--primary);"></i> Portal Pengguna (Anggota/Wali)</span><p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Akses untuk anggota mendaftar dan memantau.</p></div><label class="toggle-switch"><input type="checkbox" id="toggle-sub-user"><span class="toggle-slider"></span></label></div><div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);"><div><span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="briefcase" style="width:16px; color: var(--success);"></i> Portal Staf (Pengelola/Guru)</span><p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Akses bagi pengelola untuk mengevaluasi data pengguna.</p></div><label class="toggle-switch"><input type="checkbox" id="toggle-sub-staff"><span class="toggle-slider"></span></label></div><div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-md);"><div><span class="text-sm" style="font-weight: 700; color: #FBBF24; display: flex; align-items: center; gap: 8px;"><i data-lucide="wallet" style="width:16px;"></i> Modul E-Wallet & Kas</span><p style="font-size: 11px; color: rgba(253, 230, 138, 0.8); margin-top: 4px;">Mengaktifkan tab E-Wallet pada portal Klien.</p></div><label class="toggle-switch"><input type="checkbox" id="toggle-sub-ewallet"><span class="toggle-slider"></span></label></div><div style="width: 100%; height: 1px; background: var(--border-color); margin: 8px 0;"></div><h4 class="text-xs font-bold text-muted uppercase tracking-widest mt-2 mb-2">Fitur Internal Aplikasi</h4><div id="container-feature-tahfizh" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);"><div><span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="book-open" style="width:16px; color: var(--primary);"></i> Modul Evaluasi Akademik</span><p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Fitur evaluasi dan hafalan (Legacy).</p></div><label class="toggle-switch"><input type="checkbox" id="toggle-feature-tahfizh"><span class="toggle-slider"></span></label></div><div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-md);"><div><span class="text-sm" style="font-weight: 700; color: white; display: flex; align-items: center; gap: 8px;"><i data-lucide="printer" style="width:16px; color: var(--primary);"></i> Fitur Cetak ID Card PDF</span><p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Izin mencetak PDF Massal.</p></div><label class="toggle-switch"><input type="checkbox" id="toggle-feature-cetak"><span class="toggle-slider"></span></label></div></div></div><div class="modal-footer" style="background: rgba(59, 130, 246, 0.02); border-top: 1px solid rgba(59, 130, 246, 0.2);"><button class="btn btn-outline" onclick="window.closeModal('modal-tenant-features')">Batal</button><button class="btn btn-primary" onclick="window.saveTenantFeatures()" id="btn-save-features"><i data-lucide="save" style="width:16px;"></i> Terapkan Hak Akses</button></div></div></div>
 
-    <div id="modal-client" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3 style="font-size: 18px; color: white;" id="client-modal-title">Daftarkan Klien Baru</h3><button class="btn-ghost" onclick="window.closeModal('modal-client')"><i data-lucide="x"></i></button></div><div class="modal-body"><input type="hidden" id="client-id"><div class="input-group" style="margin-bottom: 24px;"><label>Tipe Paket Berlangganan (Legacy)</label><div class="custom-dropdown" id="dropdown-client-plan"><div class="dropdown-selected" onclick="window.toggleClientPlanDropdown()"><span id="dropdown-selected-plan" style="display:flex; align-items:center; gap:8px;"><i data-lucide="star" style="width: 16px; color: var(--warning);"></i> Enterprise (All-in-One)</span><i data-lucide="chevron-down" class="dropdown-arrow"></i></div><div class="dropdown-options"><div class="dropdown-option" onclick="window.selectClientPlanOption('enterprise', 'Enterprise (All-in-One)', 'star', 'var(--warning)')"><i data-lucide="star" style="width: 16px; color: var(--warning);"></i> Enterprise (All-in-One)</div><div class="dropdown-option" onclick="window.selectClientPlanOption('lite', 'Lite (Absensi Saja)', 'clock', 'var(--success)')"><i data-lucide="clock" style="width: 16px; color: var(--success);"></i> Lite (Absensi Saja)</div></div><input type="hidden" id="select-client-plan" value="enterprise"></div></div><div class="input-group"><label>Nama Instansi Klien</label><input type="text" id="input-client-name" class="form-control" placeholder="Contoh: Instansi A" autocomplete="off"></div><div class="input-group"><label>Tenant ID / App ID</label><input type="text" id="input-client-tenantId" class="form-control font-mono" placeholder="id_unik" autocomplete="off"><p class="text-xs text-muted" style="margin-top: 6px;">ID unik (Silo Database).</p></div><div class="input-group"><label>No. WhatsApp Pengelola</label><input type="number" id="input-client-phone" class="form-control" placeholder="0812xxxxxx"></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;"><div class="input-group" style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); padding: 16px; border-radius: var(--radius-md); margin-bottom: 0;"><label style="color: var(--accent); display: flex; align-items: center; gap: 6px;"><i data-lucide="pie-chart" style="width: 14px;"></i> Porsi Dev (%)</label><input type="number" id="input-client-share" class="form-control" placeholder="20" min="0" max="100" autocomplete="off" style="font-weight: 700;"></div><div class="input-group" style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); padding: 16px; border-radius: var(--radius-md); margin-bottom: 0;"><label style="color: var(--warning); display: flex; align-items: center; gap: 6px;"><i data-lucide="calendar" style="width: 14px;"></i> Jatuh Tempo</label><input type="number" id="input-client-jatuhtempo" class="form-control" placeholder="10" min="1" max="31" autocomplete="off" style="font-weight: 700;"></div></div><div class="input-group" style="margin-bottom: 0;"><label>Status Akses Sistem</label><div class="custom-dropdown" id="dropdown-client-status"><div class="dropdown-selected" onclick="window.toggleClientStatusDropdown()"><span id="dropdown-selected-text" style="display:flex; align-items:center; gap:8px;"><i data-lucide="check-circle" style="width: 16px; color: var(--success);"></i> Active (Akses Terbuka)</span><i data-lucide="chevron-down" class="dropdown-arrow"></i></div><div class="dropdown-options"><div class="dropdown-option" onclick="window.selectClientStatusOption('active', 'Active (Akses Terbuka)', 'check-circle', 'var(--success)')"><i data-lucide="check-circle" style="width: 16px; color: var(--success);"></i> Active (Akses Terbuka)</div><div class="dropdown-option" onclick="window.selectClientStatusOption('suspended', 'Suspended (Blokir Akses)', 'lock', 'var(--danger)')"><i data-lucide="lock" style="width: 16px; color: var(--danger);"></i> Suspended (Blokir Akses)</div></div><input type="hidden" id="select-client-status" value="active"></div></div></div><div class="modal-footer"><button class="btn btn-outline" onclick="window.closeModal('modal-client')">Batal</button><button class="btn btn-primary" onclick="window.saveClient()">Simpan Registrasi</button></div></div></div>
+    <div id="modal-client" class="modal-overlay"><div class="modal-container"><div class="modal-header"><h3 style="font-size: 18px; color: white;" id="client-modal-title">Daftarkan Klien Baru</h3><button class="btn-ghost" onclick="window.closeModal('modal-client')"><i data-lucide="x"></i></button></div><div class="modal-body"><input type="hidden" id="client-id"><div class="input-group" style="margin-bottom: 24px;"><label>Tipe Paket Berlangganan (Legacy)</label><div class="custom-dropdown" id="dropdown-client-plan"><div class="dropdown-selected" onclick="window.toggleClientPlanDropdown()"><span id="dropdown-selected-plan" style="display:flex; align-items:center; gap:8px;"><i data-lucide="star" style="width: 16px; color: var(--warning);"></i> Enterprise (All-in-One)</span><i data-lucide="chevron-down" class="dropdown-arrow"></i></div><div class="dropdown-options"><div class="dropdown-option" onclick="window.selectClientPlanOption('enterprise', 'Enterprise (All-in-One)', 'star', 'var(--warning)')"><i data-lucide="star" style="width: 16px; color: var(--warning);"></i> Enterprise (All-in-One)</div><div class="dropdown-option" onclick="window.selectClientPlanOption('lite', 'Lite (Absensi Saja)', 'clock', 'var(--success)')"><i data-lucide="clock" style="width: 16px; color: var(--success);"></i> Lite (Absensi Saja)</div></div><input type="hidden" id="select-client-plan" value="enterprise"></div></div><div class="input-group"><label>Nama Instansi Klien</label><input type="text" id="input-client-name" class="form-control" placeholder="Contoh: Instansi A" autocomplete="off"></div><div class="input-group"><label>Tenant ID / App ID</label><input type="text" id="input-client-tenantId" class="form-control font-mono" placeholder="id_unik" autocomplete="off"><p class="text-xs text-muted" style="margin-top: 6px;">ID unik (Silo Database).</p></div><div class="input-group"><label>No. WhatsApp Pengelola</label><input type="number" id="input-client-phone" class="form-control" placeholder="0812xxxxxx"></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;"><div class="input-group" style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); padding: 16px; border-radius: var(--radius-md); margin-bottom: 0;"><label style="color: var(--accent); display: flex; align-items: center; gap: 6px;"><i data-lucide="pie-chart" style="width: 14px;"></i> Porsi Dev (%)</label><input type="number" id="input-client-share" class="form-control" placeholder="20" min="0" max="100" autocomplete="off" style="font-weight: 700;"></div><div class="input-group" style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); padding: 16px; border-radius: var(--radius-md); margin-bottom: 0;"><label style="color: var(--warning); display: flex; align-items: center; gap: 6px;"><i data-lucide="calendar" style="width: 14px;"></i> Jatuh Tempo</label><input type="number" id="input-client-jatuhtempo" class="form-control" placeholder="10" min="1" max="31" autocomplete="off" style="font-weight: 700;"></div></div><div class="input-group" style="margin-bottom: 0;"><label>Status Akses Sistem</label><div class="custom-dropdown" id="dropdown-client-status"><div class="dropdown-selected" onclick="window.toggleClientStatusDropdown()"><span id="dropdown-selected-text" style="display:flex; align-items:center; gap:8px;"><i data-lucide="check-circle" style="width: 16px; color: var(--success);"></i> Active (Akses Terbuka)</span><i data-lucide="chevron-down" class="dropdown-arrow"></i></div><div class="dropdown-options"><div class="dropdown-option" onclick="window.selectClientStatusOption('active', 'Active (Akses Terbuka)', 'check-circle', 'var(--success)')"><i data-lucide="check-circle" style="width: 16px; color: var(--success);"></i> Active (Akses Terbuka)</div><div class="dropdown-option" onclick="window.selectClientStatusOption('suspended', 'Suspended (Blokir Akses)', 'lock', 'var(--danger)')"><i data-lucide="lock" style="width: 16px; color: var(--danger);"></i> Suspended (Blokir Akses)</div></div><input type="hidden" id="select-client-status" value="active"></div></div>
+                <!-- TAMBAHAN GRACE PERIOD -->
+                <div class="input-group" style="margin-bottom: 20px; margin-top: 20px; border-top: 1px dashed var(--border-color); padding-top: 20px;">
+                    <label style="color: var(--success); display: flex; align-items: center; gap: 6px;"><i data-lucide="calendar-check" style="width: 14px;"></i> Bebas Tagihan Sampai (Grace Period)</label>
+                    <input type="month" id="input-client-graceperiod" class="form-control" style="font-weight: 700;">
+                    <p class="text-xs text-muted" style="margin-top: 6px;">Biarkan kosong jika tidak ada masa tenggang. Sistem Auto-Billing akan melewati klien ini hingga bulan yang ditentukan terlewati.</p>
+                </div>
+            </div><div class="modal-footer"><button class="btn btn-outline" onclick="window.closeModal('modal-client')">Batal</button><button class="btn btn-primary" onclick="window.saveClient()">Simpan Registrasi</button></div></div></div>
 
     <div id="modal-tenant-idcard" class="modal-overlay"><div class="modal-container" style="border: 1px solid var(--primary); box-shadow: 0 0 50px rgba(59, 130, 246, 0.2);"><div class="modal-header" style="background: rgba(59, 130, 246, 0.05); border-bottom: 1px solid rgba(59, 130, 246, 0.2);"><div style="display: flex; align-items: center; gap: 12px;"><div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;"><i data-lucide="upload-cloud" style="width: 20px;"></i></div><div><h3 style="font-size: 16px; color: white; margin: 0; display: flex; align-items: center; gap: 8px;">Impor Template ID Card</h3><div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Distribusi Klien: <strong id="idcard-tenant-name" style="color:white;"></strong></div></div></div><button class="btn-ghost" onclick="window.closeModal('modal-tenant-idcard')" style="color: var(--text-muted);"><i data-lucide="x"></i></button></div><div class="modal-body"><input type="hidden" id="idcard-tenant-id"><input type="hidden" id="imported-front-json"><input type="hidden" id="imported-back-json"><div class="input-group"><input type="file" id="upload-json-template" accept=".json" style="display: none;" onchange="window.handleJsonImport(event)"><label for="upload-json-template" class="file-drop-zone" id="drop-zone-json" style="border-color: var(--primary); background: rgba(59, 130, 246, 0.05);"><i data-lucide="file-json-2" style="width: 40px; height: 40px; color: var(--primary); margin-bottom: 16px; display: inline-block;"></i><div id="json-upload-text" style="font-size: 14px; font-weight: 700; color: white;">Klik Pilih File JSON</div></label></div><div id="import-status-area" style="display: none; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 16px; border-radius: var(--radius-md); align-items: center; gap: 12px; margin-top: 16px;"><div style="width: 36px; height: 36px; background: var(--success-bg); color: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i data-lucide="check" style="width: 20px;"></i></div><div><h4 style="color: var(--success); font-size: 14px; margin-bottom: 2px;">File Berhasil Terbaca!</h4></div></div></div><div class="modal-footer" style="background: rgba(59, 130, 246, 0.05); border-top: 1px solid rgba(59, 130, 246, 0.2);"><button class="btn btn-outline" onclick="window.closeModal('modal-tenant-idcard')">Batal</button><button class="btn btn-primary" onclick="window.saveTenantIdCardConfig()" id="btn-save-idcard" disabled><i data-lucide="send" style="width: 16px;"></i> Distribusikan</button></div></div></div>
 
@@ -812,6 +816,14 @@
                     const client = allClients[i];
                     if (client.status !== 'active') continue;
                     const tenantId = client.tenantId || client.id;
+                    
+                    // PENAMBAHAN FITUR: Cek Grace Period
+                    if (client.gracePeriod && client.gracePeriod >= monthKey) {
+                        overlayMsg.innerHTML = `Memproses Database Klien: <strong>${client.name}</strong> (${i+1}/${allClients.length})...<br/><span style="color:var(--warning);">Dilewati (Masa Tenggang Aktif hingga ${client.gracePeriod})</span>`;
+                        await new Promise(r => setTimeout(r, 600)); 
+                        continue; // Lewati yayasan ini
+                    }
+                    
                     overlayMsg.innerHTML = `Memproses Database Klien: <strong>${client.name}</strong> (${i+1}/${allClients.length})...`;
                     
                     const setRef = doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global');
@@ -827,16 +839,15 @@
                     stuSnap.forEach(stuDoc => {
                         const student = stuDoc.data();
                         
-                        // Perbaikan Bug: Menambahkan akumulasi dan counter bulan tunggakan
                         let newTunggakan = student.akumulasiTunggakan || 0;
                         let newBulan = parseInt(student.bulanTunggakan) || 0;
 
                         if (student.pembayaranLunas === false) {
                             newTunggakan += (nomTagihan + nomDenda);
-                            newBulan += 1; // Increment jumlah tunggakan jika sebelumnya sudah nunggak
+                            newBulan += 1;
                         } else {
                             newTunggakan = nomTagihan;
-                            newBulan = 1; // Baru menunggak bulan ini
+                            newBulan = 1;
                         }
 
                         updatePromises.push(updateDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'students', student.id), {
@@ -899,7 +910,6 @@
                 stuSnap.forEach(stuDoc => {
                     const student = stuDoc.data();
                     
-                    // Perbaikan Bug Manual Tagihan: Menambahkan akumulasi dan counter bulan tunggakan
                     let newTunggakan = student.akumulasiTunggakan || 0;
                     let newBulan = parseInt(student.bulanTunggakan) || 0;
 
@@ -924,6 +934,91 @@
                 setTimeout(() => { overlay.classList.remove('active'); window.showToast("Penagihan Manual Berhasil."); }, 2000);
             } catch(e) {
                 overlay.classList.remove('active'); window.showToast("Gagal menjalankan Override Tagihan.", true);
+            }
+        }
+
+        // ==========================================
+        // FITUR BARU: ROLLBACK AUTO-BILLING
+        // ==========================================
+        window.confirmRollbackBilling = function(tenantId, clientName) {
+            document.getElementById('confirm-title').textContent = "Rollback Tagihan Yayasan";
+            document.getElementById('confirm-desc').innerHTML = `Peringatan: Anda akan <strong style="color:var(--warning);">memundurkan tagihan 1 bulan</strong> khusus untuk <strong>${clientName}</strong>.<br><br>Ini akan membatalkan efek Auto-Billing terakhir. Siswa yang tadinya lunas akan kembali lunas, dan yang menunggak akan berkurang 1 bulan hutangnya.`;
+            document.getElementById('label-confirm-verify').textContent = 'Ketik "MUNDUR" untuk konfirmasi:';
+            document.getElementById('input-confirm-verify').value = '';
+            document.getElementById('input-confirm-verify').placeholder = 'MUNDUR';
+            
+            const btnExec = document.getElementById('btn-execute-confirm');
+            btnExec.textContent = "Eksekusi Rollback";
+            confirmRequiredText = "MUNDUR"; btnExec.disabled = true;
+
+            confirmActionCallback = async () => {
+                window.closeModal('modal-confirm');
+                await executeRollbackBilling(tenantId, clientName);
+            };
+            btnExec.onclick = confirmActionCallback; window.openModal('modal-confirm');
+        };
+
+        async function executeRollbackBilling(tenantId, clientName) {
+            const overlay = document.getElementById('system-update-overlay');
+            const overlayMsg = document.getElementById('system-update-msg');
+            overlayMsg.innerHTML = `<strong>Rollback Data Berjalan</strong><br/>Memulihkan Database Yayasan: <strong>${clientName}</strong>...`;
+            overlay.classList.add('active');
+
+            try {
+                const setRef = doc(db, 'artifacts', tenantId, 'public', 'data', 'settings', 'global');
+                const setSnap = await getDoc(setRef);
+                const tenantSettings = setSnap.exists() ? setSnap.data() : {};
+                const nomTagihan = tenantSettings.nominalTagihan !== undefined ? tenantSettings.nominalTagihan : 5000;
+                const nomDenda = tenantSettings.nominalDenda !== undefined ? tenantSettings.nominalDenda : 0;
+                const stuRef = collection(db, 'artifacts', tenantId, 'public', 'data', 'students');
+                const stuSnap = await getDocs(query(stuRef));
+                const updatePromises = [];
+                let rollbackCount = 0;
+
+                stuSnap.forEach(stuDoc => {
+                    const student = stuDoc.data();
+                    let newTunggakan = student.akumulasiTunggakan || 0;
+                    let newBulan = parseInt(student.bulanTunggakan) || 0;
+                    let lunas = student.pembayaranLunas;
+
+                    // Logika Matematika Mundur (Reverse Auto-Billing)
+                    if (newBulan > 1) {
+                        newTunggakan -= (nomTagihan + nomDenda);
+                        newBulan -= 1;
+                        lunas = false; // Tetap menunggak, tapi berkurang 1 bulan
+                        rollbackCount++;
+                    } else if (newBulan === 1) {
+                        newTunggakan = 0;
+                        newBulan = 0;
+                        lunas = true; // Kembali menjadi lunas (0 bulan)
+                        rollbackCount++;
+                    }
+
+                    if (newTunggakan < 0) newTunggakan = 0;
+
+                    updatePromises.push(updateDoc(doc(db, 'artifacts', tenantId, 'public', 'data', 'students', student.id), {
+                        pembayaranLunas: lunas, 
+                        akumulasiTunggakan: newTunggakan,
+                        bulanTunggakan: newBulan
+                    }));
+                });
+
+                await Promise.all(updatePromises);
+                
+                // Rollback periode text ke bulan lalu
+                const now = new Date();
+                let lastMonth = now.getMonth() - 1;
+                let lastYear = now.getFullYear();
+                if (lastMonth < 0) { lastMonth = 11; lastYear -= 1; }
+                const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                const rollbackPeriode = `${monthNames[lastMonth]} ${lastYear} (Rollback)`;
+                
+                await setDoc(setRef, { periodeTagihan: rollbackPeriode }, { merge: true });
+
+                overlayMsg.innerHTML = `<strong style="color:var(--success); font-size:20px;">Rollback Berhasil!</strong><br/>Data tagihan ${rollbackCount} siswa di ${clientName} berhasil dimundurkan 1 bulan.`;
+                setTimeout(() => { overlay.classList.remove('active'); window.showToast("Rollback Tagihan Berhasil."); }, 2500);
+            } catch(e) {
+                overlay.classList.remove('active'); window.showToast("Gagal menjalankan Rollback.", true);
             }
         }
 

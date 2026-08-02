@@ -1122,6 +1122,7 @@
         // =========================================================
         // LOGIKA INTEGRASI PEMBAYARAN MIDTRANS
         // =========================================================
+        
         window.bukaModalPembayaran = function(status, data = null) {
             const modal = document.getElementById('modal-status-pembayaran');
             const konten = document.getElementById('konten-status-pembayaran');
@@ -2440,6 +2441,9 @@
             } catch(e) { window.tampilkanToast("Gagal mengirim pesan.", true); }
         };
 
+        // ==========================================
+        // RENDER CHAT BUKU PENGHUBUNG & SHOLAT CARD
+        // ==========================================
         function renderChatBukuPenghubung(chatArray) {
             const chatContainer = document.getElementById('chat-history-container');
             if(!chatArray || chatArray.length === 0) {
