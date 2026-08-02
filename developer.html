@@ -1168,6 +1168,46 @@
         // END ALAT PEMULIHAN
         // ==========================================
 
+        window.confirmDeleteClient = function(tenantId, clientName) {
+            document.getElementById('confirm-title').textContent = "Hapus Klien Permanen";
+            document.getElementById('confirm-desc').innerHTML = `Anda akan menghapus pendaftaran <strong>${clientName}</strong> dari sistem SaaS. Aplikasi klien akan terkunci total (Safety Net).<br/><br/><span style="color:var(--danger);">Tindakan ini tidak dapat dibatalkan.</span>`;
+            document.getElementById('label-confirm-verify').textContent = 'Ketik "HAPUS" untuk konfirmasi:';
+            document.getElementById('input-confirm-verify').value = '';
+            document.getElementById('input-confirm-verify').placeholder = 'HAPUS';
+            
+            const btnExec = document.getElementById('btn-execute-confirm');
+            btnExec.textContent = "Hapus Permanen";
+            confirmRequiredText = "HAPUS"; 
+            btnExec.disabled = true;
+
+            confirmActionCallback = async () => {
+                window.closeModal('modal-confirm');
+                await executeDeleteClient(tenantId);
+            };
+            btnExec.onclick = confirmActionCallback; 
+            window.openModal('modal-confirm');
+        };
+
+        async function executeDeleteClient(tenantId) {
+            const overlay = document.getElementById('system-update-overlay');
+            const overlayMsg = document.getElementById('system-update-msg');
+            overlayMsg.innerHTML = `<strong>Menghapus Data Klien</strong><br/>Mencabut akses dan menghapus registrasi...`;
+            overlay.classList.add('active');
+
+            try {
+                // Delete from master list
+                await deleteDoc(doc(db, 'saas_master', 'clients', 'list', tenantId));
+                // Delete from registered stats if exists
+                await deleteDoc(doc(db, 'saas_master', 'clients', 'registered', tenantId));
+                
+                overlayMsg.innerHTML = `<strong style="color:var(--success); font-size:20px;">Berhasil!</strong><br/>Data klien telah dihapus dari sistem.`;
+                setTimeout(() => { overlay.classList.remove('active'); window.showToast("Klien berhasil dihapus secara permanen."); }, 2000);
+            } catch(e) {
+                overlay.classList.remove('active');
+                window.showToast("Gagal menghapus klien.", true);
+            }
+        }
+
         window.toggleClientStatusDropdown = function() { document.getElementById('dropdown-client-status').classList.toggle('open'); };
         window.selectClientStatusOption = function(value, text, icon, color) {
             document.getElementById('select-client-status').value = value;
@@ -2016,6 +2056,12 @@
                             <button class="btn btn-outline" style="padding: 6px 10px;" onclick="window.openModalClient('${c.id}')" title="Edit Klien">
                                 <i data-lucide="edit-3" style="width:14px;"></i>
                             </button>
+                            
+                            <!-- TOMBOL HAPUS KLIEN -->
+                            <button class="btn btn-outline" style="padding: 6px 10px; color: var(--danger); border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05);" onclick="window.confirmDeleteClient('${tenantId}', '${c.name.replace(/'/g, "\\'")}')" title="Hapus Klien (Permanen)">
+                                <i data-lucide="trash-2" style="width:14px;"></i>
+                            </button>
+
                             <button class="btn btn-outline" style="padding: 6px 10px; color: ${isSuspend ? 'var(--success)' : 'var(--danger)'}; border-color: ${isSuspend ? 'var(--success-bg)' : 'var(--danger-bg)'};" onclick="window.toggleSuspendClient('${c.id}', '${isSuspend ? 'active' : 'suspended'}')" title="${isSuspend ? 'Buka Akses' : 'Blokir Akses'}">
                                 <i data-lucide="${isSuspend ? 'unlock' : 'lock'}" style="width:14px;"></i>
                             </button>
